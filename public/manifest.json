@@ -3,7 +3,7 @@
   "name": "QuranSeekho Online",
   "short_name": "QuranSeekho",
   "description": "Read, study, and understand the Holy Quran with English and Urdu translations.",
-  "start_url": "https://quranseekho.online",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -27,12 +27,12 @@
   "shortcuts": [
     {
       "name": "Surah List",
-      "url": "/#/surah",
+      "url": "/surah",
       "icons": [{ "src": "https://img.icons8.com/color/96/000000/book.png", "sizes": "96x96" }]
     },
     {
       "name": "Tasbeeh Counter",
-      "url": "/#/tasbeeh",
+      "url": "/tasbeeh",
       "icons": [{ "src": "https://img.icons8.com/color/96/000000/beads.png", "sizes": "96x96" }]
     }
   ]
