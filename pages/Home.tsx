@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah } from '../services/quranApi';
 import { PrayerTimes } from '../types';
-import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight } from 'lucide-react';
+import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PopularSurahs = [
@@ -10,7 +9,7 @@ const PopularSurahs = [
   { id: 36, name: 'Yaseen', arabic: 'يس', translation: 'Ya-Sin' },
   { id: 55, name: 'Ar-Rahman', arabic: 'الرحمن', translation: 'The Beneficent' },
   { id: 56, name: 'Al-Waqi\'ah', arabic: 'الواقعة', translation: 'The Inevitable' },
-  { id: 67, name: 'Al-Mulk', arabic: 'الملك', translation: 'The Sovereignty' },
+  { id: 67, name: 'Al-Mulk', arabic: 'الملک', translation: 'The Sovereignty' },
 ];
 
 const Home: React.FC = () => {
@@ -18,12 +17,13 @@ const Home: React.FC = () => {
   const [dailyAyah, setDailyAyah] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
     const initData = async () => {
       try {
         const ayahRes = await fetchRandomAyah();
-        // Correctly identify parts by language/identifier
         const arabic = ayahRes.find((p: any) => p.edition.identifier === 'quran-uthmani');
         const english = ayahRes.find((p: any) => p.edition.language === 'en');
         const urdu = ayahRes.find((p: any) => p.edition.language === 'ur');
@@ -49,7 +49,31 @@ const Home: React.FC = () => {
       }
     };
     initData();
+
+    // PWA Install logic for Hero Button
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+    }
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -69,7 +93,19 @@ const Home: React.FC = () => {
           </p>
           <div className="flex flex-wrap gap-4">
             <Link to="/surah" className="px-6 py-3 bg-white text-green-800 rounded-xl font-bold hover:bg-green-50 transition-colors shadow-lg">Start Reading</Link>
-            <Link to="/learn" className="px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors">Learn Tajweed</Link>
+            
+            {!isInstalled && deferredPrompt && (
+              <button 
+                onClick={handleInstallClick}
+                className="flex items-center gap-2 px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors"
+              >
+                <Download size={20} /> Download App
+              </button>
+            )}
+            
+            {(isInstalled || !deferredPrompt) && (
+              <Link to="/learn" className="px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors">Learn Tajweed</Link>
+            )}
           </div>
         </div>
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-green-700 rounded-full blur-3xl opacity-40"></div>
