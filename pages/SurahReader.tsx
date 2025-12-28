@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { fetchSurahDetail, fetchJuzDetail } from '../services/quranApi';
-import { ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type } from 'lucide-react';
 
 const SurahReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,12 +14,16 @@ const SurahReader: React.FC = () => {
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
   const [fontSize, setFontSize] = useState(32);
+  const [isAmiri, setIsAmiri] = useState(false); // Toggle between Scheherazade (default) and Amiri
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [bookmarks, setBookmarks] = useState<string[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem('qs_bookmarks');
     if (saved) setBookmarks(JSON.parse(saved).map((b: any) => `${b.surahNumber}:${b.ayahNumber}`));
+    
+    const savedFont = localStorage.getItem('qs_preferred_font');
+    if (savedFont) setIsAmiri(savedFont === 'amiri');
   }, []);
 
   useEffect(() => {
@@ -61,6 +65,12 @@ const SurahReader: React.FC = () => {
       setBookmarks([...bookmarks, bookmarkKey]);
     }
     localStorage.setItem('qs_bookmarks', JSON.stringify(currentBookmarks));
+  };
+
+  const toggleFont = () => {
+    const newVal = !isAmiri;
+    setIsAmiri(newVal);
+    localStorage.setItem('qs_preferred_font', newVal ? 'amiri' : 'scheherazade');
   };
 
   if (loading) return (
@@ -108,7 +118,13 @@ const SurahReader: React.FC = () => {
 
         {(!isJuz || (isJuz && arabic?.ayahs[0]?.numberInSurah === 1)) && parseInt(id!) !== 9 && (
             <div className="flex justify-center py-6 relative z-10">
-                <p className="font-arabic text-5xl text-center leading-relaxed" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+                <p 
+                  className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-5xl text-center leading-[2.5] quran-text`} 
+                  dir="rtl" 
+                  lang="ar"
+                >
+                  بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                </p>
             </div>
         )}
 
@@ -131,6 +147,16 @@ const SurahReader: React.FC = () => {
                   <input type="checkbox" checked={showUrdu} onChange={() => setShowUrdu(!showUrdu)} className="accent-green-600" /> Urdu
                 </label>
               </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase text-slate-400">Arabic Script</label>
+              <button 
+                onClick={toggleFont}
+                className="w-full flex items-center justify-between p-2 text-sm border dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                <span>{isAmiri ? 'Amiri Font' : 'Scheherazade Font'}</span>
+                <Type size={16} />
+              </button>
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase text-slate-400">Arabic Size: {fontSize}px</label>
@@ -164,9 +190,10 @@ const SurahReader: React.FC = () => {
                 </div>
                 <div className="flex-1 space-y-8">
                   <p
-                    className="font-arabic text-right leading-[2.2] md:leading-[2.5]"
+                    className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-right leading-[2.2] md:leading-[2.8] quran-text`}
                     style={{ fontSize: `${fontSize}px` }}
                     dir="rtl"
+                    lang="ar"
                   >
                     {ayah.text}
                   </p>

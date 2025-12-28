@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon, Bookmark } from 'lucide-react';
+import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon, Bookmark, MessageSquare, Sparkles, Hash } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,10 +20,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: 'Home', path: '/', icon: <Clock size={20} /> },
     { name: 'Surah', path: '/surah', icon: <BookOpen size={20} /> },
-    { name: 'Juz', path: '/juz', icon: <Book size={20} /> },
+    { name: 'Ask AI', path: '/ask-ai', icon: <Sparkles size={20} className="text-purple-500" /> },
+    { name: '99 Names', path: '/names', icon: <Heart size={20} className="text-pink-500" /> },
+    { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
     { name: 'Bookmarks', path: '/bookmarks', icon: <Bookmark size={20} /> },
-    { name: 'Learn', path: '/learn', icon: <Search size={20} /> },
-    { name: 'About', path: '/about', icon: <Heart size={20} /> },
   ];
 
   return (
@@ -43,7 +43,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 key={item.path}
                 to={item.path}
                 className={`flex items-center gap-2 font-medium transition-colors ${
-                  location.pathname === item.path ? 'text-green-700' : 'hover:text-green-600'
+                  location.pathname === item.path ? 'text-green-700 dark:text-green-400' : 'hover:text-green-600'
                 }`}
               >
                 {item.icon}
@@ -88,18 +88,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Footer / Mobile Tab Bar */}
       <footer className={`mt-auto border-t pb-20 md:pb-8 pt-8 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'}`}>
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm opacity-60">© {new Date().getFullYear()} QuranSeekho.online - Read, Learn, Grow.</p>
-          <div className="flex justify-center gap-4 mt-4 text-xs">
-            <Link to="/about" className="hover:underline">Privacy Policy</Link>
-            <Link to="/about" className="hover:underline">Terms of Service</Link>
-            <Link to="/about" className="hover:underline">Contact Us</Link>
-          </div>
+          <p className="text-sm opacity-60">© {new Date().getFullYear()} QuranSeekho.online - Guidance for the Ummah.</p>
         </div>
       </footer>
 
       {/* Mobile Tab Bar (Sticky) */}
       <div className={`md:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-50 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'}`}>
-        {navItems.map((item) => (
+        {navItems.slice(0, 5).map((item) => (
           <Link
             key={item.path}
             to={item.path}

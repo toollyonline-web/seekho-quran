@@ -8,6 +8,9 @@ import SurahReader from './pages/SurahReader';
 import JuzList from './pages/JuzList';
 import Bookmarks from './pages/Bookmarks';
 import Learn from './pages/Learn';
+import AskAi from './pages/AskAi';
+import AsmaUlHusna from './pages/AsmaUlHusna';
+import Tasbeeh from './pages/Tasbeeh';
 
 const App: React.FC = () => {
   return (
@@ -21,6 +24,9 @@ const App: React.FC = () => {
           <Route path="/juz/:id" element={<SurahReader />} />
           <Route path="/bookmarks" element={<Bookmarks />} />
           <Route path="/learn" element={<Learn />} />
+          <Route path="/ask-ai" element={<AskAi />} />
+          <Route path="/names" element={<AsmaUlHusna />} />
+          <Route path="/tasbeeh" element={<Tasbeeh />} />
           <Route path="/about" element={<div className="text-center py-20">
             <h1 className="text-3xl font-bold mb-4">About QuranSeekho</h1>
             <p className="max-w-xl mx-auto text-slate-500">
