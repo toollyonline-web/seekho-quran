@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah } from '../services/quranApi';
 import { PrayerTimes } from '../types';
-import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download } from 'lucide-react';
+import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PopularSurahs = [
@@ -12,9 +12,23 @@ const PopularSurahs = [
   { id: 67, name: 'Al-Mulk', arabic: 'الملک', translation: 'The Sovereignty' },
 ];
 
+const DAILY_REMINDERS = [
+  { text: "Kindness is a mark of faith, and whoever is not kind has no faith.", source: "Prophet Muhammad (PBUH)" },
+  { text: "The best of people are those that bring most benefit to the rest of mankind.", source: "Daraqutni" },
+  { text: "Speak a good word or remain silent.", source: "Bukhari & Muslim" },
+  { text: "Patience is the key to joy.", source: "Hazrat Ali (RA)" },
+  { text: "Happiness is found in the remembrance of Allah.", source: "Quran 13:28" },
+  { text: "A powerful person is not the one who can wrestle, but the one who can control his anger.", source: "Sahih Bukhari" },
+  { text: "The most beloved of deeds to Allah are those that are most consistent, even if they are small.", source: "Sahih Bukhari" },
+  { text: "The best wealth is the richness of the soul.", source: "Sahih Bukhari" },
+  { text: "Be in this world as if you were a stranger or a traveler.", source: "Sahih Bukhari" },
+  { text: "Allah does not look at your forms and possessions, but He looks at your hearts and your deeds.", source: "Sahih Muslim" }
+];
+
 const Home: React.FC = () => {
   const [prayers, setPrayers] = useState<PrayerTimes | null>(null);
   const [dailyAyah, setDailyAyah] = useState<any>(null);
+  const [dailyReminder, setDailyReminder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -29,6 +43,14 @@ const Home: React.FC = () => {
         const urdu = ayahRes.find((p: any) => p.edition.language === 'ur');
         
         setDailyAyah({ arabic, english, urdu });
+
+        // Get daily reminder based on current day of year
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 0);
+        const diff = (now.getTime() - start.getTime()) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
+        const oneDay = 1000 * 60 * 60 * 24;
+        const dayOfYear = Math.floor(diff / oneDay);
+        setDailyReminder(DAILY_REMINDERS[dayOfYear % DAILY_REMINDERS.length]);
 
         navigator.geolocation.getCurrentPosition(
           async (pos) => {
@@ -153,6 +175,30 @@ const Home: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Daily Reminder Section */}
+          {dailyReminder && (
+            <div className="bg-gradient-to-br from-green-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700 relative overflow-hidden group">
+              <Quote className="absolute top-4 right-4 text-green-200 dark:text-slate-700 group-hover:text-green-300 transition-colors" size={64} strokeWidth={1} />
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-white">
+                    <Info size={16} />
+                  </div>
+                  <h2 className="text-xl font-bold">Daily Reminder</h2>
+                </div>
+                <blockquote className="space-y-4">
+                  <p className="text-xl md:text-2xl font-medium text-slate-800 dark:text-slate-100 leading-relaxed italic">
+                    "{dailyReminder.text}"
+                  </p>
+                  <footer className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400 font-bold uppercase tracking-widest">
+                    <span className="w-6 h-[2px] bg-green-600"></span>
+                    {dailyReminder.source}
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+          )}
 
           {/* Quick Browse Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
