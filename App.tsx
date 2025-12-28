@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -10,6 +11,7 @@ import Learn from './pages/Learn';
 import AsmaUlHusna from './pages/AsmaUlHusna';
 import Tasbeeh from './pages/Tasbeeh';
 import DuaLibrary from './pages/DuaLibrary';
+import ZakatCalculator from './pages/ZakatCalculator';
 
 const App: React.FC = () => {
   return (
@@ -26,11 +28,12 @@ const App: React.FC = () => {
           <Route path="/names" element={<AsmaUlHusna />} />
           <Route path="/tasbeeh" element={<Tasbeeh />} />
           <Route path="/duas" element={<DuaLibrary />} />
-          <Route path="/about" element={<div className="text-center py-20">
+          <Route path="/zakat" element={<ZakatCalculator />} />
+          <Route path="/about" element={<div className="text-center py-20 px-4">
             <h1 className="text-3xl font-bold mb-4">About QuranSeekho</h1>
-            <p className="max-w-xl mx-auto text-slate-500">
-              QuranSeekho.online is a dedicated platform for Muslims around the world to read, learn, and grow spiritually.
-              Our goal is to provide a clean, accessible, and high-quality digital experience for the Holy Quran.
+            <p className="max-w-xl mx-auto text-slate-500 leading-relaxed">
+              QuranSeekho.online is a modern, open-source platform dedicated to making the Holy Quran accessible, 
+              readable, and understandable for everyone. No ads, no distractions, just pure guidance.
             </p>
           </div>} />
         </Routes>

@@ -6,11 +6,11 @@ import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote,
 import { Link } from 'react-router-dom';
 
 const PopularSurahs = [
+  { id: 36, name: 'Yaseen', arabic: 'يس', translation: 'The Heart of Quran' },
+  { id: 55, name: 'Ar-Rahman', arabic: 'الرحمن', translation: 'The Most Merciful' },
   { id: 18, name: 'Al-Kahf', arabic: 'الكهف', translation: 'The Cave' },
-  { id: 36, name: 'Yaseen', arabic: 'يس', translation: 'Ya-Sin' },
-  { id: 55, name: 'Ar-Rahman', arabic: 'الرحمن', translation: 'The Beneficent' },
+  { id: 67, name: 'Al-Mulk', arabic: 'الملك', translation: 'The Sovereignty' },
   { id: 56, name: 'Al-Waqi\'ah', arabic: 'الواقعة', translation: 'The Inevitable' },
-  { id: 67, name: 'Al-Mulk', arabic: 'الملک', translation: 'The Sovereignty' },
 ];
 
 const MOODS = [
@@ -188,6 +188,43 @@ const Home: React.FC = () => {
                             <span className="font-bold">{mood.name}</span>
                         </div>
                         <ArrowRight size={14} className="opacity-50" />
+                    </Link>
+                ))}
+            </div>
+          </section>
+
+          {/* Popular Surahs Section */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <BookOpen className="text-green-600" size={20} />
+                    <h2 className="text-xl font-bold">Popular Surahs</h2>
+                </div>
+                <Link to="/surah" className="text-sm font-bold text-green-700 hover:underline">View All &rarr;</Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {PopularSurahs.map((surah) => (
+                    <Link 
+                        key={surah.id} 
+                        to={`/surah/${surah.id}`}
+                        className="bg-white dark:bg-slate-800 p-5 rounded-2xl border dark:border-slate-700 shadow-sm hover:border-green-400 dark:hover:border-green-600 transition-all flex items-center justify-between group overflow-hidden relative"
+                    >
+                        <div className="flex items-center gap-4 relative z-10">
+                            <div className="w-10 h-10 bg-green-50 dark:bg-green-900/30 rounded-xl flex items-center justify-center text-green-700 dark:text-green-400 font-bold group-hover:bg-green-700 group-hover:text-white transition-colors">
+                                {surah.id}
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-lg group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors">{surah.name}</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">{surah.translation}</p>
+                            </div>
+                        </div>
+                        <div className="text-right relative z-10">
+                            <p className="font-arabic text-2xl mb-0.5" dir="rtl">{surah.arabic}</p>
+                        </div>
+                        {/* Decorative background element */}
+                        <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                            <Book size={80} />
+                        </div>
                     </Link>
                 ))}
             </div>

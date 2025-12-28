@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon, Bookmark, MessageSquare, Hash, WifiOff, Star } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins } from 'lucide-react';
 import InstallPWA from './InstallPWA';
+import { getHijriDate } from '../services/quranApi';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,9 +13,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [hijriDate, setHijriDate] = useState('');
   const location = useLocation();
 
-  // Initialize theme from localStorage or system preference
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -21,19 +23,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
-    } else {
-      setIsDarkMode(false);
-      document.documentElement.classList.remove('dark');
     }
+    setHijriDate(getHijriDate());
   }, []);
 
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
-
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -43,75 +41,69 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
-    if (newMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+    document.documentElement.classList.toggle('dark', newMode);
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
   };
 
   const navItems = [
     { name: 'Home', path: '/', icon: <Clock size={20} /> },
     { name: 'Surah', path: '/surah', icon: <BookOpen size={20} /> },
     { name: 'Duas', path: '/duas', icon: <Star size={20} className="text-yellow-500" /> },
-    { name: '99 Names', path: '/names', icon: <Heart size={20} className="text-pink-500" /> },
+    { name: 'Zakat', path: '/zakat', icon: <Coins size={20} className="text-amber-500" /> },
     { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
   ];
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-green-50 text-slate-900'}`}>
-      {/* Offline Banner */}
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-green-50 text-slate-900'}`}>
       {isOffline && (
         <div className="bg-amber-600 text-white text-[10px] py-1 px-4 flex items-center justify-center gap-2 font-bold uppercase tracking-widest z-[70] relative">
-          <WifiOff size={12} /> You are currently offline. Some features may be limited.
+          <WifiOff size={12} /> Offline Mode - Some features may be limited
         </div>
       )}
 
-      {/* Header */}
       <header className={`sticky top-0 z-50 w-full border-b ${isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/80 border-green-100'} backdrop-blur-md`}>
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center text-white font-bold text-xl">QS</div>
-            <span className="font-bold text-xl tracking-tight hidden sm:inline">QuranSeekho</span>
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-900/20">QS</div>
+            <div className="flex flex-col">
+              <span className="font-bold text-lg tracking-tight leading-none">QuranSeekho</span>
+              <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">{hijriDate}</span>
+            </div>
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2 font-medium transition-colors ${
-                  location.pathname === item.path ? 'text-green-700 dark:text-green-400' : 'hover:text-green-600'
+                className={`flex items-center gap-2 font-semibold transition-all hover:scale-105 ${
+                  location.pathname === item.path ? 'text-green-700 dark:text-green-400' : 'text-slate-500 hover:text-green-600'
                 }`}
               >
                 {item.icon}
-                {item.name}
+                <span className="text-sm">{item.name}</span>
               </Link>
             ))}
           </nav>
 
           <div className="flex items-center gap-4">
-            <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle Dark Mode">
+            <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle Theme">
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
+            <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-slate-900 border-b dark:border-slate-800 py-4 px-4 space-y-4">
+          <div className="md:hidden bg-white dark:bg-slate-900 border-b dark:border-slate-800 py-6 px-4 space-y-4 animate-in slide-in-from-top-4">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 py-2 text-lg font-medium"
+                className="flex items-center gap-4 py-3 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold"
               >
                 {item.icon}
                 {item.name}
@@ -121,32 +113,86 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 flex-grow">
         {children}
       </main>
 
       <InstallPWA />
 
-      {/* Footer / Mobile Tab Bar */}
-      <footer className={`mt-auto border-t pb-20 md:pb-8 pt-8 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'}`}>
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-sm opacity-60">© {new Date().getFullYear()} QuranSeekho.online - Guidance for the Ummah.</p>
+      <footer className={`mt-20 border-t pt-16 pb-24 md:pb-12 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'}`}>
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+            <div className="lg:col-span-2 space-y-6">
+              <Link to="/" className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-green-700 rounded-xl flex items-center justify-center text-white font-bold text-2xl">QS</div>
+                <span className="font-bold text-2xl tracking-tight">QuranSeekho</span>
+              </Link>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
+                Empowering the Ummah with knowledge. A clean, modern platform for Quranic studies, daily dhikr, and spiritual growth.
+              </p>
+              
+              <div className="pt-4">
+                <h5 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Stay Connected</h5>
+                <div className="flex items-center gap-4">
+                  <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-green-600 transition-all hover:scale-110 shadow-sm"><Twitter size={18} /></a>
+                  <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-green-600 transition-all hover:scale-110 shadow-sm"><Github size={18} /></a>
+                  <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-green-600 transition-all hover:scale-110 shadow-sm"><Mail size={18} /></a>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-green-700 dark:text-green-400">Library</h4>
+              <ul className="space-y-4">
+                <li><Link to="/surah" className="text-slate-500 hover:text-green-600 transition-colors">All Surahs</Link></li>
+                <li><Link to="/juz" className="text-slate-500 hover:text-green-600 transition-colors">By Juz</Link></li>
+                <li><Link to="/names" className="text-slate-500 hover:text-green-600 transition-colors">99 Names</Link></li>
+                <li><Link to="/duas" className="text-slate-500 hover:text-green-600 transition-colors">Dua Bank</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-green-700 dark:text-green-400">Tools</h4>
+              <ul className="space-y-4">
+                <li><Link to="/tasbeeh" className="text-slate-500 hover:text-green-600 transition-colors">Tasbeeh</Link></li>
+                <li><Link to="/zakat" className="text-slate-500 hover:text-green-600 transition-colors">Zakat Calc</Link></li>
+                <li><Link to="/bookmarks" className="text-slate-500 hover:text-green-600 transition-colors">Bookmarks</Link></li>
+                <li><Link to="/learn" className="text-slate-500 hover:text-green-600 transition-colors">Tajweed</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-green-700 dark:text-green-400">Support</h4>
+              <div className="bg-green-50 dark:bg-slate-800 p-4 rounded-2xl border border-green-100 dark:border-slate-700">
+                <p className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase mb-2">Help the Project</p>
+                <p className="text-xs text-slate-500 mb-4 leading-tight">QuranSeekho is ad-free and open-source. Consider donating.</p>
+                <button className="w-full py-2 bg-green-700 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors">Donate Now</button>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="text-sm text-slate-500">© {new Date().getFullYear()} QuranSeekho.online</p>
+            <div className="flex items-center gap-3 text-xs text-slate-400">
+              <span>Made with</span>
+              <Heart size={14} className="text-rose-500 fill-rose-500 animate-pulse" />
+              <span>for the Ummah</span>
+            </div>
+          </div>
         </div>
       </footer>
 
-      {/* Mobile Tab Bar (Sticky) */}
-      <div className={`md:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-50 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'}`}>
+      <div className={`md:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[100] ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'} backdrop-blur-lg shadow-2xl`}>
         {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className={`flex flex-col items-center justify-center w-full gap-1 ${
-              location.pathname === item.path ? 'text-green-700' : 'text-slate-400'
+            className={`flex flex-col items-center justify-center w-full gap-1 transition-all ${
+              location.pathname === item.path ? 'text-green-700 dark:text-green-400 scale-110' : 'text-slate-400'
             }`}
           >
-            {item.icon}
-            <span className="text-[10px] font-medium">{item.name}</span>
+            {React.cloneElement(item.icon as React.ReactElement<any>, { size: 22 })}
+            <span className="text-[10px] font-bold uppercase tracking-tight">{item.name}</span>
           </Link>
         ))}
       </div>

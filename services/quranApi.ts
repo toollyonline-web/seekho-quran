@@ -11,7 +11,6 @@ export const fetchSurahList = async (): Promise<Surah[]> => {
 };
 
 export const fetchSurahDetail = async (id: number): Promise<any> => {
-  // Fetch Arabic text, English translation, and Urdu translation
   const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
   const res = await fetch(`${BASE_URL}/surah/${id}/editions/${editions.join(',')}`);
   const data = await res.json();
@@ -38,4 +37,17 @@ export const fetchRandomAyah = async (): Promise<any> => {
   const res = await fetch(`${BASE_URL}/ayah/${randomNum}/editions/${editions.join(',')}`);
   const data = await res.json();
   return data.data;
+};
+
+export const getSurahAudioUrl = (surahNumber: number): string => {
+  // Using Mishary Rashid Alafasy as default
+  return `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surahNumber}.mp3`;
+};
+
+export const getHijriDate = () => {
+  return new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(new Date());
 };
