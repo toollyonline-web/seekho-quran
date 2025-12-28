@@ -1,15 +1,15 @@
 
 import React, { useEffect, useState } from 'react';
-import { fetchPrayerTimes, fetchRandomAyah } from '../services/quranApi';
+import { fetchPrayerTimes, fetchRandomAyah, ISLAMIC_EVENTS } from '../services/quranApi';
 import { PrayerTimes } from '../types';
-import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle } from 'lucide-react';
+import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PopularSurahs = [
   { id: 36, name: 'Yaseen', arabic: 'يس', translation: 'The Heart of Quran' },
   { id: 55, name: 'Ar-Rahman', arabic: 'الرحمن', translation: 'The Most Merciful' },
   { id: 18, name: 'Al-Kahf', arabic: 'الكهف', translation: 'The Cave' },
-  { id: 67, name: 'Al-Mulk', arabic: 'الملك', translation: 'The Sovereignty' },
+  { id: 67, name: 'Al-Mulk', arabic: 'الملک', translation: 'The Sovereignty' },
   { id: 56, name: 'Al-Waqi\'ah', arabic: 'الواقعة', translation: 'The Inevitable' },
 ];
 
@@ -154,7 +154,9 @@ const Home: React.FC = () => {
             )}
             
             {(isInstalled || !deferredPrompt) && (
-              <Link to="/learn" className="px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors">Learn Tajweed</Link>
+              <Link to="/calendar" className="px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center gap-2">
+                <Calendar size={18} /> View Calendar
+              </Link>
             )}
           </div>
         </div>
@@ -221,7 +223,6 @@ const Home: React.FC = () => {
                         <div className="text-right relative z-10">
                             <p className="font-arabic text-2xl mb-0.5" dir="rtl">{surah.arabic}</p>
                         </div>
-                        {/* Decorative background element */}
                         <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
                             <Book size={80} />
                         </div>
@@ -258,51 +259,35 @@ const Home: React.FC = () => {
               </div>
             )}
           </div>
-
-          {/* Daily Reminder */}
-          {dailyReminder && (
-            <div className="bg-gradient-to-br from-green-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700 relative overflow-hidden group">
-              <Quote className="absolute top-4 right-4 text-green-200 dark:text-slate-700 group-hover:text-green-300 transition-colors" size={64} strokeWidth={1} />
-              <div className="relative z-10">
-                <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
-                  <Info size={16} className="text-green-600" /> Daily Wisdom
-                </h2>
-                <blockquote className="space-y-4">
-                  <p className="text-xl font-medium text-slate-800 dark:text-slate-100 leading-relaxed italic">
-                    "{dailyReminder.text}"
-                  </p>
-                  <footer className="text-sm text-green-700 dark:text-green-400 font-bold uppercase tracking-widest">
-                    — {dailyReminder.source}
-                  </footer>
-                </blockquote>
-              </div>
-            </div>
-          )}
-
-          {/* Quick Browse Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link to="/surah" className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-green-100 dark:border-slate-700 group hover:border-green-400 transition-all hover:shadow-md">
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center text-green-700 mb-4 transition-transform group-hover:scale-110">
-                    <BookOpen size={24} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">Browse by Surah</h3>
-                <p className="text-sm opacity-70 mb-4">Explore all 114 chapters of the Holy Quran.</p>
-                <span className="text-green-700 dark:text-green-400 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">Start Reading &rarr;</span>
-            </Link>
-            <Link to="/juz" className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-green-100 dark:border-slate-700 group hover:border-orange-400 transition-all hover:shadow-md">
-                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-orange-700 mb-4 transition-transform group-hover:scale-110">
-                    <Clock size={24} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">Browse by Juz</h3>
-                <p className="text-sm opacity-70 mb-4">Read the Quran in 30 equal parts.</p>
-                <span className="text-orange-700 dark:text-orange-400 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">Explore Juz &rarr;</span>
-            </Link>
-          </div>
         </div>
 
         {/* Right Sidebar */}
         <div className="space-y-6">
           
+          {/* Upcoming Events Section - NEW */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Calendar className="text-green-600" size={20} /> Important Days
+              </h2>
+              <Link to="/calendar" className="text-[10px] font-bold uppercase text-green-700 hover:underline">Full Calendar</Link>
+            </div>
+            <div className="space-y-4">
+              {ISLAMIC_EVENTS.slice(0, 3).map((event, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-slate-50 dark:bg-slate-900 rounded-xl flex flex-col items-center justify-center border dark:border-slate-700 shrink-0">
+                    <span className="text-[8px] font-bold text-slate-400 uppercase leading-none mb-1">Hijri</span>
+                    <span className="text-sm font-bold text-green-700 dark:text-green-400 leading-none">{event.hijri.split(' ')[0]}</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold leading-tight">{event.name}</p>
+                    <p className="text-[10px] text-slate-400">{event.hijri.split(' ').slice(1).join(' ')}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Prayer Times Card */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-6">
@@ -327,7 +312,7 @@ const Home: React.FC = () => {
             )}
           </div>
 
-          {/* Daily Sunnah Checklist - NEW FEATURE */}
+          {/* Daily Sunnah Checklist */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <Sparkles className="text-yellow-500" size={20} /> Daily Sunnahs
@@ -353,23 +338,7 @@ const Home: React.FC = () => {
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-[10px] text-center text-slate-400 italic">Progress resets every day.</p>
           </div>
-
-          {/* Download App Section */}
-          {!isInstalled && deferredPrompt && (
-            <div className="bg-green-50 dark:bg-slate-800 rounded-2xl p-6 border border-green-100 dark:border-slate-700 text-center">
-              <Smartphone size={32} className="mx-auto text-green-700 dark:text-green-400 mb-2" />
-              <h2 className="font-bold mb-1">Download App</h2>
-              <p className="text-xs text-slate-500 mb-4">Install for faster offline access.</p>
-              <button 
-                onClick={handleInstallClick}
-                className="w-full py-2 bg-green-700 text-white rounded-lg font-bold text-sm hover:bg-green-600 transition-colors shadow-lg"
-              >
-                Install Now
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

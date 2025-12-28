@@ -12,6 +12,7 @@ import AsmaUlHusna from './pages/AsmaUlHusna';
 import Tasbeeh from './pages/Tasbeeh';
 import DuaLibrary from './pages/DuaLibrary';
 import ZakatCalculator from './pages/ZakatCalculator';
+import IslamicCalendar from './pages/IslamicCalendar';
 
 const App: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const App: React.FC = () => {
           <Route path="/tasbeeh" element={<Tasbeeh />} />
           <Route path="/duas" element={<DuaLibrary />} />
           <Route path="/zakat" element={<ZakatCalculator />} />
+          <Route path="/calendar" element={<IslamicCalendar />} />
           <Route path="/about" element={<div className="text-center py-20 px-4">
             <h1 className="text-3xl font-bold mb-4">About QuranSeekho</h1>
             <p className="max-w-xl mx-auto text-slate-500 leading-relaxed">

@@ -48,6 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: 'Home', path: '/', icon: <Clock size={20} /> },
     { name: 'Surah', path: '/surah', icon: <BookOpen size={20} /> },
+    { name: 'Calendar', path: '/calendar', icon: <Calendar size={20} className="text-green-500" /> },
     { name: 'Duas', path: '/duas', icon: <Star size={20} className="text-yellow-500" /> },
     { name: 'Zakat', path: '/zakat', icon: <Coins size={20} className="text-amber-500" /> },
     { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
@@ -71,7 +72,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -90,14 +91,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle Theme">
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-slate-900 border-b dark:border-slate-800 py-6 px-4 space-y-4 animate-in slide-in-from-top-4">
+          <div className="lg:hidden bg-white dark:bg-slate-900 border-b dark:border-slate-800 py-6 px-4 space-y-4 animate-in slide-in-from-top-4">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -147,7 +148,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <li><Link to="/surah" className="text-slate-500 hover:text-green-600 transition-colors">All Surahs</Link></li>
                 <li><Link to="/juz" className="text-slate-500 hover:text-green-600 transition-colors">By Juz</Link></li>
                 <li><Link to="/names" className="text-slate-500 hover:text-green-600 transition-colors">99 Names</Link></li>
-                <li><Link to="/duas" className="text-slate-500 hover:text-green-600 transition-colors">Dua Bank</Link></li>
+                <li><Link to="/calendar" className="text-slate-500 hover:text-green-600 transition-colors">Hijri Calendar</Link></li>
               </ul>
             </div>
 
@@ -186,7 +187,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </footer>
 
-      <div className={`md:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[100] ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'} backdrop-blur-lg shadow-2xl`}>
+      <div className={`lg:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[100] ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'} backdrop-blur-lg shadow-2xl`}>
         {navItems.map((item) => (
           <Link
             key={item.path}

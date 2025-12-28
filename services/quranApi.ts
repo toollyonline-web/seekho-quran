@@ -40,19 +40,41 @@ export const fetchRandomAyah = async (): Promise<any> => {
 };
 
 export const getSurahAudioUrl = (surahNumber: number): string => {
-  // Using Mishary Rashid Alafasy as default
   return `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surahNumber}.mp3`;
 };
 
 export const getAyahAudioUrl = (ayahGlobalNumber: number): string => {
-  // Returns individual Ayah audio URL (Mishary Rashid Alafasy)
   return `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahGlobalNumber}.mp3`;
 };
 
-export const getHijriDate = () => {
+export const getHijriDate = (date: Date = new Date()) => {
   return new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  }).format(new Date());
+  }).format(date);
 };
+
+export const getHijriParts = (date: Date = new Date()) => {
+  const parts = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).formatToParts(date);
+  
+  const res: any = {};
+  parts.forEach(p => res[p.type] = p.value);
+  return res;
+};
+
+export const ISLAMIC_EVENTS = [
+  { name: 'Islamic New Year', hijri: '1 Muharram', description: 'Start of the new Hijri year.' },
+  { name: 'Ashura', hijri: '10 Muharram', description: 'Day of fasting and remembrance.' },
+  { name: 'Mawlid an-Nabi', hijri: '12 Rabi al-Awwal', description: 'Birth of the Prophet Muhammad (PBUH).' },
+  { name: 'Isra and Mi\'raj', hijri: '27 Rajab', description: 'The Night Journey and Ascension.' },
+  { name: 'Ramadan Start', hijri: '1 Ramadan', description: 'The month of fasting begins.' },
+  { name: 'Laylat al-Qadr', hijri: '27 Ramadan', description: 'The Night of Power (approximate).' },
+  { name: 'Eid ul-Fitr', hijri: '1 Shawwal', description: 'Festival of Breaking the Fast.' },
+  { name: 'Day of Arafah', hijri: '9 Dhul-Hijjah', description: 'The climax of Hajj.' },
+  { name: 'Eid ul-Adha', hijri: '10 Dhul-Hijjah', description: 'Festival of Sacrifice.' },
+];
