@@ -9,6 +9,7 @@ import Bookmarks from './pages/Bookmarks';
 import Learn from './pages/Learn';
 import AsmaUlHusna from './pages/AsmaUlHusna';
 import Tasbeeh from './pages/Tasbeeh';
+import DuaLibrary from './pages/DuaLibrary';
 
 const App: React.FC = () => {
   return (
@@ -24,6 +25,7 @@ const App: React.FC = () => {
           <Route path="/learn" element={<Learn />} />
           <Route path="/names" element={<AsmaUlHusna />} />
           <Route path="/tasbeeh" element={<Tasbeeh />} />
+          <Route path="/duas" element={<DuaLibrary />} />
           <Route path="/about" element={<div className="text-center py-20">
             <h1 className="text-3xl font-bold mb-4">About QuranSeekho</h1>
             <p className="max-w-xl mx-auto text-slate-500">

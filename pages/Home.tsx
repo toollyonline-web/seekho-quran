@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah } from '../services/quranApi';
 import { PrayerTimes } from '../types';
-import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone } from 'lucide-react';
+import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PopularSurahs = [
@@ -13,6 +13,20 @@ const PopularSurahs = [
   { id: 67, name: 'Al-Mulk', arabic: 'الملک', translation: 'The Sovereignty' },
 ];
 
+const MOODS = [
+  { name: 'Anxious', icon: <ShieldCheck size={18} />, color: 'bg-blue-100 text-blue-700', surahId: 94 },
+  { name: 'Sad', icon: <Heart size={18} />, color: 'bg-rose-100 text-rose-700', surahId: 93 },
+  { name: 'Grateful', icon: <Sun size={18} />, color: 'bg-amber-100 text-amber-700', surahId: 55 },
+  { name: 'Lost', icon: <Sparkles size={18} />, color: 'bg-purple-100 text-purple-700', surahId: 1 },
+];
+
+const DAILY_SUNNAHS = [
+  { id: 'miswak', label: 'Use Miswak', detail: 'A Sunnah for purification of the mouth.' },
+  { id: 'smile', label: 'Smile at someone', detail: 'Smiling is an act of Sadaqah (Charity).' },
+  { id: 'kursi', label: 'Ayatul Kursi (Night)', detail: 'Protection throughout the night.' },
+  { id: 'dhikr', label: 'Morning Adhkar', detail: 'Start your day with remembrance.' },
+];
+
 const DAILY_REMINDERS = [
   { text: "Kindness is a mark of faith, and whoever is not kind has no faith.", source: "Prophet Muhammad (PBUH)" },
   { text: "The best of people are those that bring most benefit to the rest of mankind.", source: "Daraqutni" },
@@ -21,9 +35,6 @@ const DAILY_REMINDERS = [
   { text: "Happiness is found in the remembrance of Allah.", source: "Quran 13:28" },
   { text: "A powerful person is not the one who can wrestle, but the one who can control his anger.", source: "Sahih Bukhari" },
   { text: "The most beloved of deeds to Allah are those that are most consistent, even if they are small.", source: "Sahih Bukhari" },
-  { text: "The best wealth is the richness of the soul.", source: "Sahih Bukhari" },
-  { text: "Be in this world as if you were a stranger or a traveler.", source: "Sahih Bukhari" },
-  { text: "Allah does not look at your forms and possessions, but He looks at your hearts and your deeds.", source: "Sahih Muslim" }
 ];
 
 const Home: React.FC = () => {
@@ -34,8 +45,21 @@ const Home: React.FC = () => {
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [sunnahs, setSunnahs] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    // Load Sunnahs
+    const savedSunnahs = localStorage.getItem('qs_sunnah_today');
+    const today = new Date().toDateString();
+    const savedDate = localStorage.getItem('qs_sunnah_date');
+    
+    if (savedDate === today && savedSunnahs) {
+      setSunnahs(JSON.parse(savedSunnahs));
+    } else {
+      localStorage.setItem('qs_sunnah_date', today);
+      localStorage.setItem('qs_sunnah_today', JSON.stringify({}));
+    }
+
     const initData = async () => {
       try {
         const ayahRes = await fetchRandomAyah();
@@ -45,7 +69,6 @@ const Home: React.FC = () => {
         
         setDailyAyah({ arabic, english, urdu });
 
-        // Get daily reminder based on current day of year
         const now = new Date();
         const start = new Date(now.getFullYear(), 0, 0);
         const diff = (now.getTime() - start.getTime()) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
@@ -73,7 +96,6 @@ const Home: React.FC = () => {
     };
     initData();
 
-    // PWA Install logic for Hero Button
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -81,13 +103,18 @@ const Home: React.FC = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     
-    // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
     }
 
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
+
+  const toggleSunnah = (id: string) => {
+    const newSunnahs = { ...sunnahs, [id]: !sunnahs[id] };
+    setSunnahs(newSunnahs);
+    localStorage.setItem('qs_sunnah_today', JSON.stringify(newSunnahs));
+  };
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
@@ -137,31 +164,36 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Download App Section - New Specific Title/Section */}
-      {!isInstalled && deferredPrompt && (
-        <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-dashed border-green-200 dark:border-slate-700 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center text-green-700 dark:text-green-400 shrink-0">
-              <Smartphone size={32} />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Download QuranSeekho App</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Install our app for a faster experience and offline access to the Holy Quran.</p>
-            </div>
-          </div>
-          <button 
-            onClick={handleInstallClick}
-            className="w-full md:w-auto px-8 py-4 bg-green-700 text-white rounded-xl font-bold hover:bg-green-600 transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-900/10 active:scale-95"
-          >
-            <Download size={20} /> Install App
-          </button>
-        </section>
-      )}
-
-      {/* Main Grid: Daily Content & Sidebar */}
+      {/* Grid for Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Left/Middle: Daily Feed */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Daily Ayah Section */}
+          
+          {/* Mood-Based Guidance */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-2">
+                <Heart className="text-rose-500 fill-rose-500" size={20} />
+                <h2 className="text-xl font-bold">How are you feeling?</h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {MOODS.map((mood) => (
+                    <Link 
+                        key={mood.name} 
+                        to={`/surah/${mood.surahId}`}
+                        className={`flex items-center justify-between p-4 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-sm border border-transparent hover:border-white/20 ${mood.color}`}
+                    >
+                        <div className="flex items-center gap-3">
+                            {mood.icon}
+                            <span className="font-bold">{mood.name}</span>
+                        </div>
+                        <ArrowRight size={14} className="opacity-50" />
+                    </Link>
+                ))}
+            </div>
+          </section>
+
+          {/* Daily Ayah */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-6">
               <Star className="text-yellow-500 fill-yellow-500" size={20} />
@@ -169,11 +201,7 @@ const Home: React.FC = () => {
             </div>
             {dailyAyah && (
               <div className="space-y-6">
-                <p 
-                  className="font-arabic text-3xl md:text-4xl text-right leading-[1.8] md:leading-[2.2] mb-4 quran-text" 
-                  dir="rtl" 
-                  lang="ar"
-                >
+                <p className="font-arabic text-3xl md:text-4xl text-right leading-[1.8] md:leading-[2.2] mb-4 quran-text" dir="rtl" lang="ar">
                   {dailyAyah.arabic?.text}
                 </p>
                 <div className="space-y-4">
@@ -190,32 +218,24 @@ const Home: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div className="flex justify-between items-center text-sm opacity-60 pt-4 border-t dark:border-slate-700">
-                  <span>Surah {dailyAyah.arabic?.surah?.englishName} ({dailyAyah.arabic?.numberInSurah})</span>
-                  <span>Juz {dailyAyah.arabic?.juz}</span>
-                </div>
               </div>
             )}
           </div>
 
-          {/* Daily Reminder Section */}
+          {/* Daily Reminder */}
           {dailyReminder && (
             <div className="bg-gradient-to-br from-green-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700 relative overflow-hidden group">
               <Quote className="absolute top-4 right-4 text-green-200 dark:text-slate-700 group-hover:text-green-300 transition-colors" size={64} strokeWidth={1} />
               <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-white">
-                    <Info size={16} />
-                  </div>
-                  <h2 className="text-xl font-bold">Daily Reminder</h2>
-                </div>
+                <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
+                  <Info size={16} className="text-green-600" /> Daily Wisdom
+                </h2>
                 <blockquote className="space-y-4">
-                  <p className="text-xl md:text-2xl font-medium text-slate-800 dark:text-slate-100 leading-relaxed italic">
+                  <p className="text-xl font-medium text-slate-800 dark:text-slate-100 leading-relaxed italic">
                     "{dailyReminder.text}"
                   </p>
-                  <footer className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400 font-bold uppercase tracking-widest">
-                    <span className="w-6 h-[2px] bg-green-600"></span>
-                    {dailyReminder.source}
+                  <footer className="text-sm text-green-700 dark:text-green-400 font-bold uppercase tracking-widest">
+                    — {dailyReminder.source}
                   </footer>
                 </blockquote>
               </div>
@@ -228,86 +248,91 @@ const Home: React.FC = () => {
                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center text-green-700 mb-4 transition-transform group-hover:scale-110">
                     <BookOpen size={24} />
                 </div>
-                <h3 className="font-bold text-lg mb-2">Read by Surah</h3>
-                <p className="text-sm opacity-70 mb-4">Explore all 114 chapters of the Holy Quran with full translations.</p>
-                <span className="text-green-700 dark:text-green-400 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">Browse Surahs <ArrowRight size={16} /></span>
+                <h3 className="font-bold text-lg mb-2">Browse by Surah</h3>
+                <p className="text-sm opacity-70 mb-4">Explore all 114 chapters of the Holy Quran.</p>
+                <span className="text-green-700 dark:text-green-400 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">Start Reading &rarr;</span>
             </Link>
             <Link to="/juz" className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-green-100 dark:border-slate-700 group hover:border-orange-400 transition-all hover:shadow-md">
                 <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-orange-700 mb-4 transition-transform group-hover:scale-110">
                     <Clock size={24} />
                 </div>
-                <h3 className="font-bold text-lg mb-2">Read by Juz</h3>
-                <p className="text-sm opacity-70 mb-4">Read the Quran in 30 equal parts, perfect for daily recitation.</p>
-                <span className="text-orange-700 dark:text-orange-400 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">Explore Juz <ArrowRight size={16} /></span>
+                <h3 className="font-bold text-lg mb-2">Browse by Juz</h3>
+                <p className="text-sm opacity-70 mb-4">Read the Quran in 30 equal parts.</p>
+                <span className="text-orange-700 dark:text-orange-400 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">Explore Juz &rarr;</span>
             </Link>
-          </div>
-
-          {/* Popular Surahs Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                <Star className="text-green-600" size={20} /> Popular Surahs
-              </h2>
-              <Link to="/surah" className="text-sm text-green-700 hover:underline font-medium">View All Surahs</Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {PopularSurahs.map((surah) => (
-                <Link 
-                  key={surah.id} 
-                  to={`/surah/${surah.id}`}
-                  className="bg-white dark:bg-slate-800 p-4 rounded-xl border dark:border-slate-700 hover:border-green-400 hover:shadow-sm transition-all text-center group"
-                >
-                  <p 
-                    className="font-arabic text-2xl mb-1 text-green-800 dark:text-green-400 group-hover:scale-110 transition-transform" 
-                    dir="rtl" 
-                    lang="ar"
-                  >
-                    {surah.arabic}
-                  </p>
-                  <p className="font-bold text-sm">{surah.name}</p>
-                  <p className="text-[10px] opacity-50 uppercase tracking-widest">{surah.translation}</p>
-                </Link>
-              ))}
-            </div>
           </div>
         </div>
 
-        {/* Sidebar */}
+        {/* Right Sidebar */}
         <div className="space-y-6">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700 sticky top-24">
+          
+          {/* Prayer Times Card */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold flex items-center gap-2">
-                <Clock className="text-green-600" size={20} /> Prayer Times
+                <Clock className="text-green-600" size={20} /> Prayers
               </h2>
-              <span className="text-[10px] bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 px-2 py-1 rounded-full font-bold flex items-center gap-1">
-                <MapPin size={10} /> {location ? 'Auto Detected' : 'Mecca'}
+              <span className="text-[10px] bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 px-2 py-1 rounded-full font-bold">
+                {location ? 'Nearby' : 'Mecca'}
               </span>
             </div>
-
             {prayers ? (
               <div className="space-y-2">
-                {Object.entries(prayers)
-                  .filter(([key]) => ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].includes(key))
-                  .map(([name, time]) => (
-                    <div key={name} className="flex items-center justify-between p-3 rounded-xl hover:bg-green-50 dark:hover:bg-slate-700 transition-colors border border-transparent hover:border-green-100 dark:hover:border-slate-600">
-                      <span className="font-semibold text-slate-600 dark:text-slate-400">{name}</span>
-                      <span className="font-mono text-green-700 dark:text-green-400 font-bold">{time}</span>
-                    </div>
-                  ))}
+                {['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map((name) => (
+                  <div key={name} className="flex items-center justify-between p-3 rounded-xl hover:bg-green-50 dark:hover:bg-slate-700 transition-colors border border-transparent hover:border-green-100 dark:hover:border-slate-600">
+                    <span className="font-semibold text-slate-600 dark:text-slate-400">{name}</span>
+                    <span className="font-mono text-green-700 dark:text-green-400 font-bold">{prayers[name as keyof PrayerTimes]}</span>
+                  </div>
+                ))}
               </div>
             ) : (
-                <div className="flex justify-center py-8">
-                  <div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-                </div>
+                <div className="flex justify-center py-8"><div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div></div>
             )}
-            
-            <div className="mt-6 pt-6 border-t dark:border-slate-700">
-              <Link to="/learn" className="block p-4 bg-green-50 dark:bg-slate-900 rounded-xl text-center group">
-                <p className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-widest mb-1">New to Quran?</p>
-                <p className="text-sm font-bold group-hover:underline">Start Learning Tajweed &rarr;</p>
-              </Link>
-            </div>
           </div>
+
+          {/* Daily Sunnah Checklist - NEW FEATURE */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <Sparkles className="text-yellow-500" size={20} /> Daily Sunnahs
+            </h2>
+            <div className="space-y-4">
+              {DAILY_SUNNAHS.map((sunnah) => (
+                <button
+                  key={sunnah.id}
+                  onClick={() => toggleSunnah(sunnah.id)}
+                  className="w-full flex items-start gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-green-200 transition-all text-left"
+                >
+                  <div className="mt-1">
+                    {sunnahs[sunnah.id] ? (
+                      <CheckCircle2 className="text-green-600" size={20} />
+                    ) : (
+                      <Circle className="text-slate-300" size={20} />
+                    )}
+                  </div>
+                  <div>
+                    <p className={`font-bold text-sm ${sunnahs[sunnah.id] ? 'line-through opacity-50' : ''}`}>{sunnah.label}</p>
+                    <p className="text-[10px] text-slate-400">{sunnah.detail}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <p className="mt-4 text-[10px] text-center text-slate-400 italic">Progress resets every day.</p>
+          </div>
+
+          {/* Download App Section */}
+          {!isInstalled && deferredPrompt && (
+            <div className="bg-green-50 dark:bg-slate-800 rounded-2xl p-6 border border-green-100 dark:border-slate-700 text-center">
+              <Smartphone size={32} className="mx-auto text-green-700 dark:text-green-400 mb-2" />
+              <h2 className="font-bold mb-1">Download App</h2>
+              <p className="text-xs text-slate-500 mb-4">Install for faster offline access.</p>
+              <button 
+                onClick={handleInstallClick}
+                className="w-full py-2 bg-green-700 text-white rounded-lg font-bold text-sm hover:bg-green-600 transition-colors shadow-lg"
+              >
+                Install Now
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { fetchSurahDetail, fetchJuzDetail } from '../services/quranApi';
-import { ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type, Book, Info, X } from 'lucide-react';
 
 const SurahReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,11 +13,14 @@ const SurahReader: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
+  const [showTafsir, setShowTafsir] = useState(false);
   const [fontSize, setFontSize] = useState(32);
-  const [isAmiri, setIsAmiri] = useState(false); // Toggle between Scheherazade (default) and Amiri
+  const [isAmiri, setIsAmiri] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [activeAyah, setActiveAyah] = useState<number | null>(null);
+  const [tafsirData, setTafsirData] = useState<Record<number, string>>({});
+  const [tafsirLoading, setTafsirLoading] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const saved = localStorage.getItem('qs_bookmarks');
@@ -46,13 +49,31 @@ const SurahReader: React.FC = () => {
     loadContent();
   }, [id, isJuz]);
 
-  // Handle active ayah tracking during scroll
+  // Fetch Tafsir for a specific Ayah
+  const loadTafsir = async (ayahNumber: number, surahNumber: number, ayahInSurah: number) => {
+    if (tafsirData[ayahNumber]) return;
+    
+    setTafsirLoading(prev => ({ ...prev, [ayahNumber]: true }));
+    try {
+      // Using Ibn Kathir (English) as the default Tafsir edition
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahInSurah}/en.tafsir-ibn-kathir`);
+      const result = await res.json();
+      if (result.status === 'OK') {
+        setTafsirData(prev => ({ ...prev, [ayahNumber]: result.data.text }));
+      }
+    } catch (err) {
+      console.error("Tafsir load failed", err);
+    } finally {
+      setTafsirLoading(prev => ({ ...prev, [ayahNumber]: false }));
+    }
+  };
+
   useEffect(() => {
     if (loading || !data) return;
 
     const observerOptions = {
       root: null,
-      rootMargin: '-20% 0px -60% 0px', // Focused on the upper-middle part of the screen
+      rootMargin: '-20% 0px -60% 0px',
       threshold: 0,
     };
 
@@ -96,12 +117,6 @@ const SurahReader: React.FC = () => {
     localStorage.setItem('qs_bookmarks', JSON.stringify(currentBookmarks));
   };
 
-  const toggleFont = () => {
-    const newVal = !isAmiri;
-    setIsAmiri(newVal);
-    localStorage.setItem('qs_preferred_font', newVal ? 'amiri' : 'scheherazade');
-  };
-
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh]">
       <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
@@ -130,6 +145,7 @@ const SurahReader: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Header Info Card */}
       <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border dark:border-slate-700 shadow-sm relative overflow-hidden">
         <div className="flex justify-between items-center mb-6 relative z-10">
           <Link to={prevLink} className={`p-2 rounded-full hover:bg-green-50 dark:hover:bg-slate-700 transition-colors ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
@@ -147,11 +163,7 @@ const SurahReader: React.FC = () => {
 
         {(!isJuz || (isJuz && arabic?.ayahs[0]?.numberInSurah === 1)) && parseInt(id!) !== 9 && (
             <div className="flex justify-center py-6 relative z-10">
-                <p 
-                  className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-5xl text-center leading-[2.5] quran-text`} 
-                  dir="rtl" 
-                  lang="ar"
-                >
+                <p className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-5xl text-center leading-[2.5] quran-text`} dir="rtl" lang="ar">
                   بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                 </p>
             </div>
@@ -165,10 +177,11 @@ const SurahReader: React.FC = () => {
           <Settings size={20} />
         </button>
 
+        {/* Settings Dropdown */}
         {isSettingsOpen && (
           <div className="absolute top-14 right-4 bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-xl rounded-2xl p-4 z-50 w-64 space-y-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-slate-400">Translations</label>
+              <label className="text-xs font-bold uppercase text-slate-400">Content</label>
               <div className="flex flex-col gap-2">
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input type="checkbox" checked={showEnglish} onChange={() => setShowEnglish(!showEnglish)} className="accent-green-600" /> English
@@ -176,35 +189,34 @@ const SurahReader: React.FC = () => {
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input type="checkbox" checked={showUrdu} onChange={() => setShowUrdu(!showUrdu)} className="accent-green-600" /> Urdu
                 </label>
+                <label className="flex items-center gap-2 cursor-pointer text-sm">
+                  <input type="checkbox" checked={showTafsir} onChange={() => setShowTafsir(!showTafsir)} className="accent-green-600" /> Tafsir (Ibn Kathir)
+                </label>
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase text-slate-400">Arabic Script</label>
-              <button 
-                onClick={toggleFont}
-                className="w-full flex items-center justify-between p-2 text-sm border dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-              >
-                <span>{isAmiri ? 'Amiri Font' : 'Scheherazade Font'}</span>
+              <button onClick={() => setIsAmiri(!isAmiri)} className="w-full flex items-center justify-between p-2 text-sm border dark:border-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
+                <span>{isAmiri ? 'Amiri Font' : 'Standard Font'}</span>
                 <Type size={16} />
               </button>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-slate-400">Arabic Size: {fontSize}px</label>
-              <input
-                type="range" min="20" max="64" value={fontSize}
-                onChange={(e) => setFontSize(parseInt(e.target.value))}
-                className="w-full accent-green-600"
-              />
+              <label className="text-xs font-bold uppercase text-slate-400">Font Size: {fontSize}px</label>
+              <input type="range" min="20" max="64" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full accent-green-600" />
             </div>
           </div>
         )}
       </div>
 
+      {/* Verses List */}
       <div className="space-y-6 pb-20">
         {arabic?.ayahs.map((ayah: any, index: number) => {
           const ayahNumber = ayah.number;
           const isBookmarked = bookmarks.includes(`${arabic.number}:${ayah.numberInSurah}`);
           const isActive = activeAyah === ayahNumber;
+          const hasTafsir = !!tafsirData[ayahNumber];
+          const isTafsirLoading = !!tafsirLoading[ayahNumber];
           
           return (
             <div 
@@ -223,15 +235,19 @@ const SurahReader: React.FC = () => {
                   }`}>
                     {ayah.numberInSurah || ayah.number}
                   </div>
-                  <button 
-                    onClick={() => toggleBookmark(ayah, arabic)}
-                    className={`transition-colors ${isBookmarked ? 'text-green-600' : 'text-slate-300 hover:text-green-400'}`}
-                    title={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-                  >
+                  <button onClick={() => toggleBookmark(ayah, arabic)} className={`transition-colors ${isBookmarked ? 'text-green-600' : 'text-slate-300 hover:text-green-400'}`}>
                     {isBookmarked ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
                   </button>
+                  <button 
+                    onClick={() => loadTafsir(ayahNumber, arabic.number, ayah.numberInSurah)} 
+                    className={`transition-colors ${hasTafsir || showTafsir ? 'text-blue-600' : 'text-slate-300 hover:text-blue-400'}`}
+                    title="Read Explanation (Tafsir)"
+                  >
+                    <Book size={20} />
+                  </button>
                 </div>
-                <div className="flex-1 space-y-8">
+
+                <div className="flex-1 space-y-8 overflow-hidden">
                   <p
                     className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-right leading-[2.2] md:leading-[2.8] quran-text transition-all duration-300 ${
                       isActive ? 'text-green-900 dark:text-green-50' : ''
@@ -246,20 +262,42 @@ const SurahReader: React.FC = () => {
                   <div className="space-y-4">
                     {showEnglish && english?.ayahs[index] && (
                       <div className="border-l-2 border-green-100 dark:border-slate-800 pl-4 py-1">
-                        <p className={`leading-relaxed italic transition-colors duration-300 ${
-                          isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'
-                        }`}>
+                        <p className={`leading-relaxed italic transition-colors duration-300 ${isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
                           {english.ayahs[index].text}
                         </p>
                       </div>
                     )}
                     {showUrdu && urdu?.ayahs[index] && (
                       <div className="border-r-2 border-green-100 dark:border-slate-800 pr-4 py-1 text-right" dir="rtl">
-                        <p className={`font-urdu text-3xl urdu-text transition-colors duration-300 ${
-                          isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'
-                        }`}>
+                        <p className={`font-urdu text-3xl urdu-text transition-colors duration-300 ${isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
                           {urdu.ayahs[index].text}
                         </p>
+                      </div>
+                    )}
+
+                    {/* Tafsir Section */}
+                    {(hasTafsir || showTafsir) && (
+                      <div className="mt-6 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl p-6 border border-blue-100 dark:border-blue-900/30 animate-in fade-in slide-in-from-top-4 duration-300">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400 flex items-center gap-2">
+                            <Info size={14} /> Tafsir Ibn Kathir
+                          </h4>
+                          {!showTafsir && (
+                            <button onClick={() => setTafsirData(prev => { const n = {...prev}; delete n[ayahNumber]; return n; })} className="text-blue-400 hover:text-blue-600">
+                              <X size={14} />
+                            </button>
+                          )}
+                        </div>
+                        {isTafsirLoading ? (
+                           <div className="flex items-center gap-2 text-sm text-blue-500 italic">
+                             <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                             Loading explanation...
+                           </div>
+                        ) : (
+                          <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                            {tafsirData[ayahNumber] || "Click the book icon to load the explanation for this verse."}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

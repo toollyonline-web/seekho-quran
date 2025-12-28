@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon, Bookmark, MessageSquare, Hash, WifiOff } from 'lucide-react';
+import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon, Bookmark, MessageSquare, Hash, WifiOff, Star } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 
 interface LayoutProps {
@@ -55,9 +55,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: 'Home', path: '/', icon: <Clock size={20} /> },
     { name: 'Surah', path: '/surah', icon: <BookOpen size={20} /> },
+    { name: 'Duas', path: '/duas', icon: <Star size={20} className="text-yellow-500" /> },
     { name: '99 Names', path: '/names', icon: <Heart size={20} className="text-pink-500" /> },
     { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
-    { name: 'Bookmarks', path: '/bookmarks', icon: <Bookmark size={20} /> },
   ];
 
   return (
