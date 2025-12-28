@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { fetchSurahDetail, fetchJuzDetail } from '../services/quranApi';
 import { ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type } from 'lucide-react';
@@ -17,6 +17,7 @@ const SurahReader: React.FC = () => {
   const [isAmiri, setIsAmiri] = useState(false); // Toggle between Scheherazade (default) and Amiri
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [bookmarks, setBookmarks] = useState<string[]>([]);
+  const [activeAyah, setActiveAyah] = useState<number | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('qs_bookmarks');
@@ -44,6 +45,34 @@ const SurahReader: React.FC = () => {
     };
     loadContent();
   }, [id, isJuz]);
+
+  // Handle active ayah tracking during scroll
+  useEffect(() => {
+    if (loading || !data) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px', // Focused on the upper-middle part of the screen
+      threshold: 0,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const ayahNum = parseInt(entry.target.getAttribute('data-ayah-number') || '0');
+          setActiveAyah(ayahNum);
+        }
+      });
+    }, observerOptions);
+
+    const elements = document.querySelectorAll('.ayah-container');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+      observer.disconnect();
+    };
+  }, [loading, data]);
 
   const toggleBookmark = (ayah: any, surahInfo: any) => {
     const bookmarkKey = `${surahInfo.number}:${ayah.numberInSurah}`;
@@ -131,6 +160,7 @@ const SurahReader: React.FC = () => {
         <button
           onClick={() => setIsSettingsOpen(!isSettingsOpen)}
           className="absolute top-4 right-4 p-2 text-slate-400 hover:text-green-600 transition-colors"
+          aria-label="Settings"
         >
           <Settings size={20} />
         </button>
@@ -170,14 +200,27 @@ const SurahReader: React.FC = () => {
         )}
       </div>
 
-      <div className="space-y-12 pb-20">
+      <div className="space-y-6 pb-20">
         {arabic?.ayahs.map((ayah: any, index: number) => {
+          const ayahNumber = ayah.number;
           const isBookmarked = bookmarks.includes(`${arabic.number}:${ayah.numberInSurah}`);
+          const isActive = activeAyah === ayahNumber;
+          
           return (
-            <div key={ayah.number} className="group scroll-mt-24">
-              <div className="flex items-start gap-4 md:gap-8 mb-4">
+            <div 
+              key={ayahNumber} 
+              data-ayah-number={ayahNumber}
+              className={`ayah-container group scroll-mt-24 p-4 md:p-8 rounded-2xl transition-all duration-500 border-l-4 ${
+                isActive 
+                  ? 'bg-green-50/50 dark:bg-green-900/10 border-green-600 shadow-sm' 
+                  : 'border-transparent'
+              }`}
+            >
+              <div className="flex items-start gap-4 md:gap-8">
                 <div className="flex flex-col items-center gap-4 shrink-0">
-                  <div className="w-10 h-10 rounded-full border dark:border-slate-700 flex items-center justify-center text-xs font-mono opacity-40 group-hover:opacity-100 transition-opacity">
+                  <div className={`w-10 h-10 rounded-full border dark:border-slate-700 flex items-center justify-center text-xs font-mono transition-all duration-300 ${
+                    isActive ? 'bg-green-600 text-white border-green-600 opacity-100' : 'opacity-40'
+                  }`}>
                     {ayah.numberInSurah || ayah.number}
                   </div>
                   <button 
@@ -190,7 +233,9 @@ const SurahReader: React.FC = () => {
                 </div>
                 <div className="flex-1 space-y-8">
                   <p
-                    className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-right leading-[2.2] md:leading-[2.8] quran-text`}
+                    className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-right leading-[2.2] md:leading-[2.8] quran-text transition-all duration-300 ${
+                      isActive ? 'text-green-900 dark:text-green-50' : ''
+                    }`}
                     style={{ fontSize: `${fontSize}px` }}
                     dir="rtl"
                     lang="ar"
@@ -201,18 +246,25 @@ const SurahReader: React.FC = () => {
                   <div className="space-y-4">
                     {showEnglish && english?.ayahs[index] && (
                       <div className="border-l-2 border-green-100 dark:border-slate-800 pl-4 py-1">
-                        <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic">{english.ayahs[index].text}</p>
+                        <p className={`leading-relaxed italic transition-colors duration-300 ${
+                          isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'
+                        }`}>
+                          {english.ayahs[index].text}
+                        </p>
                       </div>
                     )}
                     {showUrdu && urdu?.ayahs[index] && (
                       <div className="border-r-2 border-green-100 dark:border-slate-800 pr-4 py-1 text-right" dir="rtl">
-                        <p className="font-urdu text-3xl text-slate-700 dark:text-slate-300 urdu-text">{urdu.ayahs[index].text}</p>
+                        <p className={`font-urdu text-3xl urdu-text transition-colors duration-300 ${
+                          isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'
+                        }`}>
+                          {urdu.ayahs[index].text}
+                        </p>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="h-px w-full bg-slate-100 dark:bg-slate-800 mt-12"></div>
             </div>
           );
         })}

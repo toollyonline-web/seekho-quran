@@ -3,7 +3,7 @@
   "name": "QuranSeekho Online",
   "short_name": "QuranSeekho",
   "description": "Read, study, and understand the Holy Quran with English and Urdu translations.",
-  "start_url": "/",
+  "start_url": "https://quranseekho.online",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
