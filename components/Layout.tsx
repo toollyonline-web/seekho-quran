@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon, Bookmark, MessageSquare, Sparkles, Hash } from 'lucide-react';
+import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon, Bookmark, MessageSquare, Hash, WifiOff } from 'lucide-react';
+import InstallPWA from './InstallPWA';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,7 +11,21 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const location = useLocation();
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -20,7 +35,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: 'Home', path: '/', icon: <Clock size={20} /> },
     { name: 'Surah', path: '/surah', icon: <BookOpen size={20} /> },
-    { name: 'Ask AI', path: '/ask-ai', icon: <Sparkles size={20} className="text-purple-500" /> },
     { name: '99 Names', path: '/names', icon: <Heart size={20} className="text-pink-500" /> },
     { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
     { name: 'Bookmarks', path: '/bookmarks', icon: <Bookmark size={20} /> },
@@ -28,6 +42,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-green-50 text-slate-900'}`}>
+      {/* Offline Banner */}
+      {isOffline && (
+        <div className="bg-amber-600 text-white text-[10px] py-1 px-4 flex items-center justify-center gap-2 font-bold uppercase tracking-widest z-[70] relative">
+          <WifiOff size={12} /> You are currently offline. Some features may be limited.
+        </div>
+      )}
+
       {/* Header */}
       <header className={`sticky top-0 z-50 w-full border-b ${isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/80 border-green-100'} backdrop-blur-md`}>
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -85,6 +106,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </main>
 
+      <InstallPWA />
+
       {/* Footer / Mobile Tab Bar */}
       <footer className={`mt-auto border-t pb-20 md:pb-8 pt-8 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'}`}>
         <div className="container mx-auto px-4 text-center">
@@ -94,7 +117,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Mobile Tab Bar (Sticky) */}
       <div className={`md:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-50 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'}`}>
-        {navItems.slice(0, 5).map((item) => (
+        {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
