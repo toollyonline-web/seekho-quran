@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah } from '../services/quranApi';
 import { PrayerTimes } from '../types';
-import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote } from 'lucide-react';
+import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PopularSurahs = [
@@ -135,6 +136,27 @@ const Home: React.FC = () => {
            <Book size={300} strokeWidth={0.5} />
         </div>
       </section>
+
+      {/* Download App Section - New Specific Title/Section */}
+      {!isInstalled && deferredPrompt && (
+        <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-dashed border-green-200 dark:border-slate-700 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center text-green-700 dark:text-green-400 shrink-0">
+              <Smartphone size={32} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Download QuranSeekho App</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Install our app for a faster experience and offline access to the Holy Quran.</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleInstallClick}
+            className="w-full md:w-auto px-8 py-4 bg-green-700 text-white rounded-xl font-bold hover:bg-green-600 transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-900/10 active:scale-95"
+          >
+            <Download size={20} /> Install App
+          </button>
+        </section>
+      )}
 
       {/* Main Grid: Daily Content & Sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
