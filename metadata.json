@@ -1,0 +1,7 @@
+{
+  "name": "QuranSeekho Online",
+  "description": "A clean, distraction-free Quran platform for reading, learning, and daily Islamic guidance. Features English and Urdu translations, Juz and Surah browsing, and accurate prayer times.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
