@@ -1,30 +1,67 @@
 
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { fetchSurahDetail } from '../services/quranApi';
-import { ChevronLeft, ChevronRight, Settings, Languages, Type, Play, Pause } from 'lucide-react';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { fetchSurahDetail, fetchJuzDetail } from '../services/quranApi';
+import { ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck } from 'lucide-react';
 
 const SurahReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const isJuz = location.pathname.includes('/juz/');
+  
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
   const [fontSize, setFontSize] = useState(32);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [bookmarks, setBookmarks] = useState<string[]>([]);
 
   useEffect(() => {
-    const loadSurah = async () => {
+    const saved = localStorage.getItem('qs_bookmarks');
+    if (saved) setBookmarks(JSON.parse(saved).map((b: any) => `${b.surahNumber}:${b.ayahNumber}`));
+  }, []);
+
+  useEffect(() => {
+    const loadContent = async () => {
       setLoading(true);
       if (id) {
-        const detail = await fetchSurahDetail(parseInt(id));
-        setData(detail);
+        try {
+          const detail = isJuz 
+            ? await fetchJuzDetail(parseInt(id)) 
+            : await fetchSurahDetail(parseInt(id));
+          setData(detail);
+        } catch (err) {
+          console.error("Failed to load content", err);
+        }
       }
       setLoading(false);
       window.scrollTo(0, 0);
     };
-    loadSurah();
-  }, [id]);
+    loadContent();
+  }, [id, isJuz]);
+
+  const toggleBookmark = (ayah: any, surahInfo: any) => {
+    const bookmarkKey = `${surahInfo.number}:${ayah.numberInSurah}`;
+    const saved = localStorage.getItem('qs_bookmarks');
+    let currentBookmarks = saved ? JSON.parse(saved) : [];
+    
+    if (bookmarks.includes(bookmarkKey)) {
+      currentBookmarks = currentBookmarks.filter((b: any) => `${b.surahNumber}:${b.ayahNumber}` !== bookmarkKey);
+      setBookmarks(bookmarks.filter(k => k !== bookmarkKey));
+    } else {
+      const newBookmark = {
+        surahNumber: surahInfo.number,
+        surahName: surahInfo.englishName,
+        ayahNumber: ayah.numberInSurah,
+        text: ayah.text,
+        timestamp: Date.now()
+      };
+      currentBookmarks.push(newBookmark);
+      setBookmarks([...bookmarks, bookmarkKey]);
+    }
+    localStorage.setItem('qs_bookmarks', JSON.stringify(currentBookmarks));
+  };
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -32,35 +69,49 @@ const SurahReader: React.FC = () => {
     </div>
   );
 
-  if (!data) return <div>Surah not found.</div>;
+  if (!data) return <div className="text-center py-20">Content not found.</div>;
 
-  const arabic = data[0];
-  const english = data[1];
-  const urdu = data[2];
+  let arabic: any, english: any, urdu: any;
+
+  if (isJuz) {
+    arabic = data.find((e: any) => e.edition.identifier === 'quran-uthmani');
+    english = data.find((e: any) => e.edition.language === 'en');
+    urdu = data.find((e: any) => e.edition.identifier === 'ur.jalandhara');
+  } else {
+    arabic = data.find((e: any) => e.edition.format === 'text' && e.edition.type === 'quran');
+    english = data.find((e: any) => e.edition.language === 'en');
+    urdu = data.find((e: any) => e.edition.identifier === 'ur.jalandhara');
+  }
+
+  const title = isJuz ? `Juz ${id}` : arabic?.englishName;
+  const subtitle = isJuz ? `Part of the Holy Quran` : `${arabic?.englishNameTranslation} • ${arabic?.revelationType}`;
+  const maxItems = isJuz ? 30 : 114;
+  const prevLink = isJuz ? `/juz/${parseInt(id!) - 1}` : `/surah/${parseInt(id!) - 1}`;
+  const nextLink = isJuz ? `/juz/${parseInt(id!) + 1}` : `/surah/${parseInt(id!) + 1}`;
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Surah Header */}
       <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border dark:border-slate-700 shadow-sm relative overflow-hidden">
         <div className="flex justify-between items-center mb-6 relative z-10">
-          <Link to={`/surah/${parseInt(id!) - 1}`} className={`p-2 rounded-full hover:bg-green-50 dark:hover:bg-slate-700 transition-colors ${parseInt(id!) <= 1 ? 'invisible' : ''}`}>
+          <Link to={prevLink} className={`p-2 rounded-full hover:bg-green-50 dark:hover:bg-slate-700 transition-colors ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
             <ChevronLeft size={24} />
           </Link>
           <div className="text-center">
-            <p className="text-sm font-semibold text-green-700 dark:text-green-400 uppercase tracking-widest mb-1">Surah {id}</p>
-            <h1 className="text-3xl font-bold">{arabic.englishName}</h1>
-            <p className="text-slate-500 dark:text-slate-400">{arabic.englishNameTranslation} • {arabic.revelationType}</p>
+            <p className="text-sm font-semibold text-green-700 dark:text-green-400 uppercase tracking-widest mb-1">{isJuz ? 'Sipara' : 'Surah'} {id}</p>
+            <h1 className="text-3xl font-bold">{title}</h1>
+            <p className="text-slate-500 dark:text-slate-400">{subtitle}</p>
           </div>
-          <Link to={`/surah/${parseInt(id!) + 1}`} className={`p-2 rounded-full hover:bg-green-50 dark:hover:bg-slate-700 transition-colors ${parseInt(id!) >= 114 ? 'invisible' : ''}`}>
+          <Link to={nextLink} className={`p-2 rounded-full hover:bg-green-50 dark:hover:bg-slate-700 transition-colors ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
             <ChevronRight size={24} />
           </Link>
         </div>
 
-        <div className="flex justify-center py-6 relative z-10">
-            <p className="font-arabic text-5xl text-center leading-relaxed">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-        </div>
+        {(!isJuz || (isJuz && arabic?.ayahs[0]?.numberInSurah === 1)) && parseInt(id!) !== 9 && (
+            <div className="flex justify-center py-6 relative z-10">
+                <p className="font-arabic text-5xl text-center leading-relaxed" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            </div>
+        )}
 
-        {/* Floating Settings Trigger */}
         <button
           onClick={() => setIsSettingsOpen(!isSettingsOpen)}
           className="absolute top-4 right-4 p-2 text-slate-400 hover:text-green-600 transition-colors"
@@ -69,20 +120,20 @@ const SurahReader: React.FC = () => {
         </button>
 
         {isSettingsOpen && (
-          <div className="absolute top-14 right-4 bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-xl rounded-2xl p-4 z-50 w-64 space-y-4 animate-in fade-in slide-in-from-top-2">
+          <div className="absolute top-14 right-4 bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-xl rounded-2xl p-4 z-50 w-64 space-y-4">
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase text-slate-400">Translations</label>
               <div className="flex flex-col gap-2">
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input type="checkbox" checked={showEnglish} onChange={() => setShowEnglish(!showEnglish)} className="accent-green-600" /> English (Sahih)
+                  <input type="checkbox" checked={showEnglish} onChange={() => setShowEnglish(!showEnglish)} className="accent-green-600" /> English
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input type="checkbox" checked={showUrdu} onChange={() => setShowUrdu(!showUrdu)} className="accent-green-600" /> Urdu (Jalandhara)
+                  <input type="checkbox" checked={showUrdu} onChange={() => setShowUrdu(!showUrdu)} className="accent-green-600" /> Urdu
                 </label>
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-slate-400">Arabic Size</label>
+              <label className="text-xs font-bold uppercase text-slate-400">Arabic Size: {fontSize}px</label>
               <input
                 type="range" min="20" max="64" value={fontSize}
                 onChange={(e) => setFontSize(parseInt(e.target.value))}
@@ -93,39 +144,51 @@ const SurahReader: React.FC = () => {
         )}
       </div>
 
-      {/* Verses */}
       <div className="space-y-12 pb-20">
-        {arabic.ayahs.map((ayah: any, index: number) => (
-          <div key={ayah.number} className="group scroll-mt-24">
-            <div className="flex items-start gap-4 md:gap-8 mb-4">
-              <div className="w-10 h-10 rounded-full border dark:border-slate-700 flex items-center justify-center text-xs font-mono shrink-0 opacity-40 group-hover:opacity-100 transition-opacity">
-                {ayah.numberInSurah}
-              </div>
-              <div className="flex-1 space-y-8">
-                <p
-                  className="font-arabic text-right leading-[2.2] md:leading-[2.5]"
-                  style={{ fontSize: `${fontSize}px` }}
-                >
-                  {ayah.text}
-                </p>
+        {arabic?.ayahs.map((ayah: any, index: number) => {
+          const isBookmarked = bookmarks.includes(`${arabic.number}:${ayah.numberInSurah}`);
+          return (
+            <div key={ayah.number} className="group scroll-mt-24">
+              <div className="flex items-start gap-4 md:gap-8 mb-4">
+                <div className="flex flex-col items-center gap-4 shrink-0">
+                  <div className="w-10 h-10 rounded-full border dark:border-slate-700 flex items-center justify-center text-xs font-mono opacity-40 group-hover:opacity-100 transition-opacity">
+                    {ayah.numberInSurah || ayah.number}
+                  </div>
+                  <button 
+                    onClick={() => toggleBookmark(ayah, arabic)}
+                    className={`transition-colors ${isBookmarked ? 'text-green-600' : 'text-slate-300 hover:text-green-400'}`}
+                    title={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+                  >
+                    {isBookmarked ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
+                  </button>
+                </div>
+                <div className="flex-1 space-y-8">
+                  <p
+                    className="font-arabic text-right leading-[2.2] md:leading-[2.5]"
+                    style={{ fontSize: `${fontSize}px` }}
+                    dir="rtl"
+                  >
+                    {ayah.text}
+                  </p>
 
-                <div className="space-y-4">
-                  {showEnglish && (
-                    <div className="border-l-2 border-green-100 dark:border-slate-800 pl-4 py-1">
-                      <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic">{english.ayahs[index].text}</p>
-                    </div>
-                  )}
-                  {showUrdu && (
-                    <div className="border-r-2 border-green-100 dark:border-slate-800 pr-4 py-1 text-right">
-                      <p className="font-urdu text-2xl text-slate-700 dark:text-slate-300 leading-[1.8]">{urdu.ayahs[index].text}</p>
-                    </div>
-                  )}
+                  <div className="space-y-4">
+                    {showEnglish && english?.ayahs[index] && (
+                      <div className="border-l-2 border-green-100 dark:border-slate-800 pl-4 py-1">
+                        <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic">{english.ayahs[index].text}</p>
+                      </div>
+                    )}
+                    {showUrdu && urdu?.ayahs[index] && (
+                      <div className="border-r-2 border-green-100 dark:border-slate-800 pr-4 py-1 text-right" dir="rtl">
+                        <p className="font-urdu text-3xl text-slate-700 dark:text-slate-300 urdu-text">{urdu.ayahs[index].text}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
+              <div className="h-px w-full bg-slate-100 dark:bg-slate-800 mt-12"></div>
             </div>
-            <div className="h-px w-full bg-slate-100 dark:bg-slate-800 mt-12"></div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

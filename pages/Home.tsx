@@ -14,7 +14,12 @@ const Home: React.FC = () => {
     const initData = async () => {
       try {
         const ayahRes = await fetchRandomAyah();
-        setDailyAyah(ayahRes);
+        // Correctly identify parts by language/identifier
+        const arabic = ayahRes.find((p: any) => p.edition.identifier === 'quran-uthmani');
+        const english = ayahRes.find((p: any) => p.edition.language === 'en');
+        const urdu = ayahRes.find((p: any) => p.edition.language === 'ur');
+        
+        setDailyAyah({ arabic, english, urdu });
 
         navigator.geolocation.getCurrentPosition(
           async (pos) => {
@@ -24,7 +29,6 @@ const Home: React.FC = () => {
             setPrayers(p);
           },
           async () => {
-            // Default to Mecca coordinates if blocked
             const p = await fetchPrayerTimes(21.4225, 39.8262);
             setPrayers(p);
           }
@@ -66,7 +70,6 @@ const Home: React.FC = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Daily Ayah Section */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-6">
@@ -76,21 +79,25 @@ const Home: React.FC = () => {
             {dailyAyah && (
               <div className="space-y-6">
                 <p className="font-arabic text-3xl md:text-4xl text-right leading-loose mb-4">
-                  {dailyAyah[0].text}
+                  {dailyAyah.arabic?.text}
                 </p>
                 <div className="space-y-4">
-                  <div className="p-4 bg-green-50 dark:bg-slate-900 rounded-xl">
-                    <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">English Translation</p>
-                    <p className="italic leading-relaxed">{dailyAyah[1].text}</p>
-                  </div>
-                  <div className="p-4 bg-blue-50 dark:bg-slate-900 rounded-xl">
-                    <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1">Urdu Translation</p>
-                    <p className="font-urdu text-2xl leading-relaxed text-right">{dailyAyah[2].text}</p>
-                  </div>
+                  {dailyAyah.english && (
+                    <div className="p-4 bg-green-50 dark:bg-slate-900 rounded-xl">
+                      <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">English Translation</p>
+                      <p className="italic leading-relaxed">{dailyAyah.english.text}</p>
+                    </div>
+                  )}
+                  {dailyAyah.urdu && (
+                    <div className="p-4 bg-blue-50 dark:bg-slate-900 rounded-xl">
+                      <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1 text-right">Urdu Translation</p>
+                      <p className="font-urdu text-3xl leading-relaxed text-right">{dailyAyah.urdu.text}</p>
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-between items-center text-sm opacity-60 pt-4 border-t dark:border-slate-700">
-                  <span>Surah {dailyAyah[0].surah.englishName} ({dailyAyah[0].numberInSurah})</span>
-                  <span>Juz {dailyAyah[0].juz}</span>
+                  <span>Surah {dailyAyah.arabic?.surah?.englishName} ({dailyAyah.arabic?.numberInSurah})</span>
+                  <span>Juz {dailyAyah.arabic?.juz}</span>
                 </div>
               </div>
             )}
@@ -116,7 +123,6 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* Sidebar: Prayer Times */}
         <div className="space-y-6">
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-6">
@@ -142,19 +148,6 @@ const Home: React.FC = () => {
             ) : (
                 <p>Loading times...</p>
             )}
-            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-xs text-blue-800 dark:text-blue-300 flex gap-2">
-                <Info size={16} className="shrink-0" />
-                <p>Times are based on Islamic Society of North America (ISNA) method.</p>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-2xl p-6 text-white shadow-lg">
-            <h3 className="font-bold text-lg mb-3">Daily Remembrance</h3>
-            <p className="font-arabic text-2xl text-right leading-loose mb-4">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</p>
-            <p className="text-sm opacity-90 italic">"Glory be to Allah and His is the praise."</p>
-            <div className="mt-4 pt-4 border-t border-white/20">
-                <p className="text-xs font-medium">Tip: Recite 100 times daily for immense reward.</p>
-            </div>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon } from 'lucide-react';
+import { Book, Heart, Clock, Search, BookOpen, Settings, Menu, X, Sun, Moon, Bookmark } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,6 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Home', path: '/', icon: <Clock size={20} /> },
     { name: 'Surah', path: '/surah', icon: <BookOpen size={20} /> },
     { name: 'Juz', path: '/juz', icon: <Book size={20} /> },
+    { name: 'Bookmarks', path: '/bookmarks', icon: <Bookmark size={20} /> },
     { name: 'Learn', path: '/learn', icon: <Search size={20} /> },
     { name: 'About', path: '/about', icon: <Heart size={20} /> },
   ];
