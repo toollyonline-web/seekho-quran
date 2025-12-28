@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { fetchSurahDetail, fetchJuzDetail } from '../services/quranApi';
-import { ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type, Book, Info, X } from 'lucide-react';
+import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, getSurahAudioUrl } from '../services/quranApi';
+import { ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type, Book, Info, X, Play, Pause, Volume2 } from 'lucide-react';
 
 const SurahReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +21,11 @@ const SurahReader: React.FC = () => {
   const [activeAyah, setActiveAyah] = useState<number | null>(null);
   const [tafsirData, setTafsirData] = useState<Record<number, string>>({});
   const [tafsirLoading, setTafsirLoading] = useState<Record<number, boolean>>({});
+  
+  // Audio State
+  const [playingAyah, setPlayingAyah] = useState<number | null>(null);
+  const [isPlayingFullSurah, setIsPlayingFullSurah] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('qs_bookmarks');
@@ -27,6 +33,21 @@ const SurahReader: React.FC = () => {
     
     const savedFont = localStorage.getItem('qs_preferred_font');
     if (savedFont) setIsAmiri(savedFont === 'amiri');
+
+    // Initialize Audio
+    audioRef.current = new Audio();
+    const audio = audioRef.current;
+
+    const handleEnded = () => {
+      setPlayingAyah(null);
+      setIsPlayingFullSurah(false);
+    };
+
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.pause();
+      audio.removeEventListener('ended', handleEnded);
+    };
   }, []);
 
   useEffect(() => {
@@ -88,6 +109,34 @@ const SurahReader: React.FC = () => {
       observer.disconnect();
     };
   }, [loading, data]);
+
+  const toggleAyahAudio = (ayahGlobalNumber: number) => {
+    if (!audioRef.current) return;
+
+    if (playingAyah === ayahGlobalNumber) {
+      audioRef.current.pause();
+      setPlayingAyah(null);
+    } else {
+      setIsPlayingFullSurah(false);
+      audioRef.current.src = getAyahAudioUrl(ayahGlobalNumber);
+      audioRef.current.play();
+      setPlayingAyah(ayahGlobalNumber);
+    }
+  };
+
+  const toggleFullSurahAudio = () => {
+    if (!audioRef.current || isJuz) return;
+
+    if (isPlayingFullSurah) {
+      audioRef.current.pause();
+      setIsPlayingFullSurah(false);
+    } else {
+      setPlayingAyah(null);
+      audioRef.current.src = getSurahAudioUrl(parseInt(id!));
+      audioRef.current.play();
+      setIsPlayingFullSurah(true);
+    }
+  };
 
   const toggleBookmark = (ayah: any, surahInfo: any) => {
     const bookmarkKey = `${surahInfo.number}:${ayah.numberInSurah}`;
@@ -152,6 +201,18 @@ const SurahReader: React.FC = () => {
           </Link>
         </div>
 
+        <div className="flex justify-center gap-4 mb-4 relative z-10">
+          {!isJuz && (
+            <button 
+              onClick={toggleFullSurahAudio}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${isPlayingFullSurah ? 'bg-green-700 text-white shadow-lg' : 'bg-green-50 dark:bg-slate-700 text-green-700 dark:text-green-400 hover:bg-green-100'}`}
+            >
+              {isPlayingFullSurah ? <Pause size={18} /> : <Volume2 size={18} />}
+              {isPlayingFullSurah ? 'Playing Full Surah' : 'Play Full Surah'}
+            </button>
+          )}
+        </div>
+
         {(!isJuz || (isJuz && arabic?.ayahs[0]?.numberInSurah === 1)) && parseInt(id!) !== 9 && (
             <div className="flex justify-center py-6 relative z-10">
                 <p className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-5xl text-center leading-[2.5] quran-text`} dir="rtl" lang="ar">
@@ -192,6 +253,7 @@ const SurahReader: React.FC = () => {
           const ayahNumber = ayah.number;
           const isBookmarked = bookmarks.includes(`${arabic.number}:${ayah.numberInSurah}`);
           const isActive = activeAyah === ayahNumber;
+          const isAyahPlaying = playingAyah === ayahNumber;
           const hasTafsir = !!tafsirData[ayahNumber];
           const isTafsirLoading = !!tafsirLoading[ayahNumber];
           
@@ -200,11 +262,21 @@ const SurahReader: React.FC = () => {
               <div className="flex items-start gap-4 md:gap-8">
                 <div className="flex flex-col items-center gap-4 shrink-0">
                   <div className={`w-10 h-10 rounded-full border dark:border-slate-700 flex items-center justify-center text-xs font-mono transition-all duration-300 ${isActive ? 'bg-green-600 text-white border-green-600 opacity-100' : 'opacity-40'}`}>{ayah.numberInSurah || ayah.number}</div>
+                  
+                  {/* Play Button Control */}
+                  <button 
+                    onClick={() => toggleAyahAudio(ayahNumber)} 
+                    className={`p-2 rounded-full transition-all ${isAyahPlaying ? 'bg-green-600 text-white shadow-md scale-110' : 'text-slate-300 hover:text-green-600 hover:bg-green-50 dark:hover:bg-slate-700'}`}
+                    aria-label={isAyahPlaying ? "Pause Audio" : "Play Audio"}
+                  >
+                    {isAyahPlaying ? <Pause size={18} /> : <Play size={18} />}
+                  </button>
+
                   <button onClick={() => toggleBookmark(ayah, arabic)} className={`transition-colors ${isBookmarked ? 'text-green-600' : 'text-slate-300 hover:text-green-400'}`}>{isBookmarked ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}</button>
                   <button onClick={() => loadTafsir(ayahNumber, arabic.number, ayah.numberInSurah)} className={`transition-colors ${hasTafsir || showTafsir ? 'text-blue-600' : 'text-slate-300 hover:text-blue-400'}`}><Book size={20} /></button>
                 </div>
                 <div className="flex-1 space-y-8 overflow-hidden">
-                  <p className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-right leading-[2.2] md:leading-[2.8] quran-text transition-all duration-300 ${isActive ? 'text-green-900 dark:text-green-50' : ''}`} style={{ fontSize: `${fontSize}px` }} dir="rtl" lang="ar">{ayah.text}</p>
+                  <p className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-right leading-[2.2] md:leading-[2.8] quran-text transition-all duration-300 ${isActive || isAyahPlaying ? 'text-green-900 dark:text-green-50 font-bold' : ''}`} style={{ fontSize: `${fontSize}px` }} dir="rtl" lang="ar">{ayah.text}</p>
                   <div className="space-y-4">
                     {showEnglish && english?.ayahs[index] && (<div className="border-l-2 border-green-100 dark:border-slate-800 pl-4 py-1"><p className={`leading-relaxed italic transition-colors duration-300 ${isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>{english.ayahs[index].text}</p></div>)}
                     {showUrdu && urdu?.ayahs[index] && (<div className="border-r-2 border-green-100 dark:border-slate-800 pr-4 py-1 text-right" dir="rtl"><p className={`font-urdu text-3xl urdu-text transition-colors duration-300 ${isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>{urdu.ayahs[index].text}</p></div>)}

@@ -44,6 +44,11 @@ export const getSurahAudioUrl = (surahNumber: number): string => {
   return `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surahNumber}.mp3`;
 };
 
+export const getAyahAudioUrl = (ayahGlobalNumber: number): string => {
+  // Returns individual Ayah audio URL (Mishary Rashid Alafasy)
+  return `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahGlobalNumber}.mp3`;
+};
+
 export const getHijriDate = () => {
   return new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
     day: 'numeric',
