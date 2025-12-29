@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,23 +13,7 @@
     <meta name="keywords" content="Quran, Read Quran Online, Urdu Translation, English Translation, QuranSeekho, Islamic Guidance, Zakat Calculator, Prayer Times">
     <meta name="author" content="QuranSeekho">
 
-    <!-- Google Search Console Verification Placeholder -->
-    <!-- Replace 'YOUR_VERIFICATION_CODE' with the code from Google Search Console -->
     <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://quranseekho.online/">
-    <meta property="og:title" content="QuranSeekho Online - Read & Learn Holy Quran">
-    <meta property="og:description" content="Beautiful, distraction-free Quran reading experience with translations.">
-    <meta property="og:image" content="https://img.icons8.com/color/512/000000/quran.png">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://quranseekho.online/">
-    <meta property="twitter:title" content="QuranSeekho Online - Read & Learn Holy Quran">
-    <meta property="twitter:description" content="Beautiful, distraction-free Quran reading experience with translations.">
-    <meta property="twitter:image" content="https://img.icons8.com/color/512/000000/quran.png">
 
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,16 +23,33 @@
     <script>
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark');
+        } else if (localStorage.getItem('theme') === 'sepia') {
+          document.documentElement.classList.add('sepia');
         } else {
-          document.documentElement.classList.remove('dark');
+          document.documentElement.classList.remove('dark', 'sepia');
         }
     </script>
     <style>
+        :root {
+            --sepia-bg: #f4ecd8;
+            --sepia-text: #433422;
+            --sepia-border: #e2d7b5;
+        }
         body { 
           font-family: 'Inter', sans-serif; 
           text-rendering: optimizeLegibility;
           -webkit-font-smoothing: antialiased;
         }
+        .sepia {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+        .sepia .bg-white { background-color: #fdfaf1; }
+        .sepia .dark\:bg-slate-800 { background-color: #fdfaf1; }
+        .sepia .border-green-100 { border-color: var(--sepia-border); }
+        .sepia .text-slate-900 { color: var(--sepia-text); }
+        .sepia .text-slate-500 { color: #705e47; }
+        
         .font-arabic { 
           font-family: 'Scheherazade New', 'Amiri', serif; 
           font-feature-settings: "kern" 1, "liga" 1, "clig" 1, "calt" 1;
@@ -58,7 +60,21 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
         .urdu-text { direction: rtl; line-height: 2.5; }
-        .quran-text { word-spacing: 0.15em; }
+        .quran-text { 
+            word-spacing: 0.2em;
+            line-height: 3.2 !important;
+        }
+        /* Focus effect for reading */
+        .reading-focus .ayah-container:not(.active-ayah) {
+            opacity: 0.4;
+            filter: grayscale(0.5);
+            transition: all 0.5s ease;
+        }
+        .reading-focus .ayah-container.active-ayah {
+            opacity: 1;
+            filter: grayscale(0);
+            transform: scale(1.01);
+        }
     </style>
 <script type="importmap">
 {
