@@ -15,6 +15,7 @@ import ZakatCalculator from './pages/ZakatCalculator';
 import IslamicCalendar from './pages/IslamicCalendar';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Feedback from './pages/Feedback';
+import Donation from './pages/Donation';
 import { Heart, Globe, ShieldCheck, Mail, Share2, MessageSquare } from 'lucide-react';
 
 const AboutPage = () => {
@@ -105,6 +106,7 @@ const App: React.FC = () => {
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/feedback" element={<Feedback />} />
+          <Route path="/donate" element={<Donation />} />
         </Routes>
       </Layout>
     </Router>

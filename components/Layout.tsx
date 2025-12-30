@@ -227,7 +227,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <div className="bg-green-50 dark:bg-slate-800 p-4 rounded-2xl border border-green-100 dark:border-slate-700">
                 <p className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase mb-2">Help the Project</p>
                 <p className="text-xs text-slate-500 mb-4 leading-tight">Quran Seekho is ad-free and open-source. Consider donating.</p>
-                <button className="w-full py-2 bg-green-700 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors">Donate Now</button>
+                <Link to="/donate" className="block w-full py-2 bg-green-700 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors text-center">Donate Now</Link>
               </div>
             </div>
           </div>
@@ -235,7 +235,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex flex-col items-center md:items-start">
               <p className="text-sm text-slate-500">© {new Date().getFullYear()} Quran Seekho</p>
-              <p className="text-[10px] text-slate-400 font-mono mt-1">v1.0.6-beta</p>
+              <p className="text-[10px] text-slate-400 font-mono mt-1">v1.0.7-Production</p>
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-400">
               <span>Made with</span>
