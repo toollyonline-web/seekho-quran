@@ -144,7 +144,8 @@ const SurahReader: React.FC = () => {
         }
       }
       setLoading(false);
-      window.scrollTo(0, 0);
+      // Ensure smooth scroll to top when navigation occurs within the reader
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     loadContent();
   }, [id, isJuz]);
