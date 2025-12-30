@@ -76,26 +76,6 @@ const SurahReader: React.FC = () => {
     };
   }, []);
 
-  const handleShare = async (ayah: any, surahName: string) => {
-    const text = `${ayah.text}\n\n"${ayah.translations?.en || ''}"\n\n— Quran [${surahName} ${ayah.numberInSurah}]\nShared via QuranSeekho.online`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: `Ayah from ${surahName}`, text, url: window.location.href });
-      } catch (err) { console.log(err); }
-    } else {
-      navigator.clipboard.writeText(text);
-      alert('Ayah text copied!');
-    }
-  };
-
-  const switchTheme = (theme: 'light' | 'sepia' | 'dark') => {
-    setReadingTheme(theme);
-    localStorage.setItem('theme', theme);
-    document.documentElement.classList.remove('dark', 'sepia');
-    if (theme !== 'light') document.documentElement.classList.add(theme);
-    window.dispatchEvent(new Event('storage'));
-  };
-
   useEffect(() => {
     const loadContent = async () => {
       setLoading(true);
@@ -103,6 +83,16 @@ const SurahReader: React.FC = () => {
         try {
           const detail = isJuz ? await fetchJuzDetail(parseInt(id)) : await fetchSurahDetail(parseInt(id));
           setData(detail);
+          
+          // Save Last Read (Resume Reading Feature)
+          if (!isJuz && detail && detail[0]) {
+            localStorage.setItem('qs_last_read', JSON.stringify({
+              id: id,
+              name: detail[0].englishName,
+              ayah: 1, // Start of surah
+              timestamp: Date.now()
+            }));
+          }
         } catch (err) { console.error(err); }
       }
       setLoading(false);
@@ -110,6 +100,21 @@ const SurahReader: React.FC = () => {
     };
     loadContent();
   }, [id, isJuz]);
+
+  const incrementReadingProgress = () => {
+    const today = new Date().toDateString();
+    const progressDate = localStorage.getItem('qs_reading_date');
+    let count = 0;
+    
+    if (progressDate === today) {
+      count = parseInt(localStorage.getItem('qs_reading_progress') || '0');
+    } else {
+      localStorage.setItem('qs_reading_date', today);
+    }
+    
+    const newCount = count + 1;
+    localStorage.setItem('qs_reading_progress', newCount.toString());
+  };
 
   const loadTafsir = async (ayahNumber: number, surahNumber: number, ayahInSurah: number) => {
     if (tafsirData[ayahNumber]) return;
@@ -123,7 +128,7 @@ const SurahReader: React.FC = () => {
     }
   };
 
-  const toggleAyahAudio = (ayahGlobalNumber: number) => {
+  const toggleAyahAudio = (ayahGlobalNumber: number, ayahInSurah: number) => {
     if (!audioRef.current) return;
     if (playingAyah === ayahGlobalNumber) {
       audioRef.current.pause();
@@ -134,6 +139,20 @@ const SurahReader: React.FC = () => {
       audioRef.current.play();
       setPlayingAyah(ayahGlobalNumber);
       setActiveAyah(ayahGlobalNumber);
+      
+      // Update Resume Reading with exact ayah
+      if (!isJuz && data && data[0]) {
+         localStorage.setItem('qs_last_read', JSON.stringify({
+           id: id,
+           name: data[0].englishName,
+           ayah: ayahInSurah,
+           timestamp: Date.now()
+         }));
+      }
+
+      // Track Reading Progress
+      incrementReadingProgress();
+
       document.querySelector(`[data-ayah-number="${ayahGlobalNumber}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
@@ -152,6 +171,14 @@ const SurahReader: React.FC = () => {
     }
   };
 
+  const switchTheme = (theme: 'light' | 'sepia' | 'dark') => {
+    setReadingTheme(theme);
+    localStorage.setItem('theme', theme);
+    document.documentElement.classList.remove('dark', 'sepia');
+    if (theme !== 'light') document.documentElement.classList.add(theme);
+    window.dispatchEvent(new Event('storage'));
+  };
+
   const toggleBookmark = (ayah: any, surahInfo: any) => {
     const bookmarkKey = `${surahInfo.number}:${ayah.numberInSurah}`;
     const saved = localStorage.getItem('qs_bookmarks');
@@ -164,6 +191,18 @@ const SurahReader: React.FC = () => {
       setBookmarks([...bookmarks, bookmarkKey]);
     }
     localStorage.setItem('qs_bookmarks', JSON.stringify(currentBookmarks));
+  };
+
+  const handleShare = async (ayah: any, surahName: string) => {
+    const text = `${ayah.text}\n\n"${ayah.translations?.en || ''}"\n\n— Quran [${surahName} ${ayah.numberInSurah}]\nShared via QuranSeekho.online`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `Ayah from ${surahName}`, text, url: window.location.href });
+      } catch (err) { console.log(err); }
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('Ayah text copied!');
+    }
   };
 
   if (loading) return (
@@ -298,7 +337,7 @@ const SurahReader: React.FC = () => {
                 {!focusMode && (
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
                     <div className="md:col-span-1 flex md:flex-col items-center justify-center gap-3">
-                      <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isAyahPlaying ? 'bg-green-700 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-green-600'}`}>
+                      <button onClick={() => toggleAyahAudio(ayah.number, ayah.numberInSurah)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isAyahPlaying ? 'bg-green-700 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-green-600'}`}>
                         {isAyahPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
                       </button>
                       <button onClick={() => toggleBookmark(ayah, arabic)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isBookmarked ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>

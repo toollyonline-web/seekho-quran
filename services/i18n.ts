@@ -28,7 +28,16 @@ export const translations: Record<Language, any> = {
       popularSurahs: "Popular Surahs",
       viewAll: "View All",
       dailySunnahs: "Daily Sunnahs",
-      prayerTimes: "Prayer Times"
+      prayerTimes: "Prayer Times",
+      resumeReading: "Resume Reading",
+      lastRead: "Last read",
+      readingGoal: "Reading Goal",
+      ayahsRead: "Ayahs read today",
+      setGoal: "Set Daily Goal",
+      knowledgeDay: "Knowledge of the Day",
+      upcomingEvents: "Upcoming Events",
+      quickActions: "Quick Actions",
+      continue: "Continue"
     },
     reader: {
       settings: "Reader Settings",
@@ -104,7 +113,16 @@ export const translations: Record<Language, any> = {
       popularSurahs: "مشہور سورتیں",
       viewAll: "سب دیکھیں",
       dailySunnahs: "روزانہ کی سنتیں",
-      prayerTimes: "نماز کے اوقات"
+      prayerTimes: "نماز کے اوقات",
+      resumeReading: "تلاوت جاری رکھیں",
+      lastRead: "آخری بار پڑھا",
+      readingGoal: "پڑھنے کا ہدف",
+      ayahsRead: "آج پڑھی گئی آیات",
+      setGoal: "روزانہ کا ہدف مقرر کریں",
+      knowledgeDay: "آج کی معلومات",
+      upcomingEvents: "آنے والے واقعات",
+      quickActions: "فوری اقدامات",
+      continue: "جاری رکھیں"
     },
     reader: {
       settings: "ریڈر سیٹنگز",
@@ -180,7 +198,16 @@ export const translations: Record<Language, any> = {
       popularSurahs: "السور الشائعة",
       viewAll: "عرض الكل",
       dailySunnahs: "سنن يومية",
-      prayerTimes: "أوقات الصلاة"
+      prayerTimes: "أوقات الصلاة",
+      resumeReading: "متابعة القراءة",
+      lastRead: "آخر قراءة",
+      readingGoal: "هدف القراءة",
+      ayahsRead: "الآيات المقروءة اليوم",
+      setGoal: "تحديد الهدف اليومي",
+      knowledgeDay: "معلومة اليوم",
+      upcomingEvents: "الأحداث القادمة",
+      quickActions: "إجراءات سريعة",
+      continue: "متابعة"
     },
     reader: {
       settings: "إعدادات القارئ",
