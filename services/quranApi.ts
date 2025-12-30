@@ -4,52 +4,92 @@ import { Surah, Ayah, PrayerTimes } from '../types';
 const BASE_URL = 'https://api.alquran.cloud/v1';
 const PRAYER_URL = 'https://api.aladhan.com/v1';
 
+const fetchWithTimeout = async (resource: string, options = {}) => {
+  const { timeout = 8000 } = options as any;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  const response = await fetch(resource, {
+    ...options,
+    signal: controller.signal
+  });
+  clearTimeout(id);
+  return response;
+};
+
 export const fetchSurahList = async (): Promise<Surah[]> => {
-  const res = await fetch(`${BASE_URL}/surah`);
-  const data = await res.json();
-  return data.data;
+  try {
+    const res = await fetchWithTimeout(`${BASE_URL}/surah`);
+    const data = await res.json();
+    return data.data || [];
+  } catch (err) {
+    console.error("fetchSurahList error:", err);
+    return [];
+  }
 };
 
 export const fetchSurahDetail = async (id: number): Promise<any> => {
-  const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
-  const res = await fetch(`${BASE_URL}/surah/${id}/editions/${editions.join(',')}`);
-  const data = await res.json();
-  return data.data;
+  try {
+    const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
+    const res = await fetchWithTimeout(`${BASE_URL}/surah/${id}/editions/${editions.join(',')}`);
+    const data = await res.json();
+    return data.data;
+  } catch (err) {
+    console.error("fetchSurahDetail error:", err);
+    throw err;
+  }
 };
 
 export const fetchJuzDetail = async (id: number): Promise<any> => {
-  const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
-  const res = await fetch(`${BASE_URL}/juz/${id}/editions/${editions.join(',')}`);
-  const data = await res.json();
-  return data.data;
+  try {
+    const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
+    const res = await fetchWithTimeout(`${BASE_URL}/juz/${id}/editions/${editions.join(',')}`);
+    const data = await res.json();
+    return data.data;
+  } catch (err) {
+    console.error("fetchJuzDetail error:", err);
+    throw err;
+  }
 };
 
 export const searchAyah = async (query: string): Promise<any> => {
   if (!query || query.length < 3) return null;
-  const res = await fetch(`${BASE_URL}/search/${query}/all/en.sahih`);
-  const data = await res.json();
-  return data.data;
+  try {
+    const res = await fetchWithTimeout(`${BASE_URL}/search/${query}/all/en.sahih`);
+    const data = await res.json();
+    return data.data;
+  } catch (err) {
+    console.error("searchAyah error:", err);
+    return null;
+  }
 };
 
 export const fetchPrayerTimes = async (lat: number, lng: number): Promise<PrayerTimes> => {
   try {
     const date = new Date().toLocaleDateString('en-GB').split('/').join('-');
-    const res = await fetch(`${PRAYER_URL}/timings/${date}?latitude=${lat}&longitude=${lng}&method=2`);
+    const res = await fetchWithTimeout(`${PRAYER_URL}/timings/${date}?latitude=${lat}&longitude=${lng}&method=2`);
     if (!res.ok) throw new Error("Prayer times API failed");
     const data = await res.json();
     return data.data.timings;
   } catch (err) {
     console.warn("Using fallback prayer times due to error:", err);
-    throw err;
+    // Fallback to Mecca
+    const fallbackRes = await fetch(`${PRAYER_URL}/timings?latitude=21.4225&longitude=39.8262&method=2`);
+    const fallbackData = await fallbackRes.json();
+    return fallbackData.data.timings;
   }
 };
 
 export const fetchRandomAyah = async (): Promise<any> => {
-  const randomNum = Math.floor(Math.random() * 6236) + 1;
-  const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
-  const res = await fetch(`${BASE_URL}/ayah/${randomNum}/editions/${editions.join(',')}`);
-  const data = await res.json();
-  return data.data;
+  try {
+    const randomNum = Math.floor(Math.random() * 6236) + 1;
+    const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
+    const res = await fetchWithTimeout(`${BASE_URL}/ayah/${randomNum}/editions/${editions.join(',')}`);
+    const data = await res.json();
+    return data.data;
+  } catch (err) {
+    console.error("fetchRandomAyah error:", err);
+    return null;
+  }
 };
 
 export const getSurahAudioUrl = (surahNumber: number): string => {
@@ -61,23 +101,31 @@ export const getAyahAudioUrl = (ayahGlobalNumber: number): string => {
 };
 
 export const getHijriDate = (date: Date = new Date()) => {
-  return new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }).format(date);
+  try {
+    return new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(date);
+  } catch (e) {
+    return date.toDateString();
+  }
 };
 
 export const getHijriParts = (date: Date = new Date()) => {
-  const parts = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }).formatToParts(date);
-  
-  const res: any = {};
-  parts.forEach(p => res[p.type] = p.value);
-  return res;
+  try {
+    const parts = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).formatToParts(date);
+    
+    const res: any = {};
+    parts.forEach(p => res[p.type] = p.value);
+    return res;
+  } catch (e) {
+    return { day: date.getDate(), month: 'Day', year: date.getFullYear() };
+  }
 };
 
 export const ISLAMIC_EVENTS = [

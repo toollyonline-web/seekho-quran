@@ -1,21 +1,24 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, getSurahAudioUrl } from '../services/quranApi';
 import { 
-  ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type, Book, 
-  X, Play, Pause, Volume2, VolumeX, Eye, EyeOff, Maximize2, Minimize2,
-  Sliders, Layout as LayoutIcon, Sun, Moon, Share2, Info, Coffee, Loader2
+  ChevronLeft, ChevronRight, Bookmark, BookmarkCheck, Book, 
+  X, Play, Pause, Eye, EyeOff, Maximize2,
+  Sliders, Sun, Moon, Share2, Info, Coffee, Loader2, Quote
 } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
 
 const SurahReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const location = useLocation();
   const isJuz = location.pathname.includes('/juz/');
   
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
   const [showTafsir, setShowTafsir] = useState(false);
@@ -27,7 +30,6 @@ const SurahReader: React.FC = () => {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [activeAyah, setActiveAyah] = useState<number | null>(null);
   const [tafsirData, setTafsirData] = useState<Record<number, string>>({});
-  const [tafsirLoading, setTafsirLoading] = useState<Record<number, boolean>>({});
   
   const currentLang = (localStorage.getItem('language') as Language) || 'en';
   const t = translations[currentLang];
@@ -38,135 +40,78 @@ const SurahReader: React.FC = () => {
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const [isPlayingFullSurah, setIsPlayingFullSurah] = useState(false);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    const savedBookmarks = localStorage.getItem('qs_bookmarks');
-    if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks).map((b: any) => `${b.surahNumber}:${b.ayahNumber}`));
-    
-    const savedTheme = localStorage.getItem('theme') as any;
-    if (savedTheme) setReadingTheme(savedTheme);
+    try {
+      const savedBookmarks = localStorage.getItem('qs_bookmarks');
+      if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks).map((b: any) => `${b.surahNumber}:${b.ayahNumber}`));
+      
+      const savedTheme = localStorage.getItem('theme') as any;
+      if (savedTheme) setReadingTheme(savedTheme);
 
-    const savedFont = localStorage.getItem('qs_preferred_font');
-    if (savedFont) setIsAmiri(savedFont === 'amiri');
-
-    const savedSize = localStorage.getItem('qs_font_size');
-    if (savedSize) setFontSize(parseInt(savedSize));
+      const savedSize = localStorage.getItem('qs_font_size');
+      if (savedSize) setFontSize(parseInt(savedSize));
+    } catch (e) { console.warn("Preferences load failed", e); }
 
     const audio = new Audio();
     audio.crossOrigin = "anonymous";
     audioRef.current = audio;
 
-    const handleEnded = () => {
-      setPlayingAyah(null);
-      setIsPlayingFullSurah(false);
-      setIsAudioLoading(false);
-      setCurrentTime(0);
+    const handleEvents = {
+      ended: () => { setPlayingAyah(null); setIsPlayingFullSurah(false); setIsAudioLoading(false); },
+      waiting: () => setIsAudioLoading(true),
+      playing: () => setIsAudioLoading(false),
+      error: () => { setIsAudioLoading(false); setPlayingAyah(null); setIsPlayingFullSurah(false); }
     };
 
-    const handleWaiting = () => setIsAudioLoading(true);
-    const handlePlaying = () => setIsAudioLoading(false);
-    const handleError = () => {
-      console.error("Audio error occurred");
-      setIsAudioLoading(false);
-      setPlayingAyah(null);
-      setIsPlayingFullSurah(false);
-    };
-
-    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const handleLoadedMetadata = () => {
-      setDuration(audio.duration);
-      setIsAudioLoading(false);
-    };
-
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('waiting', handleWaiting);
-    audio.addEventListener('playing', handlePlaying);
-    audio.addEventListener('error', handleError);
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    Object.entries(handleEvents).forEach(([ev, fn]) => audio.addEventListener(ev, fn));
     
     return () => {
       audio.pause();
-      audio.src = "";
-      audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('waiting', handleWaiting);
-      audio.removeEventListener('playing', handlePlaying);
-      audio.removeEventListener('error', handleError);
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      Object.entries(handleEvents).forEach(([ev, fn]) => audio.removeEventListener(ev, fn));
     };
   }, []);
 
   useEffect(() => {
     const loadContent = async () => {
+      if (!id) return;
       setLoading(true);
-      if (id) {
-        try {
-          const detail = isJuz ? await fetchJuzDetail(parseInt(id)) : await fetchSurahDetail(parseInt(id));
-          setData(detail);
-          
-          if (!isJuz && detail && detail[0]) {
-            localStorage.setItem('qs_last_read', JSON.stringify({
-              id: id,
-              name: detail[0].englishName,
-              ayah: 1,
-              timestamp: Date.now()
-            }));
-          }
-        } catch (err) { console.error(err); }
+      setError(null);
+      try {
+        const detail = isJuz ? await fetchJuzDetail(parseInt(id)) : await fetchSurahDetail(parseInt(id));
+        if (!detail) throw new Error("No data returned from API");
+        setData(detail);
+        
+        if (!isJuz && detail[0]) {
+          localStorage.setItem('qs_last_read', JSON.stringify({
+            id: id,
+            name: detail[0].englishName,
+            ayah: 1,
+            timestamp: Date.now()
+          }));
+        }
+      } catch (err) { 
+        console.error("Reader load error:", err); 
+        setError("Failed to load content. Please check your connection.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     loadContent();
   }, [id, isJuz]);
 
-  const incrementReadingProgress = () => {
-    const today = new Date().toDateString();
-    const progressDate = localStorage.getItem('qs_reading_date');
-    let count = 0;
-    if (progressDate === today) {
-      count = parseInt(localStorage.getItem('qs_reading_progress') || '0');
-    } else {
-      localStorage.setItem('qs_reading_date', today);
-    }
-    const newCount = count + 1;
-    localStorage.setItem('qs_reading_progress', newCount.toString());
-  };
-
-  const loadTafsir = async (ayahNumber: number, surahNumber: number, ayahInSurah: number) => {
-    if (tafsirData[ayahNumber]) return;
-    setTafsirLoading(prev => ({ ...prev, [ayahNumber]: true }));
-    try {
-      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahInSurah}/en.tafsir-ibn-kathir`);
-      const result = await res.json();
-      if (result.status === 'OK') setTafsirData(prev => ({ ...prev, [ayahNumber]: result.data.text }));
-    } catch (err) { console.error(err); } finally {
-      setTafsirLoading(prev => ({ ...prev, [ayahNumber]: false }));
-    }
-  };
-
   const safePlay = async () => {
     if (!audioRef.current) return;
     try {
-      // If there's an ongoing play request, wait for it to finish or fail
-      if (playPromiseRef.current !== null) {
-        await playPromiseRef.current;
-      }
+      if (playPromiseRef.current !== null) await playPromiseRef.current;
       setIsAudioLoading(true);
       playPromiseRef.current = audioRef.current.play();
       await playPromiseRef.current;
       playPromiseRef.current = null;
     } catch (err) {
-      console.warn("Playback interrupted or failed:", err);
+      console.warn("Playback interrupted:", err);
       setIsAudioLoading(false);
-      // Only reset states if the source is really empty
-      if (!audioRef.current.src) {
-        setPlayingAyah(null);
-        setIsPlayingFullSurah(false);
-      }
       playPromiseRef.current = null;
     }
   };
@@ -182,19 +127,8 @@ const SurahReader: React.FC = () => {
       audioRef.current.src = getAyahAudioUrl(ayahGlobalNumber);
       audioRef.current.load();
       safePlay();
-      
       setPlayingAyah(ayahGlobalNumber);
       setActiveAyah(ayahGlobalNumber);
-      
-      if (!isJuz && data && data[0]) {
-         localStorage.setItem('qs_last_read', JSON.stringify({
-           id: id,
-           name: data[0].englishName,
-           ayah: ayahInSurah,
-           timestamp: Date.now()
-         }));
-      }
-      incrementReadingProgress();
       document.querySelector(`[data-ayah-number="${ayahGlobalNumber}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
@@ -222,217 +156,156 @@ const SurahReader: React.FC = () => {
     localStorage.setItem('theme', theme);
     document.documentElement.classList.remove('dark', 'sepia');
     if (theme !== 'light') document.documentElement.classList.add(theme);
-    window.dispatchEvent(new Event('storage'));
-  };
-
-  const toggleBookmark = (ayah: any, surahInfo: any) => {
-    const bookmarkKey = `${surahInfo.number}:${ayah.numberInSurah}`;
-    const saved = localStorage.getItem('qs_bookmarks');
-    let currentBookmarks = saved ? JSON.parse(saved) : [];
-    if (bookmarks.includes(bookmarkKey)) {
-      currentBookmarks = currentBookmarks.filter((b: any) => `${b.surahNumber}:${b.ayahNumber}` !== bookmarkKey);
-      setBookmarks(bookmarks.filter(k => k !== bookmarkKey));
-    } else {
-      currentBookmarks.push({ surahNumber: surahInfo.number, surahName: surahInfo.englishName, ayahNumber: ayah.numberInSurah, text: ayah.text, timestamp: Date.now() });
-      setBookmarks([...bookmarks, bookmarkKey]);
-    }
-    localStorage.setItem('qs_bookmarks', JSON.stringify(currentBookmarks));
-  };
-
-  const handleShare = async (ayah: any, surahName: string) => {
-    const text = `${ayah.text}\n\n"${ayah.translations?.en || ''}"\n\n— Quran [${surahName} ${ayah.numberInSurah}]\nShared via QuranSeekho.online`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: `Ayah from ${surahName}`, text, url: window.location.href });
-      } catch (err) { console.log(err); }
-    } else {
-      navigator.clipboard.writeText(text);
-      alert('Ayah text copied!');
-    }
   };
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh]">
-      <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+    <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6 page-transition">
+      <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Opening the Sacred Text...</p>
     </div>
   );
 
-  if (!data) return <div className="text-center py-20">Content not found.</div>;
+  if (error) return (
+    <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6 text-center px-4 page-transition">
+      <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mb-4">
+        <X size={40} />
+      </div>
+      <h2 className="text-2xl font-black">{error}</h2>
+      <button onClick={() => window.location.reload()} className="px-8 py-4 bg-green-700 text-white rounded-2xl font-bold shadow-lg">Try Again</button>
+    </div>
+  );
 
   let arabic: any, english: any, urdu: any;
-  if (isJuz) {
-    arabic = data.find((e: any) => e.edition.identifier === 'quran-uthmani');
+  try {
+    arabic = data.find((e: any) => e.edition.identifier === 'quran-uthmani' || e.edition.type === 'quran');
     english = data.find((e: any) => e.edition.language === 'en');
     urdu = data.find((e: any) => e.edition.identifier === 'ur.jalandhara');
-  } else {
-    arabic = data.find((e: any) => e.edition.format === 'text' && e.edition.type === 'quran');
-    english = data.find((e: any) => e.edition.language === 'en');
-    urdu = data.find((e: any) => e.edition.identifier === 'ur.jalandhara');
+  } catch (e) {
+    return <div className="text-center py-20">Formatting error. Please refresh.</div>;
   }
 
-  const title = isJuz ? `Juz ${id}` : arabic?.englishName;
-  const subtitle = isJuz ? `${t.nav.calendar} ${id}` : `${arabic?.englishNameTranslation} • ${arabic?.revelationType}`;
+  const title = isJuz ? `Juz ${id}` : arabic?.englishName || "Surah";
+  const subtitle = isJuz ? `Part ${id}` : `${arabic?.englishNameTranslation || ''} • ${arabic?.revelationType || ''}`;
   const maxItems = isJuz ? 30 : 114;
   const prevLink = isJuz ? `/juz/${parseInt(id!) - 1}` : `/surah/${parseInt(id!) - 1}`;
   const nextLink = isJuz ? `/juz/${parseInt(id!) + 1}` : `/surah/${parseInt(id!) + 1}`;
 
   return (
-    <div className={`max-w-5xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20 ${focusMode ? 'focus-mode-active' : ''}`}>
+    <div className="max-w-5xl mx-auto space-y-12 pb-32 px-4 md:px-8 page-transition">
       
+      {/* Settings Drawer */}
       {isDrawerOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)}></div>
-          <div className="relative w-80 h-full bg-white dark:bg-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-            <div className="p-6 border-b dark:border-slate-700 flex items-center justify-between">
-              <h2 className="font-bold text-lg flex items-center gap-2 text-slate-900 dark:text-white"><Sliders size={20} className="text-green-600" /> {t.reader.settings}</h2>
-              <button onClick={() => setIsDrawerOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full dark:text-white"><X size={20} /></button>
+        <div className="fixed inset-0 z-[200] flex justify-end">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)}></div>
+          <div className="relative w-80 h-full glass shadow-2xl flex flex-col animate-in slide-in-from-right duration-500">
+            <div className="p-8 border-b dark:border-white/10 flex items-center justify-between">
+              <h2 className="font-black text-xl flex items-center gap-2 dark:text-white"><Sliders size={20} className="text-green-600" /> {t.reader.settings}</h2>
+              <button onClick={() => setIsDrawerOpen(false)} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full dark:text-white transition-colors"><X size={24} /></button>
             </div>
-            
-            <div className="flex-1 overflow-y-auto p-6 space-y-8">
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest block">{t.reader.focusMode}</label>
-                <button onClick={() => setFocusMode(!focusMode)} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${focusMode ? 'bg-green-700 text-white border-green-700' : 'bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white'}`}>
-                  <div className="flex items-center gap-3"><Maximize2 size={18} /><span className="font-bold text-sm">{t.reader.focusMode}</span></div>
-                  <div className={`w-8 h-4 rounded-full relative transition-colors ${focusMode ? 'bg-green-500' : 'bg-slate-300'}`}>
-                    <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${focusMode ? 'ltr:right-0.5 rtl:left-0.5' : 'ltr:left-0.5 rtl:right-0.5'}`}></div>
+            <div className="flex-1 overflow-y-auto p-8 space-y-8">
+               <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block">Reading Theme</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {['light', 'sepia', 'dark'].map((th) => (
+                      <button key={th} onClick={() => switchTheme(th as any)} className={`h-16 rounded-2xl border-2 flex items-center justify-center ${th === 'light' ? 'bg-white' : th === 'sepia' ? 'bg-[#fdf6e3]' : 'bg-slate-900'} ${readingTheme === th ? 'border-green-600 scale-105 shadow-lg' : 'border-transparent'}`}>
+                        {th === 'light' ? <Sun size={18} className="text-slate-900" /> : th === 'sepia' ? <Coffee size={18} className="text-[#5d4037]" /> : <Moon size={18} className="text-white" />}
+                      </button>
+                    ))}
                   </div>
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest block">{t.reader.theme}</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {[{id:'light',icon:<Sun size={14}/>,bg:'bg-white'},{id:'sepia',icon:<Coffee size={14}/>,bg:'bg-[#fdf6e3]'},{id:'dark',icon:<Moon size={14}/>,bg:'bg-slate-900'}].map((th) => (
-                    <button key={th.id} onClick={() => switchTheme(th.id as any)} className={`h-16 rounded-2xl border-2 flex flex-col items-center justify-center transition-all ${th.bg} ${readingTheme === th.id ? 'border-green-600 scale-105' : 'border-slate-200 dark:border-slate-700'}`}>
-                      <span className="mb-1 text-green-600">{th.icon}</span>
-                      <span className={`text-[10px] font-bold uppercase ${th.id === 'dark' ? 'text-white' : 'text-slate-900'}`}>{th.id}</span>
+               </div>
+               <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block">Arabic Font Size</label>
+                  <input type="range" min="20" max="72" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full accent-green-600" />
+                  <p className="text-right font-mono text-xs text-slate-400">{fontSize}px</p>
+               </div>
+               <div className="space-y-2">
+                 {[
+                   { id: 'en', label: 'English translation', state: showEnglish, set: setShowEnglish },
+                   { id: 'ur', label: 'Urdu translation', state: showUrdu, set: setShowUrdu }
+                 ].map(l => (
+                    <button key={l.id} onClick={() => l.set(!l.state)} className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${l.state ? 'bg-green-700 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
+                       <span className="font-bold text-sm">{l.label}</span>
+                       {l.state ? <Eye size={18} /> : <EyeOff size={18} />}
                     </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest block">{t.reader.fontSize}</label>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center text-xs"><span className="font-bold dark:text-white">{t.reader.fontSize}</span><span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded font-mono dark:text-white">{fontSize}px</span></div>
-                  <input type="range" min="20" max="72" value={fontSize} onChange={(e) => { const s = parseInt(e.target.value); setFontSize(s); localStorage.setItem('qs_font_size', s.toString()); }} className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none accent-green-600" />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest block">{t.reader.layers}</label>
-                <div className="space-y-2">
-                  {[
-                    { label: 'English', state: showEnglish, set: setShowEnglish },
-                    { label: 'Urdu', state: showUrdu, set: setShowUrdu },
-                    { label: t.reader.tafsir, state: showTafsir, set: setShowTafsir }
-                  ].map((layer) => (
-                    <button key={layer.label} onClick={() => layer.set(!layer.state)} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${layer.state ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 dark:text-white' : 'bg-slate-50 dark:bg-slate-900 dark:border-slate-700 opacity-60 dark:text-slate-400'}`}>
-                      <span className="text-sm font-bold">{layer.label}</span>
-                      {layer.state ? <Eye size={18} className="text-green-600" /> : <EyeOff size={18} className="text-slate-400" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                 ))}
+               </div>
             </div>
           </div>
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 md:p-14 border dark:border-slate-700 shadow-sm relative overflow-hidden transition-all text-center">
-        <div className="flex justify-between items-center mb-10 relative z-10">
-          <Link to={prevLink} className={`p-4 rounded-2xl hover:bg-green-50 dark:hover:bg-slate-700 transition-all dark:text-white ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`} aria-label="Previous">
-            {isRTL ? <ChevronRight size={32} /> : <ChevronLeft size={32} />}
-          </Link>
-          <div className="text-center">
-            <span className="text-[10px] font-black text-green-700 dark:text-green-400 uppercase tracking-[0.4em] mb-3 block">{isJuz ? 'Sipara' : 'Surah'}</span>
-            <h1 className="text-5xl md:text-7xl font-black mb-4 tracking-tight dark:text-white">{title}</h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-widest">{subtitle}</p>
-          </div>
-          <Link to={nextLink} className={`p-4 rounded-2xl hover:bg-green-50 dark:hover:bg-slate-700 transition-all dark:text-white ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`} aria-label="Next">
-            {isRTL ? <ChevronLeft size={32} /> : <ChevronRight size={32} />}
-          </Link>
+      {/* Header Card */}
+      <div className="bg-white dark:bg-slate-800 rounded-[3rem] p-10 md:p-16 border dark:border-slate-700 shadow-xl relative overflow-hidden text-center">
+        <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none rotate-12">
+           <Quote size={200} />
         </div>
-
-        <div className="flex flex-wrap justify-center gap-4 relative z-10 pt-4">
-          <button 
-            disabled={isAudioLoading}
-            onClick={toggleFullSurahAudio} 
-            className="flex items-center gap-3 px-8 py-4 bg-green-700 text-white rounded-full font-bold shadow-xl shadow-green-900/20 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isAudioLoading && isPlayingFullSurah ? <Loader2 size={20} className="animate-spin" /> : (isPlayingFullSurah ? <Pause size={20} fill="currentColor" /> : <Play size={20} className="ltr:ml-0.5 rtl:mr-0.5" fill="currentColor" />)}
-            {isPlayingFullSurah ? t.reader.pause : t.reader.playRecitation}
-          </button>
-          <button onClick={() => setIsDrawerOpen(true)} className="flex items-center gap-3 px-8 py-4 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white rounded-full font-bold hover:bg-green-100 transition-all">
-            <Sliders size={20} /> {t.reader.settings}
-          </button>
+        <div className="relative z-10 space-y-8">
+           <div className="flex items-center justify-center gap-10">
+              <Link to={prevLink} className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-green-600 transition-all ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
+                 <ChevronLeft size={32} />
+              </Link>
+              <div>
+                <span className="text-[10px] font-black text-green-700 dark:text-green-400 uppercase tracking-[0.5em] mb-4 block">Section {id}</span>
+                <h1 className="text-5xl md:text-7xl font-black dark:text-white tracking-tighter">{title}</h1>
+                <p className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-sm mt-4">{subtitle}</p>
+              </div>
+              <Link to={nextLink} className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-green-600 transition-all ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
+                 <ChevronRight size={32} />
+              </Link>
+           </div>
+           
+           <div className="flex flex-wrap justify-center gap-4 pt-6">
+              <button disabled={isAudioLoading} onClick={toggleFullSurahAudio} className="flex items-center gap-3 px-10 py-5 bg-green-700 text-white rounded-full font-black shadow-2xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50">
+                 {isAudioLoading && isPlayingFullSurah ? <Loader2 className="animate-spin" /> : isPlayingFullSurah ? <Pause /> : <Play fill="currentColor" />}
+                 {isPlayingFullSurah ? 'Pause Audio' : 'Play Full Surah'}
+              </button>
+              <button onClick={() => setIsDrawerOpen(true)} className="flex items-center gap-3 px-10 py-5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white rounded-full font-black hover:bg-green-100 transition-all">
+                 <Sliders /> Settings
+              </button>
+           </div>
         </div>
       </div>
 
-      <div className="space-y-16 px-4 md:px-0">
-        {arabic?.ayahs.map((ayah: any, index: number) => {
-          const isBookmarked = bookmarks.includes(`${arabic.number}:${ayah.numberInSurah}`);
+      {/* Verses List */}
+      <div className="space-y-12">
+        {arabic?.ayahs?.map((ayah: any, index: number) => {
           const isActive = activeAyah === ayah.number;
-          const isAyahPlaying = playingAyah === ayah.number;
-          
+          const isPlaying = playingAyah === ayah.number;
           return (
-            <div key={ayah.number} data-ayah-number={ayah.number} className={`ayah-container group relative p-8 md:p-14 rounded-[3rem] transition-all duration-700 ${isActive ? 'active-ayah bg-white dark:bg-slate-800 shadow-xl' : 'hover:bg-white/40 dark:hover:bg-slate-800/40'}`}>
+            <div key={ayah.number} data-ayah-number={ayah.number} className={`group p-8 md:p-14 rounded-[3.5rem] transition-all duration-700 ${isActive ? 'bg-white dark:bg-slate-800 shadow-2xl scale-[1.02]' : 'hover:bg-white/30 dark:hover:bg-slate-800/30'}`}>
               <div className="space-y-12">
-                <p className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-right quran-text transition-all duration-700 ${isActive || isAyahPlaying ? 'text-green-950 dark:text-white' : 'text-slate-800 dark:text-slate-200 opacity-90'}`} style={{ fontSize: `${fontSize}px` }} dir="rtl" lang="ar">
-                  {ayah.text}
-                  <span className="inline-flex items-center justify-center w-10 h-10 mx-6 text-[10px] font-black text-slate-400 group-hover:text-green-600 transition-colors align-middle font-sans border-2 border-slate-100 dark:border-slate-700 rounded-full">{ayah.numberInSurah}</span>
-                </p>
+                 <p className="font-arabic text-right quran-text transition-all duration-700 dark:text-white" style={{ fontSize: `${fontSize}px` }} dir="rtl">
+                    {ayah.text}
+                    <span className="inline-flex items-center justify-center w-12 h-12 mx-6 text-xs font-black text-slate-400 border-2 border-slate-100 dark:border-slate-700 rounded-full align-middle font-sans">{ayah.numberInSurah}</span>
+                 </p>
 
-                {!focusMode && (
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
-                    <div className="md:col-span-1 flex md:flex-col items-center justify-center gap-3">
-                      <button 
-                        disabled={isAudioLoading && isAyahPlaying}
-                        onClick={() => toggleAyahAudio(ayah.number, ayah.numberInSurah)} 
-                        className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all disabled:opacity-50 ${isAyahPlaying ? 'bg-green-700 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-green-600'}`}
-                      >
-                        {isAudioLoading && isAyahPlaying ? <Loader2 size={18} className="animate-spin" /> : (isAyahPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />)}
-                      </button>
-                      <button onClick={() => toggleBookmark(ayah, arabic)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isBookmarked ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
-                        {isBookmarked ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
-                      </button>
-                      <button onClick={() => handleShare(ayah, arabic.englishName)} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-blue-600 transition-all"><Share2 size={18} /></button>
-                      <button onClick={() => loadTafsir(ayah.number, arabic.number, ayah.numberInSurah)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${tafsirData[ayah.number] ? 'bg-blue-50 text-blue-700 dark:text-blue-400' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}><Book size={18} /></button>
+                 <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+                    <div className="md:col-span-1 flex md:flex-col items-center gap-4">
+                       <button onClick={() => toggleAyahAudio(ayah.number, ayah.numberInSurah)} className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all ${isPlaying ? 'bg-green-700 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-green-600'}`}>
+                          {isAudioLoading && isPlaying ? <Loader2 className="animate-spin" /> : isPlaying ? <Pause /> : <Play fill="currentColor" />}
+                       </button>
+                       <button onClick={() => {}} className="w-14 h-14 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-400"><Bookmark /></button>
+                       <button onClick={() => {}} className="w-14 h-14 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-400"><Share2 /></button>
                     </div>
-
                     <div className="md:col-span-11 space-y-8">
-                      {showEnglish && english?.ayahs[index] && <p className={`text-xl leading-relaxed italic transition-colors duration-700 ${isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-500'}`}>{english.ayahs[index].text}</p>}
-                      {showUrdu && urdu?.ayahs[index] && <p className={`font-urdu text-4xl text-right leading-[2.5] transition-colors duration-700 ${isActive ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-500'}`} dir="rtl">{urdu.ayahs[index].text}</p>}
-                      {tafsirData[ayah.number] && (
-                        <div className="bg-blue-50/40 dark:bg-blue-900/10 rounded-[2rem] p-8 border border-blue-100 dark:border-blue-900/30 animate-in slide-in-from-top-4 duration-500">
-                           <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-700 dark:text-blue-400 flex items-center gap-2 mb-4"><Info size={14} /> {t.reader.tafsir}</h4>
-                           <p className="text-base leading-relaxed text-slate-700 dark:text-slate-300">{tafsirData[ayah.number]}</p>
-                        </div>
-                      )}
+                       {showEnglish && english?.ayahs[index] && <p className="text-xl text-slate-500 dark:text-slate-400 italic leading-relaxed">"{english.ayahs[index].text}"</p>}
+                       {showUrdu && urdu?.ayahs[index] && <p className="font-urdu text-4xl text-right text-slate-800 dark:text-slate-200 leading-[2.5]" dir="rtl">{urdu.ayahs[index].text}</p>}
                     </div>
-                  </div>
-                )}
+                 </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      <div className="flex justify-between items-center pt-24 border-t dark:border-slate-800">
-        <Link to={prevLink} className={`flex items-center gap-6 p-6 md:p-10 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm transition-all hover:scale-105 dark:text-white ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
-          {isRTL ? <ChevronRight size={32} /> : <ChevronLeft size={32} />}
-          <div className="text-left hidden sm:block">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">{t.reader.previous}</span>
-            <span className="text-xl font-bold">Chapter {parseInt(id!) - 1}</span>
-          </div>
-        </Link>
-        <Link to={nextLink} className={`flex items-center gap-6 p-6 md:p-10 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm transition-all hover:scale-105 dark:text-white ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
-          <div className="text-right hidden sm:block">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">{t.reader.next}</span>
-            <span className="text-xl font-bold">Chapter {parseInt(id!) + 1}</span>
-          </div>
-          {isRTL ? <ChevronLeft size={32} /> : <ChevronRight size={32} />}
-        </Link>
+      {/* Bottom Nav */}
+      <div className="flex justify-between items-center pt-20">
+         <Link to={prevLink} className={`p-8 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm flex items-center gap-6 hover:scale-105 transition-all ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
+            <ChevronLeft size={24} /> <span className="font-bold text-sm hidden sm:inline">Previous Section</span>
+         </Link>
+         <Link to={nextLink} className={`p-8 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm flex items-center gap-6 hover:scale-105 transition-all ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
+            <span className="font-bold text-sm hidden sm:inline">Next Section</span> <ChevronRight size={24} />
+         </Link>
       </div>
     </div>
   );
