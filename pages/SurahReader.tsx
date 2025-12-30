@@ -5,7 +5,7 @@ import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, getSurahAudioUrl } f
 import { 
   ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type, Book, 
   X, Play, Pause, Volume2, VolumeX, Eye, EyeOff, Maximize2, Minimize2,
-  Sliders, Layout as LayoutIcon, Sun, Moon, Share2, Info, Coffee
+  Sliders, Layout as LayoutIcon, Sun, Moon, Share2, Info, Coffee, Loader2
 } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
 
@@ -36,6 +36,7 @@ const SurahReader: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const [isPlayingFullSurah, setIsPlayingFullSurah] = useState(false);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -52,25 +53,46 @@ const SurahReader: React.FC = () => {
     const savedSize = localStorage.getItem('qs_font_size');
     if (savedSize) setFontSize(parseInt(savedSize));
 
-    audioRef.current = new Audio();
-    const audio = audioRef.current;
+    const audio = new Audio();
+    audio.crossOrigin = "anonymous";
+    audioRef.current = audio;
 
     const handleEnded = () => {
       setPlayingAyah(null);
       setIsPlayingFullSurah(false);
+      setIsAudioLoading(false);
       setCurrentTime(0);
     };
 
+    const handleWaiting = () => setIsAudioLoading(true);
+    const handlePlaying = () => setIsAudioLoading(false);
+    const handleError = () => {
+      console.error("Audio error occurred");
+      setIsAudioLoading(false);
+      setPlayingAyah(null);
+      setIsPlayingFullSurah(false);
+    };
+
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+      setIsAudioLoading(false);
+    };
 
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('playing', handlePlaying);
+    audio.addEventListener('error', handleError);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     
     return () => {
       audio.pause();
+      audio.src = "";
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('playing', handlePlaying);
+      audio.removeEventListener('error', handleError);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
@@ -84,12 +106,11 @@ const SurahReader: React.FC = () => {
           const detail = isJuz ? await fetchJuzDetail(parseInt(id)) : await fetchSurahDetail(parseInt(id));
           setData(detail);
           
-          // Save Last Read (Resume Reading Feature)
           if (!isJuz && detail && detail[0]) {
             localStorage.setItem('qs_last_read', JSON.stringify({
               id: id,
               name: detail[0].englishName,
-              ayah: 1, // Start of surah
+              ayah: 1,
               timestamp: Date.now()
             }));
           }
@@ -105,13 +126,11 @@ const SurahReader: React.FC = () => {
     const today = new Date().toDateString();
     const progressDate = localStorage.getItem('qs_reading_date');
     let count = 0;
-    
     if (progressDate === today) {
       count = parseInt(localStorage.getItem('qs_reading_progress') || '0');
     } else {
       localStorage.setItem('qs_reading_date', today);
     }
-    
     const newCount = count + 1;
     localStorage.setItem('qs_reading_progress', newCount.toString());
   };
@@ -128,6 +147,19 @@ const SurahReader: React.FC = () => {
     }
   };
 
+  const safePlay = async () => {
+    if (!audioRef.current) return;
+    try {
+      setIsAudioLoading(true);
+      await audioRef.current.play();
+    } catch (err) {
+      console.error("Playback failed:", err);
+      setIsAudioLoading(false);
+      setPlayingAyah(null);
+      setIsPlayingFullSurah(false);
+    }
+  };
+
   const toggleAyahAudio = (ayahGlobalNumber: number, ayahInSurah: number) => {
     if (!audioRef.current) return;
     if (playingAyah === ayahGlobalNumber) {
@@ -135,12 +167,14 @@ const SurahReader: React.FC = () => {
       setPlayingAyah(null);
     } else {
       setIsPlayingFullSurah(false);
+      audioRef.current.pause();
       audioRef.current.src = getAyahAudioUrl(ayahGlobalNumber);
-      audioRef.current.play();
+      audioRef.current.load();
+      safePlay();
+      
       setPlayingAyah(ayahGlobalNumber);
       setActiveAyah(ayahGlobalNumber);
       
-      // Update Resume Reading with exact ayah
       if (!isJuz && data && data[0]) {
          localStorage.setItem('qs_last_read', JSON.stringify({
            id: id,
@@ -149,10 +183,7 @@ const SurahReader: React.FC = () => {
            timestamp: Date.now()
          }));
       }
-
-      // Track Reading Progress
       incrementReadingProgress();
-
       document.querySelector(`[data-ayah-number="${ayahGlobalNumber}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
@@ -165,8 +196,12 @@ const SurahReader: React.FC = () => {
     } else {
       setPlayingAyah(null);
       const newSrc = getSurahAudioUrl(parseInt(id!));
-      if (audioRef.current.src !== newSrc) audioRef.current.src = newSrc;
-      audioRef.current.play();
+      if (audioRef.current.src !== newSrc) {
+        audioRef.current.pause();
+        audioRef.current.src = newSrc;
+        audioRef.current.load();
+      }
+      safePlay();
       setIsPlayingFullSurah(true);
     }
   };
@@ -233,7 +268,6 @@ const SurahReader: React.FC = () => {
   return (
     <div className={`max-w-5xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20 ${focusMode ? 'focus-mode-active' : ''}`}>
       
-      {/* Settings Drawer */}
       {isDrawerOpen && (
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)}></div>
@@ -310,8 +344,12 @@ const SurahReader: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 relative z-10 pt-4">
-          <button onClick={toggleFullSurahAudio} className="flex items-center gap-3 px-8 py-4 bg-green-700 text-white rounded-full font-bold shadow-xl shadow-green-900/20 hover:scale-105 transition-all">
-            {isPlayingFullSurah ? <Pause size={20} fill="currentColor" /> : <Play size={20} className="ltr:ml-0.5 rtl:mr-0.5" fill="currentColor" />}
+          <button 
+            disabled={isAudioLoading}
+            onClick={toggleFullSurahAudio} 
+            className="flex items-center gap-3 px-8 py-4 bg-green-700 text-white rounded-full font-bold shadow-xl shadow-green-900/20 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isAudioLoading && isPlayingFullSurah ? <Loader2 size={20} className="animate-spin" /> : (isPlayingFullSurah ? <Pause size={20} fill="currentColor" /> : <Play size={20} className="ltr:ml-0.5 rtl:mr-0.5" fill="currentColor" />)}
             {isPlayingFullSurah ? t.reader.pause : t.reader.playRecitation}
           </button>
           <button onClick={() => setIsDrawerOpen(true)} className="flex items-center gap-3 px-8 py-4 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white rounded-full font-bold hover:bg-green-100 transition-all">
@@ -337,8 +375,12 @@ const SurahReader: React.FC = () => {
                 {!focusMode && (
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
                     <div className="md:col-span-1 flex md:flex-col items-center justify-center gap-3">
-                      <button onClick={() => toggleAyahAudio(ayah.number, ayah.numberInSurah)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isAyahPlaying ? 'bg-green-700 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-green-600'}`}>
-                        {isAyahPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
+                      <button 
+                        disabled={isAudioLoading && isAyahPlaying}
+                        onClick={() => toggleAyahAudio(ayah.number, ayah.numberInSurah)} 
+                        className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all disabled:opacity-50 ${isAyahPlaying ? 'bg-green-700 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-green-600'}`}
+                      >
+                        {isAudioLoading && isAyahPlaying ? <Loader2 size={18} className="animate-spin" /> : (isAyahPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />)}
                       </button>
                       <button onClick={() => toggleBookmark(ayah, arabic)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isBookmarked ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
                         {isBookmarked ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
