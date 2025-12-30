@@ -16,6 +16,7 @@ import IslamicCalendar from './pages/IslamicCalendar';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Feedback from './pages/Feedback';
 import Donation from './pages/Donation';
+import QiblaFinder from './pages/QiblaFinder';
 import { Heart, Globe, ShieldCheck, Mail, Share2, MessageSquare } from 'lucide-react';
 
 const AboutPage = () => {
@@ -107,6 +108,7 @@ const App: React.FC = () => {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/donate" element={<Donation />} />
+          <Route path="/qibla" element={<QiblaFinder />} />
         </Routes>
       </Layout>
     </Router>

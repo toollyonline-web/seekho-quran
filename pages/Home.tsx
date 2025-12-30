@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah, ISLAMIC_EVENTS } from '../services/quranApi';
 import { PrayerTimes } from '../types';
-import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle, Calendar, Share2 } from 'lucide-react';
+// Fixed: Added Hash to the lucide-react imports
+import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle, Calendar, Share2, Compass, Hash } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PopularSurahs = [
@@ -168,14 +169,9 @@ const Home: React.FC = () => {
               <Share2 size={20} /> Share App
             </button>
             
-            {!isInstalled && deferredPrompt && (
-              <button 
-                onClick={handleInstallClick}
-                className="flex items-center gap-2 px-6 py-3 bg-green-900/50 text-white border border-white/20 rounded-xl font-bold hover:bg-green-900 transition-colors"
-              >
-                <Download size={20} /> Install
-              </button>
-            )}
+            <Link to="/qibla" className="flex items-center gap-2 px-6 py-3 bg-blue-700 text-white border border-blue-600 rounded-xl font-bold hover:bg-blue-600 transition-colors">
+                <Compass size={20} /> Qibla Finder
+            </Link>
           </div>
         </div>
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-green-700 rounded-full blur-3xl opacity-40"></div>
@@ -289,6 +285,23 @@ const Home: React.FC = () => {
         {/* Right Sidebar */}
         <div className="space-y-6">
           
+          {/* Quick Tools */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                <Sparkles className="text-green-600" size={20} /> Quick Tools
+            </h2>
+            <div className="grid grid-cols-2 gap-3">
+                <Link to="/qibla" className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl flex flex-col items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all border dark:border-slate-700">
+                    <Compass className="text-blue-500" />
+                    <span className="text-[10px] font-bold uppercase">Qibla</span>
+                </Link>
+                <Link to="/tasbeeh" className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl flex flex-col items-center gap-2 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all border dark:border-slate-700">
+                    <Hash className="text-orange-500" />
+                    <span className="text-[10px] font-bold uppercase">Tasbeeh</span>
+                </Link>
+            </div>
+          </div>
+
           {/* Upcoming Events Section */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-6">

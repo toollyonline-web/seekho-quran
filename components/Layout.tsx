@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { getHijriDate } from '../services/quranApi';
 
@@ -66,7 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: 'Home', path: '/', icon: <Clock size={20} /> },
     { name: 'Surah', path: '/surah', icon: <BookOpen size={20} /> },
-    { name: 'Calendar', path: '/calendar', icon: <Calendar size={20} className="text-green-500" /> },
+    { name: 'Qibla', path: '/qibla', icon: <Compass size={20} className="text-blue-500" /> },
     { name: 'Duas', path: '/duas', icon: <Star size={20} className="text-yellow-500" /> },
     { name: 'Zakat', path: '/zakat', icon: <Coins size={20} className="text-amber-500" /> },
     { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
@@ -213,7 +213,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <li><Link to="/tasbeeh" className="text-slate-500 hover:text-green-600 transition-colors">Tasbeeh</Link></li>
                 <li><Link to="/zakat" className="text-slate-500 hover:text-green-600 transition-colors">Zakat Calc</Link></li>
                 <li><Link to="/bookmarks" className="text-slate-500 hover:text-green-600 transition-colors">Bookmarks</Link></li>
-                <li><Link to="/learn" className="text-slate-500 hover:text-green-600 transition-colors">Tajweed</Link></li>
+                <li><Link to="/qibla" className="text-slate-500 hover:text-green-600 transition-colors">Qibla Finder</Link></li>
               </ul>
             </div>
 
