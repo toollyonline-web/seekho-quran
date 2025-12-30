@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass, Gavel } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass, Gavel, Quote } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { getHijriDate } from '../services/quranApi';
 
@@ -202,6 +202,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <ul className="space-y-4">
                 <li><Link to="/surah" className="text-slate-500 hover:text-green-600 transition-colors">All Surahs</Link></li>
                 <li><Link to="/juz" className="text-slate-500 hover:text-green-600 transition-colors">By Juz</Link></li>
+                <li><Link to="/hadith" className="text-slate-500 hover:text-green-600 transition-colors font-bold">40 Hadith</Link></li>
                 <li><Link to="/names" className="text-slate-500 hover:text-green-600 transition-colors">99 Names</Link></li>
                 <li><Link to="/calendar" className="text-slate-500 hover:text-green-600 transition-colors">Hijri Calendar</Link></li>
               </ul>
