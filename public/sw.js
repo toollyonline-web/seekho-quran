@@ -1,7 +1,7 @@
 
 /**
  * QuranSeekho Service Worker
- * version: 1.0.2
+ * version: 1.0.3
  */
 
 const CACHE_NAME = 'quranseekho-cache-v1';
@@ -66,10 +66,15 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request).then((networkResponse) => {
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, networkResponse.clone());
-        });
+        if (networkResponse.status === 200) {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, networkResponse.clone());
+          });
+        }
         return networkResponse;
+      }).catch(() => {
+        // Fallback for offline if not in cache
+        return cachedResponse;
       });
       return cachedResponse || fetchPromise;
     })

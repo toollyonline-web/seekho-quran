@@ -41,7 +41,7 @@ const AboutPage = () => {
         <div className="w-20 h-20 bg-green-700 rounded-3xl flex items-center justify-center text-white font-bold text-3xl mx-auto mb-6 shadow-xl shadow-green-900/20">QS</div>
         <h1 className="text-4xl font-bold mb-4">About Quran Seekho</h1>
         <p className="text-xl text-slate-500 italic max-w-2xl mx-auto">"Guiding the hearts through the light of the Noble Quran."</p>
-        <div className="mt-2 inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest">Release v1.0.6-Testing</div>
+        <div className="mt-2 inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase tracking-widest">Release v1.0.7-Production-Ready</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
