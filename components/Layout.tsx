@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass, Gavel, Quote, ArrowRight, Book, Sparkles } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass, Gavel, Quote, ArrowRight, Book, Sparkles, Languages, Sliders, Type } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { getHijriDate } from '../services/quranApi';
+import { translations, Language } from '../services/i18n';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,36 +14,46 @@ type ThemeMode = 'light' | 'dark' | 'sepia';
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>('light');
+  const [language, setLanguage] = useState<Language>('en');
+  const [fontScale, setFontScale] = useState(1);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [hijriDate, setHijriDate] = useState('');
   const location = useLocation();
 
+  const t = translations[language];
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as ThemeMode;
+    const savedLang = localStorage.getItem('language') as Language;
+    const savedScale = localStorage.getItem('ui_font_scale');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
     const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    const initialLang = savedLang || 'en';
+    const initialScale = savedScale ? parseFloat(savedScale) : 1;
+
     applyGlobalTheme(initialTheme);
+    applyLanguage(initialLang);
+    applyFontScale(initialScale);
+    
     setTheme(initialTheme);
+    setLanguage(initialLang);
+    setFontScale(initialScale);
     setHijriDate(getHijriDate());
   }, []);
 
-  useEffect(() => {
-    const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) {
-      canonical.setAttribute('href', `https://quranseekho.online${location.pathname}`);
-    }
+  const applyLanguage = (lang: Language) => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === 'ur' || lang === 'ar') ? 'rtl' : 'ltr';
+    localStorage.setItem('language', lang);
+  };
 
-    const handleOnline = () => setIsOffline(false);
-    const handleOffline = () => setIsOffline(true);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [location.pathname]);
+  const applyFontScale = (scale: number) => {
+    document.documentElement.style.setProperty('--ui-scale', scale.toString());
+    localStorage.setItem('ui_font_scale', scale.toString());
+  };
 
   const applyGlobalTheme = (newTheme: ThemeMode) => {
     document.documentElement.classList.remove('dark', 'sepia');
@@ -63,12 +74,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const navItems = [
-    { name: 'Home', path: '/', icon: <Clock size={20} /> },
-    { name: 'Surah', path: '/surah', icon: <BookOpen size={20} /> },
-    { name: 'Qibla', path: '/qibla', icon: <Compass size={20} className="text-blue-500" /> },
-    { name: 'Duas', path: '/duas', icon: <Star size={20} className="text-yellow-500" /> },
-    { name: 'Zakat', path: '/zakat', icon: <Coins size={20} className="text-amber-500" /> },
-    { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
+    { name: t.nav.home, path: '/', icon: <Clock size={20} /> },
+    { name: t.nav.surah, path: '/surah', icon: <BookOpen size={20} /> },
+    { name: t.nav.qibla, path: '/qibla', icon: <Compass size={20} className="text-blue-500" /> },
+    { name: t.nav.duas, path: '/duas', icon: <Star size={20} className="text-yellow-500" /> },
+    { name: t.nav.zakat, path: '/zakat', icon: <Coins size={20} className="text-amber-500" /> },
+    { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
   ];
 
   return (
@@ -76,10 +87,65 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         theme === 'dark' ? 'bg-slate-900 text-white' : 
         theme === 'sepia' ? 'bg-[#fdf6e3] text-[#5d4037]' : 
         'bg-green-50 text-slate-900'
-    }`}>
+    }`} style={{ fontSize: `calc(1rem * var(--ui-scale, 1))` }}>
+      
       {isOffline && (
         <div className="bg-amber-600 text-white text-[10px] py-1 px-4 flex items-center justify-center gap-2 font-bold uppercase tracking-widest z-[70] relative">
           <WifiOff size={12} /> Offline Mode - Some features may be limited
+        </div>
+      )}
+
+      {/* Global Settings Drawer */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-[100] flex justify-end">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsSettingsOpen(false)}></div>
+          <div className="relative w-80 h-full bg-white dark:bg-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="p-6 border-b dark:border-slate-700 flex items-center justify-between">
+              <h2 className="font-bold text-lg flex items-center gap-2 text-slate-900 dark:text-white"><Sliders size={20} className="text-green-600" /> {t.ui.settings}</h2>
+              <button onClick={() => setIsSettingsOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full dark:text-white"><X size={20} /></button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest block">{t.ui.language}</label>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    { id: 'en', label: 'English', sub: 'Default' },
+                    { id: 'ur', label: 'اردو', sub: 'Nastaliq' },
+                    { id: 'ar', label: 'العربية', sub: 'Traditional' }
+                  ].map((lang) => (
+                    <button 
+                      key={lang.id}
+                      onClick={() => { setLanguage(lang.id as Language); applyLanguage(lang.id as Language); }}
+                      className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${language === lang.id ? 'bg-green-700 text-white border-green-700' : 'bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white'}`}
+                    >
+                      <span className="font-bold">{lang.label}</span>
+                      <span className="text-[10px] opacity-60">{lang.sub}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest block">{t.ui.fontScale}</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { val: 1, label: '100%' },
+                    { val: 1.2, label: '120%' },
+                    { val: 1.4, label: '140%' }
+                  ].map((s) => (
+                    <button 
+                      key={s.val}
+                      onClick={() => { setFontScale(s.val); applyFontScale(s.val); }}
+                      className={`p-3 rounded-xl border text-xs font-bold transition-all ${fontScale === s.val ? 'bg-green-700 text-white border-green-700' : 'bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white'}`}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -114,7 +180,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
+            <button 
+                onClick={() => setIsSettingsOpen(true)} 
+                className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 text-slate-500 dark:text-slate-400"
+                aria-label="App Settings"
+            >
+              <Languages size={20} />
+            </button>
             <button 
                 onClick={cycleTheme} 
                 className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center gap-2" 
@@ -123,7 +196,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {theme === 'light' && <Sun size={20} />}
               {theme === 'dark' && <Moon size={20} />}
               {theme === 'sepia' && <Coffee size={20} />}
-              <span className="text-[10px] font-bold uppercase tracking-widest hidden md:inline">{theme}</span>
             </button>
             <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -162,7 +234,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="container mx-auto px-6 py-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
-            {/* Brand Identity & Mission */}
             <div className="lg:col-span-4 space-y-8">
               <Link to="/" className="flex items-center gap-4 group">
                 <div className="w-14 h-14 bg-green-700 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-xl shadow-green-900/20 group-hover:rotate-6 transition-transform">QS</div>
@@ -182,7 +253,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </h5>
                   <p className="text-xs text-slate-500 mb-4">Sustain this ad-free experience with your voluntary support.</p>
                   <Link to="/donate" className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white rounded-xl text-xs font-bold hover:bg-green-600 transition-all shadow-lg shadow-green-900/10">
-                    Support the Mission <ArrowRight size={14} />
+                    {t.ui.donate} <ArrowRight size={14} />
                   </Link>
                 </div>
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform">
@@ -191,14 +262,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
             </div>
 
-            {/* Navigation Sections */}
             <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-10">
               
               <div className="space-y-6">
-                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">The Library</h4>
+                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">{t.nav.library}</h4>
                 <ul className="space-y-4">
-                  <li><Link to="/surah" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> All Surahs</Link></li>
-                  <li><Link to="/juz" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Browse Juz</Link></li>
+                  <li><Link to="/surah" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> {t.nav.surah}</Link></li>
+                  <li><Link to="/juz" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> {t.nav.surah} by Juz</Link></li>
                   <li><Link to="/hadith" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> 40 Hadith</Link></li>
                   <li><Link to="/prophetic-stories" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group font-bold"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Prophetic Stories</Link></li>
                   <li><Link to="/names" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> 99 Names</Link></li>
@@ -206,23 +276,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
 
               <div className="space-y-6">
-                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">Islamic Tools</h4>
+                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">{t.nav.tools}</h4>
                 <ul className="space-y-4">
-                  <li><Link to="/tasbeeh" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Hash size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Tasbeeh Counter</Link></li>
-                  <li><Link to="/duas" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Star size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Dua Library</Link></li>
-                  <li><Link to="/zakat" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Coins size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Zakat Calculator</Link></li>
-                  <li><Link to="/qibla" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Compass size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Qibla Finder</Link></li>
-                  <li><Link to="/calendar" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Calendar size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Hijri Calendar</Link></li>
+                  <li><Link to="/tasbeeh" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Hash size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> {t.nav.tasbeeh}</Link></li>
+                  <li><Link to="/duas" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Star size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> {t.nav.duas}</Link></li>
+                  <li><Link to="/zakat" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Coins size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> {t.nav.zakat}</Link></li>
+                  <li><Link to="/qibla" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Compass size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> {t.nav.qibla}</Link></li>
                 </ul>
               </div>
 
               <div className="space-y-6 md:col-span-1 col-span-2">
-                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">Platform</h4>
+                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">{t.nav.platform}</h4>
                 <ul className="space-y-4">
                   <li><Link to="/about" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all">About Our Mission</Link></li>
-                  <li><Link to="/feedback" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group">Tester Feedback <MessageSquare size={14} /></Link></li>
-                  <li><Link to="/privacy" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group">Privacy Policy <Shield size={14} /></Link></li>
-                  <li><Link to="/terms" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group">Terms of Service <Gavel size={14} /></Link></li>
+                  <li><Link to="/feedback" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group">Feedback <MessageSquare size={14} /></Link></li>
+                  <li><Link to="/privacy" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group">Privacy <Shield size={14} /></Link></li>
                 </ul>
               </div>
 
@@ -238,20 +306,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center gap-6 px-8 py-3 bg-slate-50 dark:bg-slate-900 rounded-full border dark:border-slate-800">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
                 <Heart size={14} className="text-rose-500 fill-rose-500 animate-pulse" />
-                Sadaqah Jariyah Project
+                {t.ui.sadaqah}
               </div>
             </div>
           </div>
         </div>
-
-        {/* Decorative background element */}
-        <div className="absolute bottom-0 right-0 p-10 opacity-[0.02] pointer-events-none translate-x-20 translate-y-20">
-          <Book size={600} strokeWidth={0.5} />
-        </div>
       </footer>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <div className={`lg:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[100] ${
+      <div className={`lg:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[90] ${
         theme === 'dark' ? 'bg-slate-900/90 border-slate-800' : 
         theme === 'sepia' ? 'bg-[#fdf6e3]/90 border-[#eee8d5]' : 
         'bg-white/90 border-green-100'
