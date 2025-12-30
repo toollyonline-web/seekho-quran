@@ -12,7 +12,11 @@ export const translations: Record<Language, any> = {
       tasbeeh: "Tasbeeh",
       library: "The Library",
       tools: "Islamic Tools",
-      platform: "Platform"
+      platform: "Platform",
+      bookmarks: "Bookmarks",
+      learn: "Learn",
+      names: "99 Names",
+      calendar: "Calendar"
     },
     home: {
       heroTitle: "Quran Seekho: Read & Learn",
@@ -22,9 +26,45 @@ export const translations: Record<Language, any> = {
       moodTitle: "How are you feeling?",
       dailyWisdom: "Daily Wisdom",
       popularSurahs: "Popular Surahs",
-      ayahOfDay: "Ayah of the Day",
       viewAll: "View All",
-      dailySunnahs: "Daily Sunnahs"
+      dailySunnahs: "Daily Sunnahs",
+      prayerTimes: "Prayer Times"
+    },
+    reader: {
+      settings: "Reader Settings",
+      playRecitation: "Play Recitation",
+      pause: "Pause",
+      fontFamily: "Typography",
+      fontSize: "Font Size",
+      theme: "Reading Theme",
+      layers: "Content Layers",
+      tafsir: "Ibn Kathir Commentary",
+      focusMode: "Focus Mode",
+      next: "Next",
+      previous: "Previous"
+    },
+    tools: {
+      tasbeehTitle: "Tasbeeh Counter",
+      tasbeehSubtitle: "Perform your daily dhikr with ease.",
+      total: "Total",
+      reset: "Reset",
+      target: "Target",
+      tapToCount: "Tap to Count",
+      zakatTitle: "Zakat Calculator",
+      zakatSubtitle: "Calculate your mandatory charity with precision.",
+      assets: "Assets & Wealth",
+      cash: "Cash (Home & Bank)",
+      goldSilver: "Gold & Silver Value",
+      investments: "Investments",
+      liabilities: "Debts & Liabilities",
+      netWealth: "Net Zakatable Wealth",
+      dueZakat: "Total Zakat Due",
+      qiblaTitle: "Qibla Finder",
+      qiblaSubtitle: "Align your device to find Kaaba.",
+      duaTitle: "Dua & Adhkar",
+      duaSubtitle: "Call upon your Lord.",
+      bookmarksTitle: "My Bookmarks",
+      bookmarksSubtitle: "Your saved Ayahs."
     },
     ui: {
       settings: "Settings",
@@ -34,7 +74,8 @@ export const translations: Record<Language, any> = {
       close: "Close",
       back: "Back",
       donate: "Support the Mission",
-      sadaqah: "Sadaqah Jariyah Project"
+      sadaqah: "Sadaqah Jariyah Project",
+      search: "Search..."
     }
   },
   ur: {
@@ -47,7 +88,11 @@ export const translations: Record<Language, any> = {
       tasbeeh: "تسبیح",
       library: "لائبریری",
       tools: "اسلامی ٹولز",
-      platform: "پلیٹ فارم"
+      platform: "پلیٹ فارم",
+      bookmarks: "بک مارکس",
+      learn: "سیکھنا",
+      names: "99 نام",
+      calendar: "کیلنڈر"
     },
     home: {
       heroTitle: "قرآن سیکھو: تلاوت اور سیکھنا",
@@ -57,9 +102,45 @@ export const translations: Record<Language, any> = {
       moodTitle: "آپ کیسا محسوس کر رہے ہیں؟",
       dailyWisdom: "آج کی حکمت",
       popularSurahs: "مشہور سورتیں",
-      ayahOfDay: "آج کی آیت",
       viewAll: "سب دیکھیں",
-      dailySunnahs: "روزانہ کی سنتیں"
+      dailySunnahs: "روزانہ کی سنتیں",
+      prayerTimes: "نماز کے اوقات"
+    },
+    reader: {
+      settings: "ریڈر سیٹنگز",
+      playRecitation: "تلاوت سنیں",
+      pause: "روکیں",
+      fontFamily: "خطاطی",
+      fontSize: "حروف کا سائز",
+      theme: "ریڈنگ تھیم",
+      layers: "ترجمہ اور تفسیر",
+      tafsir: "تفسیر ابن کثیر",
+      focusMode: "توجہ موڈ",
+      next: "اگلی",
+      previous: "پچھلی"
+    },
+    tools: {
+      tasbeehTitle: "تسبیح کاؤنٹر",
+      tasbeehSubtitle: "اپنے روزانہ کے ذکر کو آسانی سے کریں۔",
+      total: "کل تعداد",
+      reset: "دوبارہ شروع",
+      target: "ہدف",
+      tapToCount: "گننے کے لیے دبائیں",
+      zakatTitle: "زکوٰۃ کیلکولیٹر",
+      zakatSubtitle: "اپنی زکوٰۃ کا صحیح حساب لگائیں۔",
+      assets: "اثاثے اور دولت",
+      cash: "نقدی (گھر اور بینک)",
+      goldSilver: "سونا اور چاندی",
+      investments: "سرمایہ کاری",
+      liabilities: "قرض اور واجبات",
+      netWealth: "کل زکوٰۃ کے قابل دولت",
+      dueZakat: "واجب الادا زکوٰۃ",
+      qiblaTitle: "قبلہ نما",
+      qiblaSubtitle: "کعبہ کی سمت معلوم کریں۔",
+      duaTitle: "دعا اور اذکار",
+      duaSubtitle: "اپنے رب کو پکاریں۔",
+      bookmarksTitle: "میرے بک مارکس",
+      bookmarksSubtitle: "آپ کی محفوظ کردہ آیات۔"
     },
     ui: {
       settings: "سیٹنگز",
@@ -69,7 +150,8 @@ export const translations: Record<Language, any> = {
       close: "بند کریں",
       back: "واپس",
       donate: "پروجیکٹ کی حمایت کریں",
-      sadaqah: "صدقہ جاریہ پروجیکٹ"
+      sadaqah: "صدقہ جاریہ پروجیکٹ",
+      search: "تلاش کریں..."
     }
   },
   ar: {
@@ -82,7 +164,11 @@ export const translations: Record<Language, any> = {
       tasbeeh: "التسبيح",
       library: "المكتبة",
       tools: "الأدوات الإسلامية",
-      platform: "المنصة"
+      platform: "المنصة",
+      bookmarks: "الإشارات المرجعية",
+      learn: "تعلم",
+      names: "أسماء الله الحسنى",
+      calendar: "التقويم"
     },
     home: {
       heroTitle: "تعلم القرآن: قراءة وتعلم",
@@ -92,9 +178,45 @@ export const translations: Record<Language, any> = {
       moodTitle: "كيف تشعر اليوم؟",
       dailyWisdom: "حكمة اليوم",
       popularSurahs: "السور الشائعة",
-      ayahOfDay: "آية اليوم",
       viewAll: "عرض الكل",
-      dailySunnahs: "سنن يومية"
+      dailySunnahs: "سنن يومية",
+      prayerTimes: "أوقات الصلاة"
+    },
+    reader: {
+      settings: "إعدادات القارئ",
+      playRecitation: "تشغيل التلاوة",
+      pause: "إيقاف",
+      fontFamily: "نوع الخط",
+      fontSize: "حجم الخط",
+      theme: "مظهر القراءة",
+      layers: "الترجمة والتفسير",
+      tafsir: "تفسير ابن كثير",
+      focusMode: "وضع التركيز",
+      next: "التالي",
+      previous: "السابق"
+    },
+    tools: {
+      tasbeehTitle: "مسبحة إلكترونية",
+      tasbeehSubtitle: "قم بأداء ذكرك اليومي بسهولة.",
+      total: "المجموع",
+      reset: "إعادة تعيين",
+      target: "الهدف",
+      tapToCount: "اضغط للعد",
+      zakatTitle: "حاسبة الزكاة",
+      zakatSubtitle: "احسب زكاتك بدقة.",
+      assets: "الأصول والثروة",
+      cash: "النقد (المنزل والبنك)",
+      goldSilver: "قيمة الذهب والفضة",
+      investments: "الاستثمارات",
+      liabilities: "الديون والالتزامات",
+      netWealth: "صافي الثروة الخاضعة للزكاة",
+      dueZakat: "إجمالي الزكاة المستحقة",
+      qiblaTitle: "محدد القبلة",
+      qiblaSubtitle: "قم بمحاذاة جهازك للعثور على الكعبة.",
+      duaTitle: "الأدعية والأذكار",
+      duaSubtitle: "ادعُ ربك.",
+      bookmarksTitle: "إشاراتي المرجعية",
+      bookmarksSubtitle: "الآيات المحفوظة."
     },
     ui: {
       settings: "الإعدادات",
@@ -104,7 +226,8 @@ export const translations: Record<Language, any> = {
       close: "إغلاق",
       back: "رجوع",
       donate: "دعم المشروع",
-      sadaqah: "مشروع صدقة جارية"
+      sadaqah: "مشروع صدقة جارية",
+      search: "بحث..."
     }
   }
 };
