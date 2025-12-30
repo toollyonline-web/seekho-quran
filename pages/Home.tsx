@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah, ISLAMIC_EVENTS } from '../services/quranApi';
 import { PrayerTimes } from '../types';
-// Fixed: Added Hash to the lucide-react imports
 import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle, Calendar, Share2, Compass, Hash } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -29,13 +28,41 @@ const DAILY_SUNNAHS = [
 ];
 
 const DAILY_REMINDERS = [
-  { text: "Kindness is a mark of faith, and whoever is not kind has no faith.", source: "Prophet Muhammad (PBUH)" },
-  { text: "The best of people are those that bring most benefit to the rest of mankind.", source: "Daraqutni" },
-  { text: "Speak a good word or remain silent.", source: "Bukhari & Muslim" },
-  { text: "Patience is the key to joy.", source: "Hazrat Ali (RA)" },
-  { text: "Happiness is found in the remembrance of Allah.", source: "Quran 13:28" },
-  { text: "A powerful person is not the one who can wrestle, but the one who can control his anger.", source: "Sahih Bukhari" },
-  { text: "The most beloved of deeds to Allah are those that are most consistent, even if they are small.", source: "Sahih Bukhari" },
+  { 
+    text: "Kindness is a mark of faith, and whoever is not kind has no faith.", 
+    urdu: "نرمی ایمان کی علامت ہے، اور جس میں نرمی نہیں اس میں ایمان نہیں۔",
+    source: "Prophet Muhammad (PBUH)" 
+  },
+  { 
+    text: "The best of people are those that bring most benefit to the rest of mankind.", 
+    urdu: "لوگوں میں سب سے بہتر وہ ہے جو دوسروں کو فائدہ پہنچائے۔",
+    source: "Daraqutni" 
+  },
+  { 
+    text: "Speak a good word or remain silent.", 
+    urdu: "اچھی بات کہو ورنہ خاموش رہو۔",
+    source: "Bukhari & Muslim" 
+  },
+  { 
+    text: "Patience is the key to joy.", 
+    urdu: "صبر خوشی کی کنجی ہے۔",
+    source: "Hazrat Ali (RA)" 
+  },
+  { 
+    text: "Happiness is found in the remembrance of Allah.", 
+    urdu: "دلوں کا سکون اللہ کے ذکر میں ہے۔",
+    source: "Quran 13:28" 
+  },
+  { 
+    text: "A powerful person is not the one who can wrestle, but the one who can control his anger.", 
+    urdu: "طاقتور وہ نہیں جو کسی کو پچھاڑ دے، بلکہ وہ ہے جو غصے کے وقت خود پر قابو پائے۔",
+    source: "Sahih Bukhari" 
+  },
+  { 
+    text: "The most beloved of deeds to Allah are those that are most consistent, even if they are small.", 
+    urdu: "اللہ کے نزدیک پسندیدہ عمل وہ ہے جو مستقل کیا جائے، چاہے وہ تھوڑا ہی کیوں نہ ہو۔",
+    source: "Sahih Bukhari" 
+  },
 ];
 
 const Home: React.FC = () => {
@@ -66,7 +93,7 @@ const Home: React.FC = () => {
         const ayahRes = await fetchRandomAyah();
         const arabic = ayahRes.find((p: any) => p.edition.identifier === 'quran-uthmani');
         const english = ayahRes.find((p: any) => p.edition.language === 'en');
-        const urdu = ayahRes.find((p: any) => p.edition.language === 'ur');
+        const urdu = ayahRes.find((p: any) => p.edition.identifier === 'ur.jalandhara');
         
         setDailyAyah({ arabic, english, urdu });
 
@@ -213,6 +240,26 @@ const Home: React.FC = () => {
                         <ArrowRight size={14} className="opacity-50" />
                     </Link>
                 ))}
+            </div>
+          </section>
+
+          {/* Daily Reminder with Urdu */}
+          <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700 overflow-hidden relative">
+            <div className="flex items-center gap-2 mb-6">
+              <Quote className="text-blue-500" size={20} />
+              <h2 className="text-xl font-bold">Daily Wisdom</h2>
+            </div>
+            {dailyReminder && (
+              <div className="space-y-6 relative z-10">
+                <p className="text-2xl font-bold text-slate-800 dark:text-white leading-relaxed">"{dailyReminder.text}"</p>
+                <div className="p-5 bg-blue-50 dark:bg-slate-900 rounded-2xl border dark:border-slate-700">
+                   <p className="font-urdu text-3xl text-right leading-[2] text-blue-900 dark:text-blue-400" dir="rtl">{dailyReminder.urdu}</p>
+                </div>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">— {dailyReminder.source}</p>
+              </div>
+            )}
+            <div className="absolute bottom-0 right-0 p-4 opacity-5 pointer-events-none">
+              <Quote size={100} />
             </div>
           </section>
 

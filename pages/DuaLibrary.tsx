@@ -17,42 +17,48 @@ const DUAS = [
     title: "Morning Remembrance",
     arabic: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ",
     trans: "Asbahna wa asbahal-mulku lillah, walhamdu lillah, la ilaha illallahu wahdahu la sharika lah.",
-    en: "We have reached the morning and at this very time unto Allah belongs all sovereignty, and all praise is for Allah. None has the right to be worshipped except Allah, alone, without any partner."
+    en: "We have reached the morning and at this very time unto Allah belongs all sovereignty, and all praise is for Allah. None has the right to be worshipped except Allah, alone, without any partner.",
+    ur: "ہم نے صبح کی اور اللہ کے لیے ملک نے صبح کی، اور تمام تعریف اللہ ہی کے لیے ہے، اللہ کے سوا کوئی معبود نہیں وہ اکیلا ہے اس کا کوئی شریک نہیں۔"
   },
   {
     category: "Protection",
     title: "Protection from Evil",
     arabic: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
     trans: "Bismillahil-ladhi la yadurru ma'as-mihi shay'un fil-ardi wa la fis-sama'i wa Huwas-Sami'ul-'Alim.",
-    en: "In the Name of Allah with Whose Name nothing can cause harm in the earth nor in the heavens, and He is the All-Hearing, the All-Knowing."
+    en: "In the Name of Allah with Whose Name nothing can cause harm in the earth nor in the heavens, and He is the All-Hearing, the All-Knowing.",
+    ur: "اللہ کے نام کے ساتھ، جس کے نام کی برکت سے زمین اور آسمان میں کوئی چیز نقصان نہیں پہنچا سکتی، اور وہی سب کچھ سننے والا اور جاننے والا ہے۔"
   },
   {
     category: "Anxiety & Stress",
     title: "Relief from Distress",
     arabic: "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ",
     trans: "Ya Hayyu Ya Qayyumu birahmatika astaghith.",
-    en: "O Ever Living One, O Self-Sustaining One, in Your Mercy I seek relief."
+    en: "O Ever Living One, O Self-Sustaining One, in Your Mercy I seek relief.",
+    ur: "اے ہمیشہ زندہ رہنے والے، اے کائنات کو تھامنے والے، میں تیری رحمت کے ذریعے فریاد کرتا ہوں۔"
   },
   {
     category: "Success & Knowledge",
     title: "Increase in Knowledge",
     arabic: "رَّبِّ زِدْنِي عِلْمًا",
     trans: "Rabbi zidni 'ilman.",
-    en: "My Lord, increase me in knowledge."
+    en: "My Lord, increase me in knowledge.",
+    ur: "اے میرے رب، میرے علم میں اضافہ فرما۔"
   },
   {
     category: "Forgiveness",
     title: "Seeking Forgiveness",
     arabic: "اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
     trans: "Allahumma innaka 'afuwwun tuhibbul-'afwa fa'fu 'anni.",
-    en: "O Allah, You are Forgiving and You love forgiveness, so forgive me."
+    en: "O Allah, You are Forgiving and You love forgiveness, so forgive me.",
+    ur: "اے اللہ، تو معاف کرنے والا ہے اور معاف کرنے کو پسند کرتا ہے، پس مجھے معاف فرما دے۔"
   },
   {
     category: "Gratitude",
     title: "Thanking Allah",
     arabic: "الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ",
     trans: "Alhamdu lillahil-ladhi bini'matihi tatimmus-salihat.",
-    en: "All praise is for Allah by Whose favor good things are accomplished."
+    en: "All praise is for Allah by Whose favor good things are accomplished.",
+    ur: "تمام تعریفیں اللہ کے لیے ہیں جس کی نعمت سے تمام نیک کام مکمل ہوتے ہیں۔"
   }
 ];
 
@@ -63,20 +69,21 @@ const DuaLibrary: React.FC = () => {
 
   const filteredDuas = DUAS.filter(dua => {
     const matchesSearch = dua.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          dua.en.toLowerCase().includes(searchTerm.toLowerCase());
+                          dua.en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          dua.ur.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory ? dua.category === selectedCategory : true;
     return matchesSearch && matchesCategory;
   });
 
   const handleCopy = (dua: any, id: string) => {
-    const text = `${dua.title}\n\n${dua.arabic}\n\n${dua.en}\n\nShared via QuranSeekho.online`;
+    const text = `${dua.title}\n\n${dua.arabic}\n\n${dua.en}\n\n${dua.ur}\n\nShared via QuranSeekho.online`;
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
   const handleShare = async (dua: any) => {
-    const text = `*${dua.title}*\n\n${dua.arabic}\n\n"${dua.en}"\n\nShared via QuranSeekho.online`;
+    const text = `*${dua.title}*\n\n${dua.arabic}\n\n"${dua.en}"\n\n"${dua.ur}"\n\nShared via QuranSeekho.online`;
     if (navigator.share) {
       try {
         await navigator.share({
@@ -173,9 +180,15 @@ const DuaLibrary: React.FC = () => {
                     <p className="text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Transliteration</p>
                     <p className="italic text-slate-600 dark:text-slate-400 leading-relaxed">{dua.trans}</p>
                   </div>
-                  <div className="p-4 bg-green-50/50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-900/30">
-                    <p className="text-xs font-bold text-green-700 dark:text-green-400 uppercase mb-2 tracking-widest">Meaning</p>
-                    <p className="text-slate-800 dark:text-slate-200 leading-relaxed font-medium">{dua.en}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-green-50/50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-900/30">
+                      <p className="text-xs font-bold text-green-700 dark:text-green-400 uppercase mb-2 tracking-widest">English Meaning</p>
+                      <p className="text-slate-800 dark:text-slate-200 leading-relaxed font-medium">{dua.en}</p>
+                    </div>
+                    <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30">
+                      <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase mb-2 tracking-widest text-right">اردو ترجمہ</p>
+                      <p className="font-urdu text-2xl text-slate-800 dark:text-slate-200 leading-relaxed text-right" dir="rtl">{dua.ur}</p>
+                    </div>
                   </div>
                 </div>
               </div>
