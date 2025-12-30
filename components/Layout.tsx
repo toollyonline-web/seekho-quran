@@ -16,9 +16,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark' | 'sepia'>('light');
   const [language, setLanguage] = useState<Language>('en');
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
-  const t = translations[language];
+  const t = translations[language] || translations['en'];
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as any || 'light';
@@ -27,6 +28,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setTheme(savedTheme);
     setLanguage(savedLang);
     applyTheme(savedTheme);
+
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const applyTheme = (newTheme: string) => {
@@ -43,36 +48,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const navItems = [
-    { name: t.nav.home, path: '/', icon: <HomeIcon size={22} /> },
-    { name: t.nav.surah, path: '/surah', icon: <BookOpen size={22} /> },
-    { name: t.nav.search, path: '/search', icon: <SearchIcon size={22} /> },
-    { name: t.nav.duas, path: '/duas', icon: <Star size={22} /> },
-    { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={22} /> },
+    { name: t.nav.home, path: '/', icon: <HomeIcon size={20} /> },
+    { name: t.nav.surah, path: '/surah', icon: <BookOpen size={20} /> },
+    { name: t.nav.search, path: '/search', icon: <SearchIcon size={20} /> },
+    { name: t.nav.duas, path: '/duas', icon: <Star size={20} /> },
+    { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} /> },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Dynamic Settings Sheet */}
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-slate-50 dark:bg-slate-950">
+      {/* Settings Panel */}
       {isSettingsOpen && (
-        <div className="fixed inset-0 z-[200] flex justify-end">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsSettingsOpen(false)}></div>
-          <div className="relative w-full max-w-sm h-full bg-white dark:bg-slate-900 shadow-2xl animate-in slide-in-from-right duration-500">
-            <div className="p-8 flex items-center justify-between border-b dark:border-white/5">
-              <h2 className="text-2xl font-black flex items-center gap-2 dark:text-white"><Sliders className="text-emerald-600" /> {t.ui.settings}</h2>
-              <button onClick={() => setIsSettingsOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full dark:text-white"><X /></button>
+        <div className="fixed inset-0 z-[300] flex justify-end">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsSettingsOpen(false)}></div>
+          <div className="relative w-full max-w-md h-full bg-white dark:bg-slate-900 shadow-[0_0_100px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-500">
+            <div className="p-10 flex items-center justify-between border-b dark:border-white/5">
+              <h2 className="text-3xl font-black flex items-center gap-3 dark:text-white tracking-tighter"><Sliders className="text-emerald-600" /> {t.ui.settings}</h2>
+              <button onClick={() => setIsSettingsOpen(false)} className="p-3 hover:bg-slate-100 dark:hover:bg-white/5 rounded-2xl dark:text-white transition-all"><X size={28} /></button>
             </div>
-            <div className="p-8 space-y-10">
-              <div className="space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.ui.language}</p>
-                <div className="grid grid-cols-1 gap-3">
+            <div className="p-10 space-y-12">
+              <div className="space-y-6">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">{t.ui.language}</p>
+                <div className="grid grid-cols-1 gap-4">
                   {['en', 'ur', 'ar'].map((l) => (
                     <button 
                       key={l}
                       onClick={() => { setLanguage(l as Language); localStorage.setItem('language', l); window.location.reload(); }}
-                      className={`p-5 rounded-2xl border-2 transition-all flex items-center justify-between ${language === l ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-50 dark:bg-slate-800 border-transparent dark:text-white'}`}
+                      className={`p-6 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${language === l ? 'bg-emerald-700 text-white border-emerald-700 shadow-xl' : 'bg-slate-50 dark:bg-slate-800 border-transparent dark:text-white hover:border-emerald-600'}`}
                     >
-                      <span className="font-bold">{l === 'en' ? 'English' : l === 'ur' ? 'اردو' : 'العربية'}</span>
-                      {language === l && <Star size={16} fill="white" />}
+                      <span className="font-bold text-lg">{l === 'en' ? 'English' : l === 'ur' ? 'اردو' : 'العربية'}</span>
+                      {language === l && <Star size={20} fill="currentColor" />}
                     </button>
                   ))}
                 </div>
@@ -82,117 +87,117 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       )}
 
-      {/* Modern Header */}
-      <header className="sticky top-0 z-[100] w-full glass shadow-sm safe-top">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
+      {/* Floating Modern Header */}
+      <header className={`sticky top-0 z-[200] w-full transition-all duration-500 pt-safe ${scrolled ? 'h-20 glass shadow-2xl' : 'h-24 bg-transparent'}`}>
+        <div className="max-w-7xl mx-auto px-4 md:px-10 h-full flex items-center justify-between">
           <Link to="/" className="flex items-center gap-4 group">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-xl md:text-2xl shadow-xl shadow-emerald-900/20 group-hover:rotate-6 transition-transform">QS</div>
+            <div className="w-12 h-12 bg-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-2xl shadow-emerald-900/20 group-hover:-rotate-6 transition-transform">QS</div>
             <div className="hidden xs:flex flex-col">
-              <span className="font-black text-lg md:text-xl tracking-tight leading-none dark:text-white">Quran Seekho</span>
+              <span className="font-black text-xl tracking-tight leading-none dark:text-white">Quran Seekho</span>
               <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest mt-1">Sacred Journey</span>
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-2">
+          <nav className="hidden lg:flex items-center gap-2 bg-slate-900/5 dark:bg-white/5 p-1.5 rounded-full backdrop-blur-sm">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2 font-bold px-5 py-2.5 rounded-2xl transition-all ${
+                className={`flex items-center gap-2 font-black px-6 py-3 rounded-full transition-all text-xs uppercase tracking-widest ${
                   location.pathname === item.path 
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' 
-                    : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
+                    ? 'bg-white dark:bg-slate-900 text-emerald-700 shadow-xl' 
+                    : 'text-slate-500 hover:text-emerald-700 dark:text-slate-400'
                 }`}
               >
                 {item.icon}
-                <span className="text-sm">{item.name}</span>
+                <span>{item.name}</span>
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <button onClick={toggleTheme} className="p-2.5 md:p-3 rounded-2xl bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-emerald-600 transition-all">
-              {theme === 'light' ? <Sun size={20} /> : theme === 'dark' ? <Moon size={20} /> : <Coffee size={20} />}
+          <div className="flex items-center gap-3">
+            <button onClick={toggleTheme} className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 text-slate-500 hover:text-emerald-600 transition-all shadow-sm">
+              {theme === 'light' ? <Sun size={22} /> : theme === 'dark' ? <Moon size={22} /> : <Coffee size={22} />}
             </button>
-            <button onClick={() => setIsSettingsOpen(true)} className="p-2.5 md:p-3 rounded-2xl bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-emerald-600 transition-all">
-              <Languages size={20} />
+            <button onClick={() => setIsSettingsOpen(true)} className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 text-slate-500 hover:text-emerald-600 transition-all shadow-sm">
+              <Sliders size={22} />
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-grow max-w-7xl mx-auto w-full pt-4 md:pt-8 pb-32 md:pb-16 px-4 md:px-0">
+      {/* Content */}
+      <main className="flex-grow max-w-7xl mx-auto w-full pt-6 pb-32 md:pb-20">
         {children}
       </main>
 
       <InstallPWA />
 
-      {/* Mobile Floating Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-6 left-4 right-4 md:left-6 md:right-6 z-[150] h-20 glass rounded-[2.5rem] shadow-2xl flex items-center justify-around px-2 border border-white/20 pb-safe">
+      {/* Ultra-Modern Mobile Nav */}
+      <nav className="lg:hidden fixed bottom-8 left-6 right-6 z-[200] h-20 glass rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.3)] flex items-center justify-around px-2 border border-white/20 pb-safe">
         {navItems.map((item) => {
           const active = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center justify-center flex-grow transition-all ${
-                active ? 'text-emerald-700 dark:text-emerald-400 -translate-y-1' : 'text-slate-400'
+              className={`flex flex-col items-center justify-center flex-grow transition-all duration-300 ${
+                active ? 'text-emerald-700 dark:text-emerald-400 -translate-y-2' : 'text-slate-400'
               }`}
             >
-              <div className={`p-2 rounded-2xl transition-all ${active ? 'bg-emerald-600/10 shadow-inner' : ''}`}>
+              <div className={`p-3 rounded-2xl transition-all ${active ? 'bg-emerald-600/10 shadow-inner' : ''}`}>
                 {item.icon}
               </div>
               <span className="text-[10px] font-black uppercase tracking-tighter mt-1">{item.name}</span>
+              {active && <div className="w-1 h-1 bg-emerald-600 rounded-full mt-1"></div>}
             </Link>
           );
         })}
       </nav>
 
-      {/* Desktop Professional Footer */}
-      <footer className="bg-slate-900 text-white py-16 md:py-20 px-4 md:px-8 hidden md:block">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center font-black">QS</div>
-              <span className="text-2xl font-black">Quran Seekho</span>
+      {/* Footer Branding */}
+      <footer className="bg-slate-950 text-white py-24 px-8 hidden md:block">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
+          <div className="space-y-8">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-emerald-700 rounded-2xl flex items-center justify-center font-black text-2xl shadow-2xl">QS</div>
+              <span className="text-3xl font-black tracking-tighter">Quran Seekho</span>
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed">Illuminate your heart with the final revelation. No ads, no trackers, purely for the service of the Ummah.</p>
-            <div className="flex gap-4">
-              <Link to="/donate" className="text-emerald-400 font-bold text-sm hover:underline flex items-center gap-2">
-                <Heart size={16} fill="currentColor" /> Support Us
-              </Link>
-            </div>
+            <p className="text-slate-500 text-lg leading-relaxed">Dedicated to providing the global Ummah with the purest digital Quranic experience. 100% Private. 100% Ad-Free.</p>
+            <Link to="/donate" className="inline-flex items-center gap-3 px-8 py-4 bg-emerald-700 rounded-2xl font-black hover:bg-emerald-600 transition-all shadow-xl">
+              <Heart size={20} fill="currentColor" /> Support the Mission
+            </Link>
           </div>
           <div>
-            <h4 className="font-black text-xs uppercase tracking-[0.2em] text-emerald-500 mb-6">SACRED LIBRARY</h4>
-            <ul className="space-y-4 text-sm text-slate-400">
-              <li><Link to="/surah" className="hover:text-white transition-colors">Complete Surah List</Link></li>
-              <li><Link to="/juz" className="hover:text-white transition-colors">Browse by Juz</Link></li>
-              <li><Link to="/hadith" className="hover:text-white transition-colors">40 Hadith Collection</Link></li>
+            <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-emerald-500 mb-8">Sacred Library</h4>
+            <ul className="space-y-5 text-slate-400 font-bold">
+              <li><Link to="/surah" className="hover:text-white transition-colors">Surah Index</Link></li>
+              <li><Link to="/juz" className="hover:text-white transition-colors">Juz Browser</Link></li>
+              <li><Link to="/hadith" className="hover:text-white transition-colors">Prophetic Hadith</Link></li>
               <li><Link to="/names" className="hover:text-white transition-colors">99 Names of Allah</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-black text-xs uppercase tracking-[0.2em] text-emerald-500 mb-6">TOOLS</h4>
-            <ul className="space-y-4 text-sm text-slate-400">
+            <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-emerald-500 mb-8">Utility Tools</h4>
+            <ul className="space-y-5 text-slate-400 font-bold">
               <li><Link to="/qibla" className="hover:text-white transition-colors">Qibla Direction</Link></li>
-              <li><Link to="/tasbeeh" className="hover:text-white transition-colors">Digital Tasbeeh</Link></li>
+              <li><Link to="/tasbeeh" className="hover:text-white transition-colors">Digital Counter</Link></li>
               <li><Link to="/zakat" className="hover:text-white transition-colors">Zakat Calculator</Link></li>
+              <li><Link to="/calendar" className="hover:text-white transition-colors">Islamic Calendar</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-black text-xs uppercase tracking-[0.2em] text-emerald-500 mb-6">PLATFORM</h4>
-            <ul className="space-y-4 text-sm text-slate-400">
-              <li><Link to="/about" className="hover:text-white transition-colors">About Mission</Link></li>
-              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+            <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-emerald-500 mb-8">Connect</h4>
+            <ul className="space-y-5 text-slate-400 font-bold">
+              <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
               <li><Link to="/feedback" className="hover:text-white transition-colors">Submit Feedback</Link></li>
+              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-slate-500 text-[10px] font-black uppercase tracking-widest">
-           <p>© {new Date().getFullYear()} QURAN SEEKHO PLATFORM</p>
-           <p className="mt-4 md:mt-0 flex items-center gap-2"><Sparkles size={12} className="text-emerald-500" /> FOR THE GLOBAL UMMAH</p>
+        <div className="max-w-7xl mx-auto mt-24 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-slate-600 text-[10px] font-black uppercase tracking-[0.4em]">
+           <p>© {new Date().getFullYear()} Quran Seekho Platform</p>
+           <p className="mt-4 md:mt-0 flex items-center gap-3"><Sparkles size={14} className="text-emerald-500" /> Illuminating the Ummah</p>
         </div>
       </footer>
     </div>

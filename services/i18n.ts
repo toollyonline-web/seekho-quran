@@ -35,6 +35,31 @@ export const translations: Record<Language, any> = {
       quickActions: "Spiritual Tools",
       continue: "Continue Reading"
     },
+    tools: {
+      tasbeehTitle: "Digital Tasbeeh",
+      tasbeehSubtitle: "Simple and elegant Dhikr counter",
+      tapToCount: "Tap anywhere to count",
+      target: "Target",
+      total: "Total",
+      reset: "Reset",
+      zakatTitle: "Zakat Calculator",
+      zakatSubtitle: "Fulfill your pillar with ease",
+      assets: "Assets",
+      cash: "Cash on hand",
+      goldSilver: "Gold & Silver",
+      investments: "Investments",
+      liabilities: "Liabilities",
+      netWealth: "Net Wealth",
+      dueZakat: "Due Zakat",
+      bookmarksTitle: "Bookmarks",
+      bookmarksSubtitle: "Your saved verses"
+    },
+    reader: {
+      settings: "Reading Settings",
+      translation: "Translation",
+      fontSize: "Font Size",
+      theme: "Theme"
+    },
     ui: {
       settings: "Settings",
       theme: "Theme",
@@ -80,6 +105,31 @@ export const translations: Record<Language, any> = {
       quickActions: "اسلامی ٹولز",
       continue: "تلاوت شروع کریں"
     },
+    tools: {
+      tasbeehTitle: "ڈیجیٹل تسبیح",
+      tasbeehSubtitle: "ذکر الٰہی کے لیے خوبصورت کاؤنٹر",
+      tapToCount: "گننے کے لیے کہیں بھی کلک کریں",
+      target: "ہدف",
+      total: "کل",
+      reset: "دوبارہ شروع",
+      zakatTitle: "زکوٰۃ کیلکولیٹر",
+      zakatSubtitle: "آسانی سے زکوٰۃ کا حساب لگائیں",
+      assets: "اثاثے",
+      cash: "نقدی",
+      goldSilver: "سونا اور چاندی",
+      investments: "سرمایہ کاری",
+      liabilities: "قرضہ جات",
+      netWealth: "کل دولت",
+      dueZakat: "واجب الادا زکوٰۃ",
+      bookmarksTitle: "محفوظ آیات",
+      bookmarksSubtitle: "آپ کی منتخب کردہ آیات"
+    },
+    reader: {
+      settings: "ترتیبات",
+      translation: "ترجمہ",
+      fontSize: "فونٹ سائز",
+      theme: "تھیم"
+    },
     ui: {
       settings: "ترتیبات",
       theme: "تھیم",
@@ -124,6 +174,31 @@ export const translations: Record<Language, any> = {
       upcomingEvents: "أحداث هامة",
       quickActions: "أدوات إسلامية",
       continue: "متابعة"
+    },
+    tools: {
+      tasbeehTitle: "التسبيح الرقمي",
+      tasbeehSubtitle: "عداد أنيق للذكر",
+      tapToCount: "اضغط للعد",
+      target: "الهدف",
+      total: "المجموع",
+      reset: "إعادة",
+      zakatTitle: "حاسبة الزكاة",
+      zakatSubtitle: "احسب زكاتك بسهولة",
+      assets: "الأصول",
+      cash: "النقد",
+      goldSilver: "الذهب والفضة",
+      investments: "الاستثمارات",
+      liabilities: "الديون",
+      netWealth: "صافي الثروة",
+      dueZakat: "الزكاة الواجبة",
+      bookmarksTitle: "الإشارات",
+      bookmarksSubtitle: "آياتك المحفوظة"
+    },
+    reader: {
+      settings: "الإعدادات",
+      translation: "الترجمة",
+      fontSize: "حجم الخط",
+      theme: "المظهر"
     },
     ui: {
       settings: "الإعدادات",
