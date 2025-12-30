@@ -4,8 +4,8 @@
   "short_name": "QuranSeekho",
   "description": "Read, study, and understand the Holy Quran with English and Urdu translations.",
   "id": "quranseekho.online",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f0fdf4",
@@ -44,19 +44,19 @@
   "shortcuts": [
     {
       "name": "Surah List",
-      "url": "/surah",
+      "url": "./surah",
       "icons": [{ 
-        "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s96/Gold%20Black%20Crown%20x%20Crown%20Logo.png", 
-        "sizes": "96x96",
+        "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s192/Gold%20Black%20Crown%20x%20Crown%20Logo.png", 
+        "sizes": "192x192",
         "type": "image/png"
       }]
     },
     {
       "name": "Tasbeeh Counter",
-      "url": "/tasbeeh",
+      "url": "./tasbeeh",
       "icons": [{ 
-        "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s96/Gold%20Black%20Crown%20x%20Crown%20Logo.png", 
-        "sizes": "96x96",
+        "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s192/Gold%20Black%20Crown%20x%20Crown%20Logo.png", 
+        "sizes": "192x192",
         "type": "image/png"
       }]
     }
