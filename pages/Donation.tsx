@@ -9,14 +9,14 @@ const Donation: React.FC = () => {
   const paymentMethods = [
     {
       name: 'EasyPaisa',
-      accountName: 'Quran Seekho Admin',
+      accountName: 'HUZAIFA BIN SARDAR',
       number: '0316-5864192',
       color: 'bg-[#1fb35a]',
       icon: 'EP'
     },
     {
       name: 'JazzCash',
-      accountName: 'Quran Seekho Admin',
+      accountName: 'HUZAIFA BIN SARDAR',
       number: '0316-5864192',
       color: 'bg-[#ffcc00] text-black',
       icon: 'JC'
