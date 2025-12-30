@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { getHijriDate } from '../services/quranApi';
 
@@ -8,21 +8,22 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+type ThemeMode = 'light' | 'dark' | 'sepia';
+
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>('light');
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [hijriDate, setHijriDate] = useState('');
   const location = useLocation();
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem('theme') as ThemeMode;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    applyGlobalTheme(initialTheme);
+    setTheme(initialTheme);
     setHijriDate(getHijriDate());
   }, []);
 
@@ -43,11 +44,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     };
   }, [location.pathname]);
 
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    document.documentElement.classList.toggle('dark', newMode);
-    localStorage.setItem('theme', newMode ? 'dark' : 'light');
+  const applyGlobalTheme = (newTheme: ThemeMode) => {
+    document.documentElement.classList.remove('dark', 'sepia');
+    if (newTheme !== 'light') {
+      document.documentElement.classList.add(newTheme);
+    }
+  };
+
+  const cycleTheme = () => {
+    let nextTheme: ThemeMode = 'light';
+    if (theme === 'light') nextTheme = 'dark';
+    else if (theme === 'dark') nextTheme = 'sepia';
+    else nextTheme = 'light';
+    
+    setTheme(nextTheme);
+    applyGlobalTheme(nextTheme);
+    localStorage.setItem('theme', nextTheme);
   };
 
   const navItems = [
@@ -59,7 +71,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
   ];
 
-  // Schema.org Structured Data for Google
   const schemaMarkup = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -73,7 +84,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-green-50 text-slate-900'}`}>
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 ${
+        theme === 'dark' ? 'bg-slate-900 text-white' : 
+        theme === 'sepia' ? 'bg-[#fdf6e3] text-[#5d4037]' : 
+        'bg-green-50 text-slate-900'
+    }`}>
       <script type="application/ld+json">
         {JSON.stringify(schemaMarkup)}
       </script>
@@ -84,7 +99,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       )}
 
-      <header className={`sticky top-0 z-50 w-full border-b ${isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/80 border-green-100'} backdrop-blur-md`}>
+      <header className={`sticky top-0 z-50 w-full border-b transition-colors ${
+        theme === 'dark' ? 'bg-slate-900/90 border-slate-800' : 
+        theme === 'sepia' ? 'bg-[#fdf6e3]/90 border-[#eee8d5]' : 
+        'bg-white/90 border-green-100'
+      } backdrop-blur-md`}>
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-900/20">QS</div>
@@ -100,7 +119,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 key={item.path}
                 to={item.path}
                 className={`flex items-center gap-2 font-semibold transition-all hover:scale-105 ${
-                  location.pathname === item.path ? 'text-green-700 dark:text-green-400' : 'text-slate-500 hover:text-green-600'
+                  location.pathname === item.path 
+                    ? 'text-green-700 dark:text-green-400' 
+                    : 'text-slate-500 dark:text-slate-400 hover:text-green-600'
                 }`}
               >
                 {item.icon}
@@ -110,8 +131,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </nav>
 
           <div className="flex items-center gap-4">
-            <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle Theme">
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            <button 
+                onClick={cycleTheme} 
+                className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center gap-2" 
+                aria-label="Cycle Theme"
+            >
+              {theme === 'light' && <Sun size={20} />}
+              {theme === 'dark' && <Moon size={20} />}
+              {theme === 'sepia' && <Coffee size={20} />}
+              <span className="text-[10px] font-bold uppercase tracking-widest hidden md:inline">{theme}</span>
             </button>
             <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -142,7 +170,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <InstallPWA />
 
-      <footer className={`mt-20 border-t pt-16 pb-24 md:pb-12 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'}`}>
+      <footer className={`mt-20 border-t pt-16 pb-24 md:pb-12 transition-colors ${
+        theme === 'dark' ? 'bg-slate-950 border-slate-800' : 
+        theme === 'sepia' ? 'bg-[#eee8d5] border-[#fdf6e3]' : 
+        'bg-white border-green-100'
+      }`}>
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
             <div className="lg:col-span-2 space-y-6">
@@ -209,7 +241,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </footer>
 
-      <div className={`lg:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[100] ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-green-100'} backdrop-blur-lg shadow-2xl`}>
+      <div className={`lg:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[100] ${
+        theme === 'dark' ? 'bg-slate-900 border-slate-800' : 
+        theme === 'sepia' ? 'bg-[#fdf6e3] border-[#eee8d5]' : 
+        'bg-white border-green-100'
+      } backdrop-blur-lg shadow-2xl`}>
         {navItems.map((item) => (
           <Link
             key={item.path}

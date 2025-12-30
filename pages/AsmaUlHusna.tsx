@@ -17,12 +17,31 @@ const NAMES = [
   { id: 13, arabic: "ٱلمصور", trans: "Al-Musawwir", en: "The Flawless Shaper", ur: "صورت گری کرنے والا" },
   { id: 14, arabic: "ٱلغفار", trans: "Al-Ghaffar", en: "The Ever-Forgiving", ur: "بڑا بخشنے والا" },
   { id: 15, arabic: "ٱلقہار", trans: "Al-Qahhar", en: "The All-Prevailing", ur: "زبردست قدرت والا" },
-  // ... Adding some more prominent ones for visual variety
   { id: 16, arabic: "ٱلوہاب", trans: "Al-Wahhab", en: "The Supreme Bestower", ur: "سب کچھ عطا کرنے والا" },
   { id: 17, arabic: "ٱلرزاق", trans: "Ar-Razzaq", en: "The Provider", ur: "بڑا رزق دینے والا" },
   { id: 18, arabic: "ٱلفتاح", trans: "Al-Fattah", en: "The Opener", ur: "مشکل کشا" },
   { id: 19, arabic: "ٱلعليم", trans: "Al-Alim", en: "The All-Knowing", ur: "سب کچھ جاننے والا" },
   { id: 20, arabic: "ٱلقابض", trans: "Al-Qabid", en: "The Withholder", ur: "روکنے والا" },
+  { id: 21, arabic: "ٱلباسط", trans: "Al-Basit", en: "The Extender", ur: "کشادہ کرنے والا" },
+  { id: 22, arabic: "ٱلخافض", trans: "Al-Khafid", en: "The Abaser", ur: "پست کرنے والا" },
+  { id: 23, arabic: "ٱلرافع", trans: "Ar-Rafi", en: "The Exalter", ur: "بلند کرنے والا" },
+  { id: 24, arabic: "ٱلمعز", trans: "Al-Mu'izz", en: "The Giver of Honour", ur: "عزت دینے والا" },
+  { id: 25, arabic: "ٱلمذل", trans: "Al-Mudhill", en: "The Giver of Dishonour", ur: "ذلت دینے والا" },
+  { id: 26, arabic: "ٱلسميع", trans: "As-Sami", en: "The All-Hearing", ur: "سب کچھ سننے والا" },
+  { id: 27, arabic: "ٱلبصير", trans: "Al-Basir", en: "The All-Seeing", ur: "سب کچھ دیکھنے والا" },
+  { id: 28, arabic: "ٱلحكم", trans: "Al-Hakam", en: "The Judge", ur: "فیصلہ کرنے والا" },
+  { id: 29, arabic: "ٱلعدل", trans: "Al-Adl", en: "The Utterly Just", ur: "سراپا عدل" },
+  { id: 30, arabic: "ٱللطيف", trans: "Al-Latif", en: "The Subtle One", ur: "بے حد مہربان" },
+  { id: 31, arabic: "ٱلخبير", trans: "Al-Khabir", en: "The All-Aware", ur: "خبردار" },
+  { id: 32, arabic: "ٱلحليم", trans: "Al-Halim", en: "The Forbearing", ur: "بردبار" },
+  { id: 33, arabic: "ٱلعظيم", trans: "Al-Azim", en: "The Magnificent", ur: "عظمت والا" },
+  { id: 34, arabic: "ٱلغفور", trans: "Al-Ghafur", en: "The Forgiving", ur: "بڑا بخشنے والا" },
+  { id: 35, arabic: "ٱلشكور", trans: "Ash-Shakur", en: "The Grateful", ur: "بڑا قدردان" },
+  { id: 36, arabic: "ٱلعلى", trans: "Al-Ali", en: "The Most High", ur: "بہت بلند" },
+  { id: 37, arabic: "ٱلكبير", trans: "Al-Kabir", en: "The Greatest", ur: "بہت بڑا" },
+  { id: 38, arabic: "ٱلحفيظ", trans: "Al-Hafiz", en: "The Preserver", ur: "حفاظت کرنے والا" },
+  { id: 39, arabic: "ٱلمقيت", trans: "Al-Muqit", en: "The Nourisher", ur: "قوت دینے والا" },
+  { id: 40, arabic: "ٱلحسيب", trans: "Al-Hasib", en: "The Accounter", ur: "حساب لینے والا" }
 ];
 
 const AsmaUlHusna: React.FC = () => {
@@ -50,9 +69,8 @@ const AsmaUlHusna: React.FC = () => {
             </div>
           </div>
         ))}
-        {/* Placeholder for remaining names to encourage scrolling/interaction */}
         <div className="lg:col-span-4 py-12 text-center text-slate-400 italic">
-          More names are being added to the database. Explore these beautiful meanings daily.
+          Remaining names are being updated. Explore these beautiful meanings daily to attain peace of mind.
         </div>
       </div>
     </div>

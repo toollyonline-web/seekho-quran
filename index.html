@@ -47,6 +47,7 @@
             --sepia-bg: #fdf6e3;
             --sepia-text: #5d4037;
             --sepia-border: #eee8d5;
+            --sepia-card: #fcf9f2;
             --sepia-active: #f4ecd8;
         }
         body { 
@@ -55,15 +56,15 @@
           -webkit-font-smoothing: antialiased;
         }
         
-        .sepia { background-color: var(--sepia-bg); color: var(--sepia-text); }
-        .sepia .bg-white { background-color: #fcf9f2; }
-        .sepia .dark\:bg-slate-800 { background-color: #fcf9f2; }
-        .sepia .border-green-100, .sepia .dark\:border-slate-700 { border-color: var(--sepia-border); }
-        .sepia .text-slate-900, .sepia .dark\:text-white { color: var(--sepia-text); }
-        .sepia .text-slate-500, .sepia .dark\:text-slate-400 { color: #857562; }
-        .sepia .bg-green-50, .sepia .dark\:bg-green-900\/10 { background-color: var(--sepia-active); }
-        .sepia .bg-slate-50, .sepia .dark\:bg-slate-900\/50 { background-color: #eee8d5; }
-
+        /* Sepia Theme Overrides */
+        .sepia { background-color: var(--sepia-bg) !important; color: var(--sepia-text) !important; }
+        .sepia .bg-white, .sepia .bg-slate-50, .sepia .bg-green-50 { background-color: var(--sepia-card) !important; }
+        .sepia .border-green-100, .sepia .border-slate-100, .sepia .border-slate-200 { border-color: var(--sepia-border) !important; }
+        .sepia .text-slate-900, .sepia .text-slate-800, .sepia .text-slate-700 { color: var(--sepia-text) !important; }
+        .sepia .text-slate-500, .sepia .text-slate-400 { color: #857562 !important; }
+        .sepia .bg-green-50, .sepia .bg-blue-50 { background-color: var(--sepia-active) !important; }
+        
+        /* General Typography */
         .font-arabic { 
           font-family: 'Scheherazade New', serif; 
           font-feature-settings: "kern" 1, "liga" 1, "clig" 1, "calt" 1;
@@ -77,6 +78,12 @@
             padding: 0.5rem 0;
         }
         
+        /* Dark Mode Fine-tuning */
+        .dark body { background-color: #0f172a; }
+        .dark .bg-white { background-color: #1e293b; }
+        .dark .bg-green-50 { background-color: #0f172a; }
+
+        /* Reading Experience */
         .focus-mode-active .main-layout-header,
         .focus-mode-active .main-layout-footer {
             opacity: 0.1;
