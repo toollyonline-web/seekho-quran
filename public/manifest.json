@@ -2,7 +2,7 @@
 {
   "name": "QuranSeekho Online",
   "short_name": "QuranSeekho",
-  "description": "Read, study, and understand the Holy Quran with English and Urdu translations.",
+  "description": "Read, study, and understand the Holy Quran with English and Urdu translations in a distraction-free environment.",
   "id": "quranseekho.online",
   "start_url": "./",
   "scope": "./",
@@ -10,6 +10,8 @@
   "orientation": "portrait",
   "background_color": "#f0fdf4",
   "theme_color": "#166534",
+  "prefer_related_applications": false,
+  "related_applications": [],
   "categories": ["education", "books", "reference"],
   "icons": [
     {
@@ -31,34 +33,28 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "QuranSeekho Home Screen"
+      "label": "Home screen of QuranSeekho"
     },
     {
       "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s1280/Screenshot2.png",
       "sizes": "720x1280",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Reading Quran Online"
+      "label": "Reading Quran on Mobile"
     }
   ],
   "shortcuts": [
     {
       "name": "Surah List",
+      "short_name": "Surahs",
       "url": "./surah",
-      "icons": [{ 
-        "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s192/Gold%20Black%20Crown%20x%20Crown%20Logo.png", 
-        "sizes": "192x192",
-        "type": "image/png"
-      }]
+      "icons": [{ "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s192/Gold%20Black%20Crown%20x%20Crown%20Logo.png", "sizes": "192x192" }]
     },
     {
       "name": "Tasbeeh Counter",
+      "short_name": "Tasbeeh",
       "url": "./tasbeeh",
-      "icons": [{ 
-        "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s192/Gold%20Black%20Crown%20x%20Crown%20Logo.png", 
-        "sizes": "192x192",
-        "type": "image/png"
-      }]
+      "icons": [{ "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s192/Gold%20Black%20Crown%20x%20Crown%20Logo.png", "sizes": "192x192" }]
     }
   ]
 }

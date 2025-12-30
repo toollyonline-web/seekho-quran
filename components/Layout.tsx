@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee, Shield } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { getHijriDate } from '../services/quranApi';
 
@@ -219,6 +220,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div>
               <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-green-700 dark:text-green-400">Support</h4>
               <ul className="space-y-4 mb-6">
+                <li><Link to="/privacy" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Privacy Policy <Shield size={14} /></Link></li>
                 <li><Link to="/about" className="text-slate-500 hover:text-green-600 transition-colors">About Us</Link></li>
                 <li><a href="/sitemap.xml" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Sitemap <FileText size={14} /></a></li>
               </ul>
