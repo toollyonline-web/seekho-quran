@@ -54,7 +54,7 @@ const HadithCard: React.FC<{ hadith: typeof HADITHS[0] }> = ({ hadith }) => {
     const text = `Hadith ${hadith.number}: ${hadith.title}\n\n${hadith.arabic}\n\n${hadith.en}\n\n${hadith.ur}\n\nShared via QuranSeekho.online`;
     navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(null), 2000);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleShare = async () => {
