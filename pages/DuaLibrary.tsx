@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Star, Copy, Check, Search, Filter } from 'lucide-react';
+import { Star, Copy, Check, Search, Filter, Share2 } from 'lucide-react';
 
 const DUA_CATEGORIES = [
   "Morning & Evening",
@@ -67,10 +68,29 @@ const DuaLibrary: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleCopy = (text: string, id: string) => {
+  const handleCopy = (dua: any, id: string) => {
+    const text = `${dua.title}\n\n${dua.arabic}\n\n${dua.en}\n\nShared via QuranSeekho.online`;
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleShare = async (dua: any) => {
+    const text = `*${dua.title}*\n\n${dua.arabic}\n\n"${dua.en}"\n\nShared via QuranSeekho.online`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: dua.title,
+          text: text,
+          url: 'https://quranseekho.online/duas',
+        });
+      } catch (err) {
+        console.log('Share failed', err);
+      }
+    } else {
+      handleCopy(dua, 'manual');
+      alert('Dua text copied to clipboard! You can now paste and share it.');
+    }
   };
 
   return (
@@ -126,13 +146,22 @@ const DuaLibrary: React.FC = () => {
                   </span>
                   <h3 className="text-xl font-bold">{dua.title}</h3>
                 </div>
-                <button 
-                  onClick={() => handleCopy(`${dua.arabic}\n\n${dua.en}`, idx.toString())}
-                  className={`p-3 rounded-xl transition-all ${copiedId === idx.toString() ? 'bg-green-600 text-white' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-green-600'}`}
-                  title="Copy to Clipboard"
-                >
-                  {copiedId === idx.toString() ? <Check size={18} /> : <Copy size={18} />}
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => handleShare(dua)}
+                    className="p-3 rounded-xl text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 transition-all"
+                    title="Share Dua"
+                  >
+                    <Share2 size={18} />
+                  </button>
+                  <button 
+                    onClick={() => handleCopy(dua, idx.toString())}
+                    className={`p-3 rounded-xl transition-all ${copiedId === idx.toString() ? 'bg-green-600 text-white' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-green-600'}`}
+                    title="Copy to Clipboard"
+                  >
+                    {copiedId === idx.toString() ? <Check size={18} /> : <Copy size={18} />}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-6">

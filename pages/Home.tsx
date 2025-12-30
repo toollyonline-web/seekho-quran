@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah, ISLAMIC_EVENTS } from '../services/quranApi';
 import { PrayerTimes } from '../types';
-import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle, Calendar } from 'lucide-react';
+import { MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle, Calendar, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PopularSurahs = [
@@ -125,6 +125,23 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleShareApp = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Quran Seekho - Read Quran Online',
+          text: 'Check out Quran Seekho - a clean, ad-free platform for reading the Holy Quran with translations and prayer times.',
+          url: 'https://quranseekho.online/',
+        });
+      } catch (err) {
+        console.log('Share failed', err);
+      }
+    } else {
+      navigator.clipboard.writeText('https://quranseekho.online/');
+      alert('Link copied to clipboard! Share it with your friends and family.');
+    }
+  };
+
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
       <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
@@ -137,26 +154,27 @@ const Home: React.FC = () => {
       {/* Hero Banner with SEO H1 */}
       <section className="relative overflow-hidden rounded-3xl bg-green-800 p-8 md:p-12 text-white shadow-xl shadow-green-900/20">
         <div className="relative z-10 max-w-2xl">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">Read Quran Online – Surah & Sipara | Quran Seekho</h1>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">Quran Seekho: Read & Learn the Holy Quran</h1>
           <p className="text-green-100 text-lg md:text-xl mb-8 opacity-90">
-            Welcome to Quran Seekho. Explore the Holy Quran in a beautiful, distraction-free environment. Access all 114 Surahs and 30 Juz with accurate English and Urdu translations, audio recitations, and more.
+            A beautiful, distraction-free environment for spiritual growth. Explore 114 Surahs and 30 Juz with accurate translations and daily Islamic tools.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link to="/surah" className="px-6 py-3 bg-white text-green-800 rounded-xl font-bold hover:bg-green-50 transition-colors shadow-lg">Browse Surahs</Link>
             
+            <button 
+              onClick={handleShareApp}
+              className="flex items-center gap-2 px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors"
+            >
+              <Share2 size={20} /> Share App
+            </button>
+            
             {!isInstalled && deferredPrompt && (
               <button 
                 onClick={handleInstallClick}
-                className="flex items-center gap-2 px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-green-900/50 text-white border border-white/20 rounded-xl font-bold hover:bg-green-900 transition-colors"
               >
-                <Download size={20} /> Download App
+                <Download size={20} /> Install
               </button>
-            )}
-            
-            {(isInstalled || !deferredPrompt) && (
-              <Link to="/juz" className="px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center gap-2">
-                <BookOpen size={18} /> Browse by Juz
-              </Link>
             )}
           </div>
         </div>
@@ -169,7 +187,7 @@ const Home: React.FC = () => {
       {/* Intro for SEO */}
       <section className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-green-100 dark:border-slate-700">
         <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-center max-w-4xl mx-auto">
-          Quran Seekho is designed to provide an immersive reading experience for students of knowledge. Whether you are seeking a specific <strong>Surah</strong>, browsing by <strong>Juz (Sipara)</strong>, or looking for <strong>Daily Adhkar</strong>, our platform offers a seamless interface for both desktop and mobile users. Our goal is to spread the light of the Quran to every heart.
+          Quran Seekho is a free, ad-free Islamic platform. Whether you are seeking a specific <strong>Surah</strong>, browsing by <strong>Juz (Sipara)</strong>, or checking <strong>Prayer Times</strong>, we offer a seamless interface designed for the Ummah.
         </p>
       </section>
 
