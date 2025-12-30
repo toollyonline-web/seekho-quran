@@ -14,7 +14,10 @@ import DuaLibrary from './pages/DuaLibrary';
 import ZakatCalculator from './pages/ZakatCalculator';
 import IslamicCalendar from './pages/IslamicCalendar';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import { Heart, Globe, ShieldCheck, Mail, Share2 } from 'lucide-react';
+import DeveloperTools from './pages/DeveloperTools';
+import Feedback from './pages/Feedback';
+// Fix: Added MessageSquare to the lucide-react imports
+import { Heart, Globe, ShieldCheck, Mail, Share2, MessageSquare } from 'lucide-react';
 
 const AboutPage = () => {
   const handleShareApp = async () => {
@@ -40,6 +43,7 @@ const AboutPage = () => {
         <div className="w-20 h-20 bg-green-700 rounded-3xl flex items-center justify-center text-white font-bold text-3xl mx-auto mb-6 shadow-xl shadow-green-900/20">QS</div>
         <h1 className="text-4xl font-bold mb-4">About Quran Seekho</h1>
         <p className="text-xl text-slate-500 italic max-w-2xl mx-auto">"Guiding the hearts through the light of the Noble Quran."</p>
+        <div className="mt-2 inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest">Release v1.0.5-Testing</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
@@ -72,7 +76,9 @@ const AboutPage = () => {
             >
               <Share2 size={18} /> Share App
             </button>
-            <a href="mailto:support@quranseekho.online" className="px-8 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center gap-2"><Mail size={18} /> Contact Support</a>
+            <Link to="/feedback" className="px-8 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center gap-2">
+              <MessageSquare size={18} /> Give Feedback
+            </Link>
           </div>
         </div>
         <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mt-32 blur-3xl"></div>
@@ -100,6 +106,8 @@ const App: React.FC = () => {
           <Route path="/calendar" element={<IslamicCalendar />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/icon-generator" element={<DeveloperTools />} />
+          <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </Layout>
     </Router>

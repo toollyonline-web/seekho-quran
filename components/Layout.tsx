@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee, Shield } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, Image, MessageSquare } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { getHijriDate } from '../services/quranApi';
 
@@ -183,7 +183,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div className="w-12 h-12 bg-green-700 rounded-xl flex items-center justify-center text-white font-bold text-2xl">QS</div>
                 <span className="font-bold text-2xl tracking-tight">Quran Seekho</span>
               </Link>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed max-sm">
                 Empowering the Ummah with knowledge. A clean, modern platform for Quranic studies, daily dhikr, and spiritual growth.
               </p>
               
@@ -221,8 +221,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-green-700 dark:text-green-400">Support</h4>
               <ul className="space-y-4 mb-6">
                 <li><Link to="/privacy" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Privacy Policy <Shield size={14} /></Link></li>
-                <li><Link to="/about" className="text-slate-500 hover:text-green-600 transition-colors">About Us</Link></li>
-                <li><a href="/sitemap.xml" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Sitemap <FileText size={14} /></a></li>
+                <li><Link to="/feedback" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Give Feedback <MessageSquare size={14} /></Link></li>
+                <li><Link to="/icon-generator" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Icon Generator <Image size={14} /></Link></li>
               </ul>
               <div className="bg-green-50 dark:bg-slate-800 p-4 rounded-2xl border border-green-100 dark:border-slate-700">
                 <p className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase mb-2">Help the Project</p>
@@ -233,7 +233,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
 
           <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-sm text-slate-500">© {new Date().getFullYear()} Quran Seekho</p>
+            <div className="flex flex-col items-center md:items-start">
+              <p className="text-sm text-slate-500">© {new Date().getFullYear()} Quran Seekho</p>
+              <p className="text-[10px] text-slate-400 font-mono mt-1">v1.0.5-beta</p>
+            </div>
             <div className="flex items-center gap-3 text-xs text-slate-400">
               <span>Made with</span>
               <Heart size={14} className="text-rose-500 fill-rose-500 animate-pulse" />
