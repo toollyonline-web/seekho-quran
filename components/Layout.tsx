@@ -75,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const schemaMarkup = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "QuranSeekho Online",
+    "name": "Quran Seekho",
     "url": "https://quranseekho.online/",
     "potentialAction": {
       "@type": "SearchAction",
@@ -109,7 +109,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-900/20">QS</div>
             <div className="flex flex-col">
-              <span className="font-bold text-lg tracking-tight leading-none">QuranSeekho</span>
+              <span className="font-bold text-lg tracking-tight leading-none">Quran Seekho</span>
               <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">{hijriDate}</span>
             </div>
           </Link>
@@ -181,7 +181,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="lg:col-span-2 space-y-6">
               <Link to="/" className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-green-700 rounded-xl flex items-center justify-center text-white font-bold text-2xl">QS</div>
-                <span className="font-bold text-2xl tracking-tight">QuranSeekho</span>
+                <span className="font-bold text-2xl tracking-tight">Quran Seekho</span>
               </Link>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
                 Empowering the Ummah with knowledge. A clean, modern platform for Quranic studies, daily dhikr, and spiritual growth.
@@ -226,14 +226,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </ul>
               <div className="bg-green-50 dark:bg-slate-800 p-4 rounded-2xl border border-green-100 dark:border-slate-700">
                 <p className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase mb-2">Help the Project</p>
-                <p className="text-xs text-slate-500 mb-4 leading-tight">QuranSeekho is ad-free and open-source. Consider donating.</p>
+                <p className="text-xs text-slate-500 mb-4 leading-tight">Quran Seekho is ad-free and open-source. Consider donating.</p>
                 <button className="w-full py-2 bg-green-700 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors">Donate Now</button>
               </div>
             </div>
           </div>
 
           <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-sm text-slate-500">© {new Date().getFullYear()} QuranSeekho.online</p>
+            <p className="text-sm text-slate-500">© {new Date().getFullYear()} Quran Seekho</p>
             <div className="flex items-center gap-3 text-xs text-slate-400">
               <span>Made with</span>
               <Heart size={14} className="text-rose-500 fill-rose-500 animate-pulse" />

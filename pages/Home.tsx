@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah, ISLAMIC_EVENTS } from '../services/quranApi';
 import { PrayerTimes } from '../types';
@@ -136,9 +137,9 @@ const Home: React.FC = () => {
       {/* Hero Banner with SEO H1 */}
       <section className="relative overflow-hidden rounded-3xl bg-green-800 p-8 md:p-12 text-white shadow-xl shadow-green-900/20">
         <div className="relative z-10 max-w-2xl">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">Read Quran Online – Surah & Sipara | QuranSeekho</h1>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">Read Quran Online – Surah & Sipara | Quran Seekho</h1>
           <p className="text-green-100 text-lg md:text-xl mb-8 opacity-90">
-            Welcome to QuranSeekho. Explore the Holy Quran in a beautiful, distraction-free environment. Access all 114 Surahs and 30 Juz with accurate English and Urdu translations, audio recitations, and more.
+            Welcome to Quran Seekho. Explore the Holy Quran in a beautiful, distraction-free environment. Access all 114 Surahs and 30 Juz with accurate English and Urdu translations, audio recitations, and more.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link to="/surah" className="px-6 py-3 bg-white text-green-800 rounded-xl font-bold hover:bg-green-50 transition-colors shadow-lg">Browse Surahs</Link>
@@ -168,7 +169,7 @@ const Home: React.FC = () => {
       {/* Intro for SEO */}
       <section className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-green-100 dark:border-slate-700">
         <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-center max-w-4xl mx-auto">
-          QuranSeekho is designed to provide an immersive reading experience for students of knowledge. Whether you are seeking a specific <strong>Surah</strong>, browsing by <strong>Juz (Sipara)</strong>, or looking for <strong>Daily Adhkar</strong>, our platform offers a seamless interface for both desktop and mobile users. Our goal is to spread the light of the Quran to every heart.
+          Quran Seekho is designed to provide an immersive reading experience for students of knowledge. Whether you are seeking a specific <strong>Surah</strong>, browsing by <strong>Juz (Sipara)</strong>, or looking for <strong>Daily Adhkar</strong>, our platform offers a seamless interface for both desktop and mobile users. Our goal is to spread the light of the Quran to every heart.
         </p>
       </section>
 

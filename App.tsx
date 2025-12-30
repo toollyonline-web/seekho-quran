@@ -20,7 +20,7 @@ const AboutPage = () => (
   <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-700">
     <div className="text-center mb-16">
       <div className="w-20 h-20 bg-green-700 rounded-3xl flex items-center justify-center text-white font-bold text-3xl mx-auto mb-6 shadow-xl shadow-green-900/20">QS</div>
-      <h1 className="text-4xl font-bold mb-4">About QuranSeekho</h1>
+      <h1 className="text-4xl font-bold mb-4">About Quran Seekho</h1>
       <p className="text-xl text-slate-500 italic max-w-2xl mx-auto">"Guiding the hearts through the light of the Noble Quran."</p>
     </div>
 
@@ -29,7 +29,7 @@ const AboutPage = () => (
         <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 text-green-700 rounded-2xl flex items-center justify-center mb-6"><Globe size={24} /></div>
         <h2 className="text-xl font-bold mb-4">Our Mission</h2>
         <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-          QuranSeekho was built with a simple goal: to provide a distraction-free, ad-free, and high-quality digital experience for reading and understanding the Holy Quran. We believe the message of Allah should be accessible to everyone, everywhere.
+          Quran Seekho was built with a simple goal: to provide a distraction-free, ad-free, and high-quality digital experience for reading and understanding the Holy Quran. We believe the message of Allah should be accessible to everyone, everywhere.
         </p>
       </div>
       <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] border dark:border-slate-700 shadow-sm">

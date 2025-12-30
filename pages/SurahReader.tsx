@@ -129,8 +129,8 @@ const SurahReader: React.FC = () => {
           const arabicData = isJuz ? null : detail.find((e: any) => e.edition.type === 'quran');
           
           const pageTitle = isJuz 
-            ? `Sipara ${id} – Quran Reading Online | QuranSeekho` 
-            : `Surah ${arabicData?.englishName || id} – Read Quran Online | QuranSeekho`;
+            ? `Sipara ${id} – Quran Reading Online | Quran Seekho` 
+            : `Surah ${arabicData?.englishName || id} – Read Quran Online | Quran Seekho`;
           const pageDesc = isJuz 
             ? `Read and study Juz (Sipara) ${id} of the Holy Quran. Complete with English and Urdu translations and beautiful recitation.` 
             : `Read Surah ${arabicData?.englishName} (${arabicData?.name}) online. Explore its English and Urdu translations, listen to audio recitation by Mishary Alafasy.`;
@@ -351,7 +351,7 @@ const SurahReader: React.FC = () => {
             </div>
 
             <div className="p-6 border-t dark:border-slate-700 text-center">
-               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">QuranSeekho Reader</p>
+               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Quran Seekho Reader</p>
             </div>
           </div>
         </div>

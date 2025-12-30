@@ -28,10 +28,10 @@ const PrivacyPolicy: React.FC = () => {
               <Info size={24} className="text-green-600" /> 1. Introduction
             </h2>
             <p className="mb-4">
-              Welcome to <strong>QuranSeekho Online</strong> ("we," "our," or "us"). Your privacy and the sanctity of your spiritual journey are our highest priorities. This Privacy Policy describes how we collect, use, and protect your information when you access our web platform (quranseekho.online) or our mobile application.
+              Welcome to <strong>Quran Seekho</strong> ("we," "our," or "us"). Your privacy and the sanctity of your spiritual journey are our highest priorities. This Privacy Policy describes how we collect, use, and protect your information when you access our web platform (quranseekho.online) or our mobile application.
             </p>
             <p>
-              By using QuranSeekho, you agree to the collection and use of information in accordance with this policy. We are a non-profit, ad-free platform dedicated to the service of the Ummah, and we never monetize user data.
+              By using Quran Seekho, you agree to the collection and use of information in accordance with this policy. We are a non-profit, ad-free platform dedicated to the service of the Ummah, and we never monetize user data.
             </p>
           </section>
 
@@ -41,7 +41,7 @@ const PrivacyPolicy: React.FC = () => {
             </h2>
             <ul className="space-y-4">
               <li className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
-                <span className="font-bold text-slate-900 dark:text-white">Service:</span> Refers to the QuranSeekho website and Android application.
+                <span className="font-bold text-slate-900 dark:text-white">Service:</span> Refers to the Quran Seekho website and Android application.
               </li>
               <li className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
                 <span className="font-bold text-slate-900 dark:text-white">Personal Data:</span> Means data about a living individual who can be identified from those data.
