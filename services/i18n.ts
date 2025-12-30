@@ -6,6 +6,7 @@ export const translations: Record<Language, any> = {
     nav: {
       home: "Home",
       surah: "Surah",
+      search: "Search",
       qibla: "Qibla",
       duas: "Duas",
       zakat: "Zakat",
@@ -91,6 +92,7 @@ export const translations: Record<Language, any> = {
     nav: {
       home: "ہوم",
       surah: "سورتیں",
+      search: "تلاش",
       qibla: "قبلہ",
       duas: "دعائیں",
       zakat: "زکوٰۃ",
@@ -176,6 +178,7 @@ export const translations: Record<Language, any> = {
     nav: {
       home: "الرئيسية",
       surah: "السور",
+      search: "بحث",
       qibla: "القبلة",
       duas: "الأدعية",
       zakat: "الزكاة",

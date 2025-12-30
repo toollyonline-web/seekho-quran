@@ -34,6 +34,7 @@ const SurahReader: React.FC = () => {
   const isRTL = currentLang === 'ur' || currentLang === 'ar';
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playPromiseRef = useRef<Promise<void> | null>(null);
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const [isPlayingFullSurah, setIsPlayingFullSurah] = useState(false);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
@@ -150,17 +151,27 @@ const SurahReader: React.FC = () => {
   const safePlay = async () => {
     if (!audioRef.current) return;
     try {
+      // If there's an ongoing play request, wait for it to finish or fail
+      if (playPromiseRef.current !== null) {
+        await playPromiseRef.current;
+      }
       setIsAudioLoading(true);
-      await audioRef.current.play();
+      playPromiseRef.current = audioRef.current.play();
+      await playPromiseRef.current;
+      playPromiseRef.current = null;
     } catch (err) {
-      console.error("Playback failed:", err);
+      console.warn("Playback interrupted or failed:", err);
       setIsAudioLoading(false);
-      setPlayingAyah(null);
-      setIsPlayingFullSurah(false);
+      // Only reset states if the source is really empty
+      if (!audioRef.current.src) {
+        setPlayingAyah(null);
+        setIsPlayingFullSurah(false);
+      }
+      playPromiseRef.current = null;
     }
   };
 
-  const toggleAyahAudio = (ayahGlobalNumber: number, ayahInSurah: number) => {
+  const toggleAyahAudio = async (ayahGlobalNumber: number, ayahInSurah: number) => {
     if (!audioRef.current) return;
     if (playingAyah === ayahGlobalNumber) {
       audioRef.current.pause();
@@ -188,7 +199,7 @@ const SurahReader: React.FC = () => {
     }
   };
 
-  const toggleFullSurahAudio = () => {
+  const toggleFullSurahAudio = async () => {
     if (!audioRef.current || isJuz) return;
     if (isPlayingFullSurah) {
       audioRef.current.pause();

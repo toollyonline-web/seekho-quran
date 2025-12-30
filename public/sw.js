@@ -1,7 +1,7 @@
 
 /**
  * QuranSeekho Service Worker
- * version: 1.0.3
+ * version: 1.0.4
  */
 
 const CACHE_NAME = 'quranseekho-cache-v1';
@@ -46,7 +46,13 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // For API calls, try network first, then cache
+  // CRITICAL: Exclude large audio files from service worker cache.
+  // These are streamed and should be handled by the browser directly to avoid quota/partial content errors.
+  if (url.origin.includes('islamic.network') || url.pathname.endsWith('.mp3')) {
+    return; // Let the browser handle audio requests normally
+  }
+
+  // For API calls (JSON), try network first, then cache
   if (url.origin.includes('alquran.cloud') || url.origin.includes('aladhan.com')) {
     event.respondWith(
       fetch(request)
@@ -62,7 +68,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Standard fetch with cache fallback
+  // Standard fetch with cache fallback for static assets
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request).then((networkResponse) => {

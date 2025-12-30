@@ -86,7 +86,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: t.nav.home, path: '/', icon: <Clock size={20} /> },
     { name: t.nav.surah, path: '/surah', icon: <BookOpen size={20} /> },
-    { name: "Search", path: '/search', icon: <SearchIcon size={20} /> },
+    { name: t.nav.search, path: '/search', icon: <SearchIcon size={20} /> },
     { name: t.nav.duas, path: '/duas', icon: <Star size={20} /> },
     { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} /> },
   ];
@@ -239,7 +239,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         theme === 'dark' ? 'bg-slate-950 text-white' : 
         theme === 'sepia' ? 'bg-[#eee8d5]' : 
         'bg-white'
-      } border-t dark:border-slate-800 overflow-hidden pb-20 lg:pb-0`}>
+      } border-t dark:border-slate-800 overflow-hidden pb-24 lg:pb-0`}>
         <div className="container mx-auto px-6 py-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
@@ -323,16 +323,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </footer>
 
       {/* Mobile Bottom Navigation - Improved with Safe Areas */}
-      <div className={`lg:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[90] ${
+      <div className={`lg:hidden fixed bottom-0 left-0 right-0 border-t flex justify-around items-center px-2 z-[90] ${
         theme === 'dark' ? 'bg-slate-900/95 border-slate-800' : 
         theme === 'sepia' ? 'bg-[#fdf6e3]/95 border-[#eee8d5]' : 
         'bg-white/95 border-green-100'
-      } backdrop-blur-lg shadow-[0_-10px_30px_rgba(0,0,0,0.05)] safe-bottom`}>
+      } backdrop-blur-lg shadow-[0_-10px_30px_rgba(0,0,0,0.05)] pb-safe pt-2`}>
         {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className={`flex flex-col items-center justify-center w-full gap-1 transition-all ${
+            className={`flex flex-col items-center justify-center w-full gap-1 transition-all pb-2 ${
               location.pathname === item.path ? 'text-green-700 dark:text-green-400 scale-110 font-bold' : 'text-slate-400'
             }`}
           >
