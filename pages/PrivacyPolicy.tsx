@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ShieldCheck, Lock, Eye, Globe, Mail, ChevronLeft } from 'lucide-react';
+import { ShieldCheck, Lock, Eye, Globe, Mail, ChevronLeft, Info, FileText, Database, Trash2, UserCheck, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PrivacyPolicy: React.FC = () => {
@@ -12,79 +12,164 @@ const PrivacyPolicy: React.FC = () => {
         <ChevronLeft size={20} /> Back to Home
       </Link>
 
-      <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 md:p-12 shadow-sm border dark:border-slate-700">
-        <header className="mb-12 border-b dark:border-slate-700 pb-8">
-          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-700 rounded-2xl flex items-center justify-center mb-6">
-            <ShieldCheck size={32} />
+      <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 md:p-14 shadow-sm border dark:border-slate-700">
+        <header className="mb-12 border-b dark:border-slate-700 pb-10">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-700 rounded-3xl flex items-center justify-center mb-6">
+            <ShieldCheck size={40} />
           </div>
-          <h1 className="text-4xl font-bold mb-4">Privacy Policy</h1>
-          <p className="text-slate-500">Last Updated: {lastUpdated}</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Privacy Policy</h1>
+          <p className="text-slate-500 font-medium">Effective Date: {lastUpdated}</p>
         </header>
 
-        <div className="space-y-10 text-slate-700 dark:text-slate-300 leading-relaxed">
+        <div className="space-y-12 text-slate-700 dark:text-slate-300 leading-relaxed">
+          
           <section>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-              <Globe size={20} className="text-green-600" /> Introduction
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+              <Info size={24} className="text-green-600" /> 1. Introduction
             </h2>
+            <p className="mb-4">
+              Welcome to <strong>QuranSeekho Online</strong> ("we," "our," or "us"). Your privacy and the sanctity of your spiritual journey are our highest priorities. This Privacy Policy describes how we collect, use, and protect your information when you access our web platform (quranseekho.online) or our mobile application.
+            </p>
             <p>
-              Welcome to <strong>QuranSeekho Online</strong> ("we," "our," or "us"). We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website (quranseekho.online) or use our mobile application.
+              By using QuranSeekho, you agree to the collection and use of information in accordance with this policy. We are a non-profit, ad-free platform dedicated to the service of the Ummah, and we never monetize user data.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-              <Lock size={20} className="text-green-600" /> Information Collection
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+              <FileText size={24} className="text-green-600" /> 2. Definitions
             </h2>
-            <div className="space-y-4">
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
-                <h3 className="font-bold mb-2 text-sm uppercase tracking-wider">Geolocation Data</h3>
-                <p className="text-sm">
-                  We request access to your device's location to provide accurate <strong>Prayer Times</strong> based on your current coordinates. This data is processed in real-time and is <strong>not stored on our servers</strong>. You can choose to deny this permission and use default settings (Mecca) instead.
+            <ul className="space-y-4">
+              <li className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
+                <span className="font-bold text-slate-900 dark:text-white">Service:</span> Refers to the QuranSeekho website and Android application.
+              </li>
+              <li className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
+                <span className="font-bold text-slate-900 dark:text-white">Personal Data:</span> Means data about a living individual who can be identified from those data.
+              </li>
+              <li className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
+                <span className="font-bold text-slate-900 dark:text-white">Usage Data:</span> Data collected automatically either generated by the use of the Service or from the Service infrastructure itself.
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+              <Database size={24} className="text-green-600" /> 3. Data Collection and Use
+            </h2>
+            <p className="mb-6">We collect several different types of information for various purposes to provide and improve our Service to you.</p>
+            
+            <div className="space-y-6">
+              <div className="relative pl-8 border-l-4 border-green-600">
+                <h3 className="text-lg font-bold mb-2 text-slate-900 dark:text-white">A. Geolocation Data</h3>
+                <p className="text-sm mb-3">
+                  To provide accurate <strong>Prayer Times</strong> (Salat), we require access to your device's geolocation. 
                 </p>
+                <div className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-2xl border border-amber-100 dark:border-amber-900/30 text-amber-800 dark:text-amber-300 text-xs font-bold flex items-center gap-3">
+                  <AlertCircle size={18} />
+                  CRITICAL: This location data is processed EPHEMERALLY. It is used to calculate the time and then immediately discarded. We do not store your location history.
+                </div>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
-                <h3 className="font-bold mb-2 text-sm uppercase tracking-wider">Local Storage</h3>
+
+              <div className="relative pl-8 border-l-4 border-blue-600">
+                <h3 className="text-lg font-bold mb-2 text-slate-900 dark:text-white">B. Local Storage Data</h3>
                 <p className="text-sm">
-                  To provide a personalized experience, we save your <strong>Bookmarks, Reading Themes, Font Sizes, and Tasbeeh counts</strong> locally on your device using browser "Local Storage." This data remains on your device and is never uploaded to our servers.
+                  We use browser local storage and IndexedDB to save your personal preferences locally. This includes:
                 </p>
+                <ul className="list-disc pl-5 mt-2 text-sm space-y-1 opacity-80">
+                  <li>Ayah Bookmarks and Favorites.</li>
+                  <li>Custom reading themes (Light, Dark, Sepia).</li>
+                  <li>Preferred Arabic fonts and font sizes.</li>
+                  <li>Ongoing Tasbeeh counts and daily sunnah checklists.</li>
+                </ul>
               </div>
             </div>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-              <Eye size={20} className="text-green-600" /> Third-Party Services
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+              <Lock size={24} className="text-green-600" /> 4. Data Security & Retention
             </h2>
-            <p className="mb-4">We use the following trusted third-party APIs to provide our services:</p>
-            <ul className="list-disc pl-6 space-y-2 text-sm">
-              <li><strong>AlQuran.cloud:</strong> To retrieve Quranic text and translations.</li>
-              <li><strong>Aladhan.com:</strong> To calculate accurate prayer times and Hijri dates.</li>
-              <li><strong>Islamic.network:</strong> To provide audio recitations.</li>
-            </ul>
-            <p className="mt-4 text-sm">These services do not receive any personal identification data from you through our platform.</p>
+            <p className="mb-4">
+              The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
+                <h4 className="font-bold mb-2 text-sm">No Server Storage</h4>
+                <p className="text-xs opacity-70">We do not maintain a central database of your reading history or bookmarks. All data lives on YOUR device.</p>
+              </div>
+              <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border dark:border-slate-700">
+                <h4 className="font-bold mb-2 text-sm">Encryption in Transit</h4>
+                <p className="text-xs opacity-70">All requests to our content APIs are performed over secure HTTPS (SSL) connections.</p>
+              </div>
+            </div>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-              <ShieldCheck size={20} className="text-green-600" /> Children's Privacy
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+              <Eye size={24} className="text-green-600" /> 5. Third-Party Service Providers
+            </h2>
+            <p className="mb-4">We employ third-party APIs to facilitate our Service. These third parties do not have access to your Personal Data through us; they only receive the technical requests required to serve Quranic content.</p>
+            <div className="space-y-3">
+              {[
+                { name: "AlQuran API", role: "Provides Quranic text and translations.", url: "alquran.cloud" },
+                { name: "Aladhan API", role: "Provides Prayer Time calculations.", url: "aladhan.com" },
+                { name: "Islamic Network", role: "Provides high-quality audio recitation files.", url: "islamic.network" }
+              ].map((provider) => (
+                <div key={provider.name} className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-900 border dark:border-slate-700">
+                  <div>
+                    <span className="font-bold text-sm block">{provider.name}</span>
+                    <span className="text-xs opacity-60">{provider.role}</span>
+                  </div>
+                  <span className="text-[10px] font-mono opacity-40">{provider.url}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+              <Trash2 size={24} className="text-green-600" /> 6. Your Data Rights
+            </h2>
+            <p className="mb-4">
+              You have the right to access, update or delete the information we have on you. Since we do not store your data on our servers, you can exercise these rights directly:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-sm italic">
+              <li>To delete all your bookmarks and settings, simply <strong>Clear Browser Cache/Data</strong> for this site.</li>
+              <li>To stop location tracking, revoke the <strong>Location Permission</strong> in your browser or Android app settings.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+              <UserCheck size={24} className="text-green-600" /> 7. Children's Privacy
             </h2>
             <p>
-              Our services are intended for a general audience. We do not knowingly collect personal identifiable information from children under the age of 13.
+              Our Service is designed for the general public, including children under the guidance of parents. We do not knowingly collect personally identifiable information from children under 13. If you are a parent or guardian and you are aware that your child has provided us with personal data, please contact us.
             </p>
           </section>
 
-          <section className="pt-8 border-t dark:border-slate-700">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-              <Mail size={20} className="text-green-600" /> Contact Us
+          <section className="pt-10 border-t dark:border-slate-700">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+              <Mail size={24} className="text-green-600" /> 8. Contact Us
             </h2>
-            <p className="mb-4">
-              If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at:
+            <p className="mb-6">
+              If you have any questions about this Privacy Policy, please contact our support team. We are happy to clarify any technical or legal concerns you may have.
             </p>
-            <a href="mailto:support@quranseekho.online" className="inline-block px-6 py-3 bg-green-700 text-white rounded-xl font-bold hover:bg-green-600 transition-colors">
-              support@quranseekho.online
-            </a>
+            <div className="bg-green-700 text-white p-8 rounded-[2rem] shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-center md:text-left">
+                <p className="text-sm uppercase font-bold tracking-widest opacity-80 mb-1">Official Support Email</p>
+                <p className="text-2xl font-bold">support@quranseekho.online</p>
+              </div>
+              <a href="mailto:support@quranseekho.online" className="px-8 py-3 bg-white text-green-800 rounded-xl font-bold hover:bg-green-50 transition-colors">
+                Email Us Now
+              </a>
+            </div>
           </section>
         </div>
+      </div>
+      
+      <div className="mt-12 text-center text-slate-400 text-sm italic">
+        "Verily, Allah commands you to render trusts to whom they are due..." (Quran 4:58)
       </div>
     </div>
   );

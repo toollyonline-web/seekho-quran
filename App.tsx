@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import SurahList from './pages/SurahList';
@@ -14,6 +14,48 @@ import DuaLibrary from './pages/DuaLibrary';
 import ZakatCalculator from './pages/ZakatCalculator';
 import IslamicCalendar from './pages/IslamicCalendar';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import { Heart, Globe, ShieldCheck, Mail } from 'lucide-react';
+
+const AboutPage = () => (
+  <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-700">
+    <div className="text-center mb-16">
+      <div className="w-20 h-20 bg-green-700 rounded-3xl flex items-center justify-center text-white font-bold text-3xl mx-auto mb-6 shadow-xl shadow-green-900/20">QS</div>
+      <h1 className="text-4xl font-bold mb-4">About QuranSeekho</h1>
+      <p className="text-xl text-slate-500 italic max-w-2xl mx-auto">"Guiding the hearts through the light of the Noble Quran."</p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] border dark:border-slate-700 shadow-sm">
+        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 text-green-700 rounded-2xl flex items-center justify-center mb-6"><Globe size={24} /></div>
+        <h2 className="text-xl font-bold mb-4">Our Mission</h2>
+        <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+          QuranSeekho was built with a simple goal: to provide a distraction-free, ad-free, and high-quality digital experience for reading and understanding the Holy Quran. We believe the message of Allah should be accessible to everyone, everywhere.
+        </p>
+      </div>
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] border dark:border-slate-700 shadow-sm">
+        <div className="w-12 h-12 bg-rose-100 dark:bg-rose-900/30 text-rose-700 rounded-2xl flex items-center justify-center mb-6"><Heart size={24} /></div>
+        <h2 className="text-xl font-bold mb-4">Pure Experience</h2>
+        <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+          We do not display ads, and we do not sell your data. This platform is a Sadaqah Jariyah project designed for the Ummah. Every feature is crafted to help you focus on spiritual growth and learning.
+        </p>
+      </div>
+    </div>
+
+    <div className="bg-green-800 text-white p-10 rounded-[2.5rem] shadow-xl text-center relative overflow-hidden">
+      <div className="relative z-10">
+        <h2 className="text-2xl font-bold mb-4">Open for the World</h2>
+        <p className="max-w-xl mx-auto opacity-90 mb-8">
+          This platform is open-source and community-driven. If you have suggestions or want to support our mission, feel free to reach out.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <a href="mailto:support@quranseekho.online" className="px-8 py-3 bg-white text-green-800 rounded-xl font-bold hover:bg-green-50 transition-colors flex items-center gap-2"><Mail size={18} /> Contact Support</a>
+          <Link to="/privacy" className="px-8 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center gap-2"><ShieldCheck size={18} /> Privacy Policy</Link>
+        </div>
+      </div>
+      <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mt-32 blur-3xl"></div>
+    </div>
+  </div>
+);
 
 const App: React.FC = () => {
   return (
@@ -33,13 +75,7 @@ const App: React.FC = () => {
           <Route path="/zakat" element={<ZakatCalculator />} />
           <Route path="/calendar" element={<IslamicCalendar />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/about" element={<div className="text-center py-20 px-4">
-            <h1 className="text-3xl font-bold mb-4">About QuranSeekho</h1>
-            <p className="max-w-xl mx-auto text-slate-500 leading-relaxed">
-              QuranSeekho.online is a modern, open-source platform dedicated to making the Holy Quran accessible, 
-              readable, and understandable for everyone. No ads, no distractions, just pure guidance.
-            </p>
-          </div>} />
+          <Route path="/about" element={<AboutPage />} />
         </Routes>
       </Layout>
     </Router>

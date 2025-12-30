@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, getSurahAudioUrl } from '../services/quranApi';
 import { 
   ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type, Book, 
   Info, X, Play, Pause, Volume2, VolumeX, Eye, EyeOff, Maximize2, Minimize2,
-  MoreVertical, Sliders, Layout as LayoutIcon, Monitor, Coffee, Sun, Moon
+  MoreVertical, Sliders, Layout as LayoutIcon, Monitor, Coffee, Sun, Moon, Share2
 } from 'lucide-react';
 
 const SurahReader: React.FC = () => {
@@ -40,11 +41,8 @@ const SurahReader: React.FC = () => {
     const savedBookmarks = localStorage.getItem('qs_bookmarks');
     if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks).map((b: any) => `${b.surahNumber}:${b.ayahNumber}`));
     
-    // Sync with global theme
     const savedTheme = localStorage.getItem('theme') as any;
-    if (savedTheme) {
-      setReadingTheme(savedTheme);
-    }
+    if (savedTheme) setReadingTheme(savedTheme);
 
     const savedFont = localStorage.getItem('qs_preferred_font');
     if (savedFont) setIsAmiri(savedFont === 'amiri');
@@ -76,6 +74,24 @@ const SurahReader: React.FC = () => {
     };
   }, []);
 
+  const handleShare = async (ayah: any, surahName: string) => {
+    const text = `${ayah.text}\n\n"${ayah.translations?.en || ''}"\n\n— Quran [${surahName} ${ayah.numberInSurah}]\nShared via QuranSeekho.online`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Quran Ayah from ${surahName}`,
+          text: text,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log('Share failed', err);
+      }
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('Ayah text copied to clipboard!');
+    }
+  };
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
@@ -97,7 +113,6 @@ const SurahReader: React.FC = () => {
     if (theme !== 'light') {
       document.documentElement.classList.add(theme);
     }
-    // Dispatch a storage event so Layout.tsx can update if needed
     window.dispatchEvent(new Event('storage'));
   };
 
@@ -247,7 +262,6 @@ const SurahReader: React.FC = () => {
   return (
     <div className={`max-w-5xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20 ${focusMode ? 'focus-mode-active' : ''}`}>
       
-      {/* Side Reading Drawer */}
       {isDrawerOpen && (
         <div className="fixed inset-0 z-[100] flex justify-end animate-in fade-in duration-300">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)}></div>
@@ -343,7 +357,6 @@ const SurahReader: React.FC = () => {
         </div>
       )}
 
-      {/* Hero Reader Header with SEO H1 */}
       <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 md:p-14 border dark:border-slate-700 shadow-sm relative overflow-hidden transition-all group main-layout-header">
         <div className="flex justify-between items-center mb-10 relative z-10">
           <Link to={prevLink} className={`p-4 rounded-2xl hover:bg-green-50 dark:hover:bg-slate-700 transition-all dark:text-white ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`} aria-label="Previous Page">
@@ -376,7 +389,6 @@ const SurahReader: React.FC = () => {
         )}
       </div>
 
-      {/* Bismillah */}
       {(!isJuz || (isJuz && arabic?.ayahs[0]?.numberInSurah === 1)) && parseInt(id!) !== 9 && (
         <div className="flex justify-center py-10">
           <p className={`${isAmiri ? 'font-arabic-amiri' : 'font-arabic'} text-6xl text-center leading-[2] quran-text opacity-90 dark:text-white`} dir="rtl" lang="ar">
@@ -385,7 +397,6 @@ const SurahReader: React.FC = () => {
         </div>
       )}
 
-      {/* Ayahs Container with smooth reading focus */}
       <div className="space-y-16 px-4 md:px-0">
         {arabic?.ayahs.map((ayah: any, index: number) => {
           const ayahNumber = ayah.number;
@@ -433,6 +444,9 @@ const SurahReader: React.FC = () => {
                       </button>
                       <button onClick={() => toggleBookmark(ayah, arabic)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isBookmarked ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
                         {isBookmarked ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+                      </button>
+                      <button onClick={() => handleShare(ayah, arabic.englishName)} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-all">
+                        <Share2 size={18} />
                       </button>
                       <button onClick={() => loadTafsir(ayahNumber, arabic.number, ayah.numberInSurah)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${hasTafsir || showTafsir ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
                         <Book size={18} />
