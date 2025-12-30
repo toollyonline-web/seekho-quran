@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass, Gavel, Quote } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass, Gavel, Quote, ArrowRight, Book, Sparkles } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { getHijriDate } from '../services/quranApi';
 
@@ -29,7 +29,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    // Dynamic Canonical Tag for SEO
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) {
       canonical.setAttribute('href', `https://quranseekho.online${location.pathname}`);
@@ -72,28 +71,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
   ];
 
-  const schemaMarkup = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Quran Seekho",
-    "url": "https://quranseekho.online/",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://quranseekho.online/surah?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  };
-
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-300 ${
         theme === 'dark' ? 'bg-slate-900 text-white' : 
         theme === 'sepia' ? 'bg-[#fdf6e3] text-[#5d4037]' : 
         'bg-green-50 text-slate-900'
     }`}>
-      <script type="application/ld+json">
-        {JSON.stringify(schemaMarkup)}
-      </script>
-
       {isOffline && (
         <div className="bg-amber-600 text-white text-[10px] py-1 px-4 flex items-center justify-center gap-2 font-bold uppercase tracking-widest z-[70] relative">
           <WifiOff size={12} /> Offline Mode - Some features may be limited
@@ -171,97 +154,117 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <InstallPWA />
 
-      <footer className={`mt-20 border-t pt-16 pb-24 md:pb-12 transition-colors ${
-        theme === 'dark' ? 'bg-slate-950 border-slate-800' : 
-        theme === 'sepia' ? 'bg-[#eee8d5] border-[#fdf6e3]' : 
-        'bg-white border-green-100'
-      }`}>
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
-            <div className="lg:col-span-2 space-y-6">
-              <Link to="/" className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-green-700 rounded-xl flex items-center justify-center text-white font-bold text-2xl">QS</div>
-                <span className="font-bold text-2xl tracking-tight">Quran Seekho</span>
+      <footer className={`mt-20 transition-colors ${
+        theme === 'dark' ? 'bg-slate-950 text-white' : 
+        theme === 'sepia' ? 'bg-[#eee8d5]' : 
+        'bg-white'
+      } border-t dark:border-slate-800 overflow-hidden`}>
+        <div className="container mx-auto px-6 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            
+            {/* Brand Identity & Mission */}
+            <div className="lg:col-span-4 space-y-8">
+              <Link to="/" className="flex items-center gap-4 group">
+                <div className="w-14 h-14 bg-green-700 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-xl shadow-green-900/20 group-hover:rotate-6 transition-transform">QS</div>
+                <div className="flex flex-col">
+                  <span className="font-black text-2xl tracking-tighter">Quran Seekho</span>
+                  <span className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-widest">Illuminate Your Heart</span>
+                </div>
               </Link>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed max-sm">
-                Empowering the Ummah with knowledge. A clean, modern platform for Quranic studies, daily dhikr, and spiritual growth.
+              <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed max-w-sm">
+                A modern, ad-free sanctuary for the global Ummah to read, understand, and live by the light of the Noble Quran.
               </p>
               
-              <div className="pt-4">
-                <h5 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Stay Connected</h5>
-                <div className="flex items-center gap-4">
-                  <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-green-600 transition-all hover:scale-110 shadow-sm"><Twitter size={18} /></a>
-                  <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-green-600 transition-all hover:scale-110 shadow-sm"><Github size={18} /></a>
-                  <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-green-600 transition-all hover:scale-110 shadow-sm"><Mail size={18} /></a>
+              <div className="p-6 bg-green-50 dark:bg-slate-900 rounded-[2rem] border border-green-100 dark:border-slate-800 relative group overflow-hidden">
+                <div className="relative z-10">
+                  <h5 className="text-sm font-bold text-green-800 dark:text-green-400 mb-2 flex items-center gap-2">
+                    <Sparkles size={16} /> Voluntary Project
+                  </h5>
+                  <p className="text-xs text-slate-500 mb-4">Sustain this ad-free experience with your voluntary support.</p>
+                  <Link to="/donate" className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white rounded-xl text-xs font-bold hover:bg-green-600 transition-all shadow-lg shadow-green-900/10">
+                    Support the Mission <ArrowRight size={14} />
+                  </Link>
+                </div>
+                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform">
+                  <Heart size={80} fill="currentColor" />
                 </div>
               </div>
             </div>
 
-            <div>
-              <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-green-700 dark:text-green-400">Library</h4>
-              <ul className="space-y-4">
-                <li><Link to="/surah" className="text-slate-500 hover:text-green-600 transition-colors">All Surahs</Link></li>
-                <li><Link to="/juz" className="text-slate-500 hover:text-green-600 transition-colors">By Juz</Link></li>
-                <li><Link to="/hadith" className="text-slate-500 hover:text-green-600 transition-colors">40 Hadith</Link></li>
-                <li><Link to="/prophetic-stories" className="text-slate-500 hover:text-green-600 transition-colors font-bold">Prophetic Stories</Link></li>
-                <li><Link to="/names" className="text-slate-500 hover:text-green-600 transition-colors">99 Names</Link></li>
-              </ul>
-            </div>
+            {/* Navigation Sections */}
+            <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-10">
+              
+              <div className="space-y-6">
+                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">The Library</h4>
+                <ul className="space-y-4">
+                  <li><Link to="/surah" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> All Surahs</Link></li>
+                  <li><Link to="/juz" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Browse Juz</Link></li>
+                  <li><Link to="/hadith" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> 40 Hadith</Link></li>
+                  <li><Link to="/prophetic-stories" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group font-bold"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Prophetic Stories</Link></li>
+                  <li><Link to="/names" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Book size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> 99 Names</Link></li>
+                </ul>
+              </div>
 
-            <div>
-              <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-green-700 dark:text-green-400">Tools</h4>
-              <ul className="space-y-4">
-                <li><Link to="/tasbeeh" className="text-slate-500 hover:text-green-600 transition-colors">Tasbeeh</Link></li>
-                <li><Link to="/zakat" className="text-slate-500 hover:text-green-600 transition-colors">Zakat Calc</Link></li>
-                <li><Link to="/bookmarks" className="text-slate-500 hover:text-green-600 transition-colors">Bookmarks</Link></li>
-                <li><Link to="/qibla" className="text-slate-500 hover:text-green-600 transition-colors">Qibla Finder</Link></li>
-              </ul>
-            </div>
+              <div className="space-y-6">
+                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">Islamic Tools</h4>
+                <ul className="space-y-4">
+                  <li><Link to="/tasbeeh" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Hash size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Tasbeeh Counter</Link></li>
+                  <li><Link to="/duas" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Star size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Dua Library</Link></li>
+                  <li><Link to="/zakat" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Coins size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Zakat Calculator</Link></li>
+                  <li><Link to="/qibla" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Compass size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Qibla Finder</Link></li>
+                  <li><Link to="/calendar" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group"><Calendar size={14} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" /> Hijri Calendar</Link></li>
+                </ul>
+              </div>
 
-            <div>
-              <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-green-700 dark:text-green-400">Support</h4>
-              <ul className="space-y-4 mb-6">
-                <li><Link to="/privacy" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Privacy Policy <Shield size={14} /></Link></li>
-                <li><Link to="/terms" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Terms & Conditions <Gavel size={14} /></Link></li>
-                <li><Link to="/feedback" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2">Give Feedback <MessageSquare size={14} /></Link></li>
-                <li><Link to="/about" className="text-slate-500 hover:text-green-600 transition-colors">About Us</Link></li>
-              </ul>
-              <div className="bg-green-50 dark:bg-slate-800 p-4 rounded-2xl border border-green-100 dark:border-slate-700">
-                <p className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase mb-2">Help the Project</p>
-                <p className="text-xs text-slate-500 mb-4 leading-tight">Quran Seekho is ad-free and open-source. Consider donating.</p>
-                <Link to="/donate" className="block w-full py-2 bg-green-700 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors text-center">Donate Now</Link>
+              <div className="space-y-6 md:col-span-1 col-span-2">
+                <h4 className="font-black text-xs uppercase tracking-[0.2em] text-green-700 dark:text-green-400">Platform</h4>
+                <ul className="space-y-4">
+                  <li><Link to="/about" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all">About Our Mission</Link></li>
+                  <li><Link to="/feedback" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group">Tester Feedback <MessageSquare size={14} /></Link></li>
+                  <li><Link to="/privacy" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group">Privacy Policy <Shield size={14} /></Link></li>
+                  <li><Link to="/terms" className="text-slate-500 hover:text-green-600 dark:hover:text-green-400 transition-all flex items-center gap-2 group">Terms of Service <Gavel size={14} /></Link></li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="mt-20 pt-10 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex flex-col items-center md:items-start">
+              <p className="text-sm font-bold text-slate-400">© {new Date().getFullYear()} Quran Seekho Platform</p>
+              <p className="text-[10px] text-slate-400 font-mono mt-1 uppercase tracking-widest">Designed for the Ummah</p>
+            </div>
+            
+            <div className="flex items-center gap-6 px-8 py-3 bg-slate-50 dark:bg-slate-900 rounded-full border dark:border-slate-800">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                <Heart size={14} className="text-rose-500 fill-rose-500 animate-pulse" />
+                Sadaqah Jariyah Project
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex flex-col items-center md:items-start">
-              <p className="text-sm text-slate-500">© {new Date().getFullYear()} Quran Seekho</p>
-              <p className="text-[10px] text-slate-400 font-mono mt-1">v1.0.7-Production</p>
-            </div>
-            <div className="flex items-center gap-3 text-xs text-slate-400">
-              <span>Made with</span>
-              <Heart size={14} className="text-rose-500 fill-rose-500 animate-pulse" />
-              <span>for the Ummah</span>
-            </div>
-          </div>
+        {/* Decorative background element */}
+        <div className="absolute bottom-0 right-0 p-10 opacity-[0.02] pointer-events-none translate-x-20 translate-y-20">
+          <Book size={600} strokeWidth={0.5} />
         </div>
       </footer>
 
+      {/* Mobile Bottom Navigation Bar */}
       <div className={`lg:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[100] ${
-        theme === 'dark' ? 'bg-slate-900 border-slate-800' : 
-        theme === 'sepia' ? 'bg-[#fdf6e3] border-[#eee8d5]' : 
-        'bg-white border-green-100'
-      } backdrop-blur-lg shadow-2xl`}>
+        theme === 'dark' ? 'bg-slate-900/90 border-slate-800' : 
+        theme === 'sepia' ? 'bg-[#fdf6e3]/90 border-[#eee8d5]' : 
+        'bg-white/90 border-green-100'
+      } backdrop-blur-lg shadow-[0_-10px_30px_rgba(0,0,0,0.05)]`}>
         {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             className={`flex flex-col items-center justify-center w-full gap-1 transition-all ${
-              location.pathname === item.path ? 'text-green-700 dark:text-green-400 scale-110' : 'text-slate-400'
+              location.pathname === item.path ? 'text-green-700 dark:text-green-400 scale-110 font-bold' : 'text-slate-400'
             }`}
           >
-            {React.cloneElement(item.icon as React.ReactElement<any>, { size: 22 })}
+            {React.cloneElement(item.icon as React.ReactElement<any>, { size: 20 })}
             <span className="text-[10px] font-bold uppercase tracking-tight">{item.name}</span>
           </Link>
         ))}
