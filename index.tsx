@@ -17,12 +17,11 @@ root.render(
 
 /**
  * Service Worker Registration
- * Using a simple relative string './sw.js' is the most reliable way 
- * to ensure the browser fetches the worker from the current origin.
+ * Registering from root /sw.js to ensure full scope control
  */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker.register('/sw.js')
       .then(registration => {
         console.log('QuranSeekho SW registered successfully with scope:', registration.scope);
       })

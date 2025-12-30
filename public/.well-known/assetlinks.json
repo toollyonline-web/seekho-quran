@@ -1,0 +1,15 @@
+
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "online.quranseekho.twa",
+      "sha256_cert_fingerprints": [
+        "74:40:E6:20:20:7D:46:75:61:DE:69:C3:58:22:1D:A2:FA:DD:62:CB:0B:13:7B:F5:02:B3:5C:E2:83:86:70:09"
+      ]
+    }
+  }
+]
