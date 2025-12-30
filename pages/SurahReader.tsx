@@ -1,11 +1,10 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, getSurahAudioUrl } from '../services/quranApi';
 import { 
   ChevronLeft, ChevronRight, Settings, Bookmark, BookmarkCheck, Type, Book, 
   Info, X, Play, Pause, Volume2, VolumeX, Eye, EyeOff, Maximize2, Minimize2,
-  MoreVertical, Sliders, Layout, Monitor
+  MoreVertical, Sliders, Layout as LayoutIcon, Monitor
 } from 'lucide-react';
 
 const SurahReader: React.FC = () => {
@@ -111,9 +110,19 @@ const SurahReader: React.FC = () => {
           setData(detail);
           
           const arabicData = isJuz ? null : detail.find((e: any) => e.edition.type === 'quran');
-          document.title = isJuz 
-            ? `Read Juz ${id} - QuranSeekho` 
-            : `Surah ${arabicData?.englishName || id} - QuranSeekho Online`;
+          
+          // SEO Dynamic Title and Description
+          const pageTitle = isJuz 
+            ? `Sipara ${id} – Quran Reading Online | QuranSeekho` 
+            : `Surah ${arabicData?.englishName || id} – Read Quran Online | QuranSeekho`;
+          const pageDesc = isJuz 
+            ? `Read and study Juz (Sipara) ${id} of the Holy Quran. Complete with English and Urdu translations and beautiful recitation.` 
+            : `Read Surah ${arabicData?.englishName} (${arabicData?.name}) online. Explore its English and Urdu translations, listen to audio recitation by Mishary Alafasy.`;
+
+          document.title = pageTitle;
+          const metaDesc = document.querySelector('meta[name="description"]');
+          if (metaDesc) metaDesc.setAttribute('content', pageDesc);
+
         } catch (err) {
           console.error("Failed to load content", err);
         }
@@ -242,8 +251,8 @@ const SurahReader: React.FC = () => {
     urdu = data.find((e: any) => e.edition.identifier === 'ur.jalandhara');
   }
 
-  const title = isJuz ? `Juz ${id}` : arabic?.englishName;
-  const subtitle = isJuz ? `Part of the Holy Quran` : `${arabic?.englishNameTranslation} • ${arabic?.revelationType}`;
+  const title = isJuz ? `Sipara ${id}` : arabic?.englishName;
+  const subtitle = isJuz ? `Juz ${id} • Quran Reading Online` : `${arabic?.englishNameTranslation} • ${arabic?.revelationType}`;
   const maxItems = isJuz ? 30 : 114;
   const prevLink = isJuz ? `/juz/${parseInt(id!) - 1}` : `/surah/${parseInt(id!) - 1}`;
   const nextLink = isJuz ? `/juz/${parseInt(id!) + 1}` : `/surah/${parseInt(id!) + 1}`;
@@ -342,18 +351,18 @@ const SurahReader: React.FC = () => {
         </div>
       )}
 
-      {/* Hero Reader Header */}
+      {/* Hero Reader Header with SEO H1 */}
       <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 md:p-14 border dark:border-slate-700 shadow-sm relative overflow-hidden transition-all group main-layout-header">
         <div className="flex justify-between items-center mb-10 relative z-10">
-          <Link to={prevLink} className={`p-4 rounded-2xl hover:bg-green-50 dark:hover:bg-slate-700 transition-all ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
+          <Link to={prevLink} className={`p-4 rounded-2xl hover:bg-green-50 dark:hover:bg-slate-700 transition-all ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`} aria-label="Previous Page">
             <ChevronLeft size={32} />
           </Link>
           <div className="text-center">
-            <span className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-[0.4em] mb-3 block">Noble Quran Chapter</span>
+            <span className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-[0.4em] mb-3 block">{isJuz ? 'Holy Quran Sipara' : 'Noble Quran Chapter'}</span>
             <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">{title}</h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{subtitle}</p>
           </div>
-          <Link to={nextLink} className={`p-4 rounded-2xl hover:bg-green-50 dark:hover:bg-slate-700 transition-all ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
+          <Link to={nextLink} className={`p-4 rounded-2xl hover:bg-green-50 dark:hover:bg-slate-700 transition-all ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`} aria-label="Next Page">
             <ChevronRight size={32} />
           </Link>
         </div>
@@ -410,7 +419,7 @@ const SurahReader: React.FC = () => {
         </div>
       )}
 
-      {/* Ayahs Container */}
+      {/* Ayahs Container with smooth reading focus */}
       <div className="space-y-16 px-4 md:px-0">
         {arabic?.ayahs.map((ayah: any, index: number) => {
           const ayahNumber = ayah.number;
@@ -433,6 +442,7 @@ const SurahReader: React.FC = () => {
                       <button 
                         onClick={() => toggleAyahAudio(ayahNumber)}
                         className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isAyahPlaying ? 'bg-green-700 text-white' : 'bg-white dark:bg-slate-700 shadow-lg text-slate-400 hover:text-green-600'}`}
+                        aria-label="Play Ayah Audio"
                       >
                         {isAyahPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} className="ml-1" fill="currentColor" />}
                       </button>
@@ -454,14 +464,14 @@ const SurahReader: React.FC = () => {
                 {/* Translation & Action Hub */}
                 {!focusMode && (
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
-                    <div className="md:col-span-1 flex md:flex-col items-center justify-center gap-3">
-                      <button onClick={() => toggleAyahAudio(ayahNumber)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isAyahPlaying ? 'bg-green-700 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:bg-green-50 hover:text-green-600'}`}>
+                    <div className="md:col-span-1 flex md:flex-row md:flex-col items-center justify-center gap-3">
+                      <button onClick={() => toggleAyahAudio(ayahNumber)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isAyahPlaying ? 'bg-green-700 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:bg-green-50 hover:text-green-600'}`} aria-label="Audio Controls">
                         {isAyahPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
                       </button>
-                      <button onClick={() => toggleBookmark(ayah, arabic)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isBookmarked ? 'bg-green-50 text-green-700' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
+                      <button onClick={() => toggleBookmark(ayah, arabic)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${isBookmarked ? 'bg-green-50 text-green-700' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`} aria-label="Bookmark">
                         {isBookmarked ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
                       </button>
-                      <button onClick={() => loadTafsir(ayahNumber, arabic.number, ayah.numberInSurah)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${hasTafsir || showTafsir ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
+                      <button onClick={() => loadTafsir(ayahNumber, arabic.number, ayah.numberInSurah)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${hasTafsir || showTafsir ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`} aria-label="Tafsir">
                         <Book size={18} />
                       </button>
                     </div>
@@ -501,17 +511,17 @@ const SurahReader: React.FC = () => {
         })}
       </div>
 
-      {/* Footer Navigation */}
+      {/* Footer Navigation for better internal linking */}
       <div className="flex justify-between items-center pt-24 border-t dark:border-slate-800 main-layout-footer">
-        <Link to={prevLink} className={`flex items-center gap-6 p-10 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm transition-all hover:scale-105 ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
+        <Link to={prevLink} className={`flex items-center gap-6 p-6 md:p-10 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm transition-all hover:scale-105 ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
           <ChevronLeft size={32} />
-          <div className="text-left">
+          <div className="text-left hidden sm:block">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Previous</span>
             <span className="text-xl font-bold">Chapter {parseInt(id!) - 1}</span>
           </div>
         </Link>
-        <Link to={nextLink} className={`flex items-center gap-6 p-10 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm transition-all hover:scale-105 ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
-          <div className="text-right">
+        <Link to={nextLink} className={`flex items-center gap-6 p-6 md:p-10 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm transition-all hover:scale-105 ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
+          <div className="text-right hidden sm:block">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Next</span>
             <span className="text-xl font-bold">Chapter {parseInt(id!) + 1}</span>
           </div>

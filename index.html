@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,11 +6,17 @@
     <meta name="theme-color" content="#166534">
     
     <!-- Primary Meta Tags -->
-    <title>QuranSeekho Online - Read, Learn & Understand Holy Quran</title>
-    <meta name="title" content="QuranSeekho Online - Read, Learn & Understand Holy Quran">
-    <meta name="description" content="A clean, distraction-free Quran platform. Read all 114 Surahs with English and Urdu translations, use our Zakat calculator, and find daily Islamic guidance.">
-    <meta name="keywords" content="Quran, Read Quran Online, Urdu Translation, English Translation, QuranSeekho, Islamic Guidance, Zakat Calculator, Prayer Times">
+    <title>Read Quran Online – Surah & Sipara | QuranSeekho</title>
+    <meta name="title" content="Read Quran Online – Surah & Sipara | QuranSeekho">
+    <meta name="description" content="Read and listen to the Holy Quran online at QuranSeekho. Explore all 114 Surahs and 30 Juz with English and Urdu translations in a clean, ad-free environment.">
+    <meta name="keywords" content="Read Quran Online, Quran Surah, Quran Juz, Quran English Translation, Quran Urdu Translation, QuranSeekho, Islamic Guidance, Prayer Times">
     <meta name="author" content="QuranSeekho">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://quranseekho.online/">
+    <meta property="og:title" content="Read Quran Online – Surah & Sipara | QuranSeekho">
+    <meta property="og:description" content="The ultimate platform to read, listen, and understand the Holy Quran. Complete with translations, prayer times, and spiritual tools.">
 
     <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />
 
@@ -64,8 +69,9 @@
         .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; }
         
         .quran-text { 
-            line-height: 2.8 !important;
-            word-spacing: 0.15em;
+            line-height: 3.2 !important; /* Increased for better tashkeel clearance */
+            word-spacing: 0.25em;
+            padding: 0.5rem 0;
         }
         
         /* Focus Mode Overrides */
@@ -95,6 +101,13 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+        }
+
+        .sticky-reader-nav {
+            position: sticky;
+            top: 64px;
+            z-index: 40;
+            backdrop-filter: blur(8px);
         }
     </style>
 <script type="importmap">

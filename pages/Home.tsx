@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah, ISLAMIC_EVENTS } from '../services/quranApi';
 import { PrayerTimes } from '../types';
@@ -134,15 +133,15 @@ const Home: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700 pb-12">
-      {/* Hero Banner */}
+      {/* Hero Banner with SEO H1 */}
       <section className="relative overflow-hidden rounded-3xl bg-green-800 p-8 md:p-12 text-white shadow-xl shadow-green-900/20">
         <div className="relative z-10 max-w-2xl">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">Welcome to QuranSeekho</h1>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">Read Quran Online – Surah & Sipara | QuranSeekho</h1>
           <p className="text-green-100 text-lg md:text-xl mb-8 opacity-90">
-            Read, study, and understand the Holy Quran in a beautiful, distraction-free environment.
+            Welcome to QuranSeekho. Explore the Holy Quran in a beautiful, distraction-free environment. Access all 114 Surahs and 30 Juz with accurate English and Urdu translations, audio recitations, and more.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link to="/surah" className="px-6 py-3 bg-white text-green-800 rounded-xl font-bold hover:bg-green-50 transition-colors shadow-lg">Start Reading</Link>
+            <Link to="/surah" className="px-6 py-3 bg-white text-green-800 rounded-xl font-bold hover:bg-green-50 transition-colors shadow-lg">Browse Surahs</Link>
             
             {!isInstalled && deferredPrompt && (
               <button 
@@ -154,8 +153,8 @@ const Home: React.FC = () => {
             )}
             
             {(isInstalled || !deferredPrompt) && (
-              <Link to="/calendar" className="px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center gap-2">
-                <Calendar size={18} /> View Calendar
+              <Link to="/juz" className="px-6 py-3 bg-green-700 text-white border border-green-600 rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center gap-2">
+                <BookOpen size={18} /> Browse by Juz
               </Link>
             )}
           </div>
@@ -164,6 +163,13 @@ const Home: React.FC = () => {
         <div className="absolute bottom-0 right-12 opacity-10 pointer-events-none hidden lg:block">
            <Book size={300} strokeWidth={0.5} />
         </div>
+      </section>
+
+      {/* Intro for SEO */}
+      <section className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-green-100 dark:border-slate-700">
+        <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-center max-w-4xl mx-auto">
+          QuranSeekho is designed to provide an immersive reading experience for students of knowledge. Whether you are seeking a specific <strong>Surah</strong>, browsing by <strong>Juz (Sipara)</strong>, or looking for <strong>Daily Adhkar</strong>, our platform offers a seamless interface for both desktop and mobile users. Our goal is to spread the light of the Quran to every heart.
+        </p>
       </section>
 
       {/* Grid for Main Content */}
@@ -264,7 +270,7 @@ const Home: React.FC = () => {
         {/* Right Sidebar */}
         <div className="space-y-6">
           
-          {/* Upcoming Events Section - NEW */}
+          {/* Upcoming Events Section */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-green-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold flex items-center gap-2">
