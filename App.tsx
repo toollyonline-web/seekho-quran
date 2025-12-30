@@ -12,6 +12,7 @@ import AsmaUlHusna from './pages/AsmaUlHusna';
 import Tasbeeh from './pages/Tasbeeh';
 import DuaLibrary from './pages/DuaLibrary';
 import HadithLibrary from './pages/HadithLibrary';
+import PropheticStories from './pages/PropheticStories';
 import ZakatCalculator from './pages/ZakatCalculator';
 import IslamicCalendar from './pages/IslamicCalendar';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -147,6 +148,7 @@ const App: React.FC = () => {
           <Route path="/tasbeeh" element={<Tasbeeh />} />
           <Route path="/duas" element={<DuaLibrary />} />
           <Route path="/hadith" element={<HadithLibrary />} />
+          <Route path="/prophetic-stories" element={<PropheticStories />} />
           <Route path="/zakat" element={<ZakatCalculator />} />
           <Route path="/calendar" element={<IslamicCalendar />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
