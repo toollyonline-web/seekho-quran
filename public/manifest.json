@@ -12,28 +12,36 @@
   "categories": ["education", "books", "reference"],
   "icons": [
     {
-      "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s320/Gold%20Black%20Crown%20x%20Crown%20Logo.png",
+      "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s192/Gold%20Black%20Crown%20x%20Crown%20Logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s320/Gold%20Black%20Crown%20x%20Crown%20Logo.png",
+      "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s512/Gold%20Black%20Crown%20x%20Crown%20Logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
     {
       "name": "Surah List",
       "url": "/surah",
-      "icons": [{ "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s320/Gold%20Black%20Crown%20x%20Crown%20Logo.png", "sizes": "96x96" }]
+      "icons": [{ 
+        "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s96/Gold%20Black%20Crown%20x%20Crown%20Logo.png", 
+        "sizes": "96x96",
+        "type": "image/png"
+      }]
     },
     {
       "name": "Tasbeeh Counter",
       "url": "/tasbeeh",
-      "icons": [{ "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s320/Gold%20Black%20Crown%20x%20Crown%20Logo.png", "sizes": "96x96" }]
+      "icons": [{ 
+        "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQloMUtfEGTWAkP5ZKs22o8S56Hmr75PhC3y0auvVe4Y9wc8lIknYooYkH991aRXYZAfdZZw0gdNrzPgFD7f3G6tfSyai2n3-0M1XGMTEpdNL-gU-Pq_JA71LhwLAnv3xfKrX1-wolNdjapnr7-czq2n8SxqUqv0ggNyj-G_Fi7dBdnuZ9uN9bMcjGQpg_/s96/Gold%20Black%20Crown%20x%20Crown%20Logo.png", 
+        "sizes": "96x96",
+        "type": "image/png"
+      }]
     }
   ]
 }
