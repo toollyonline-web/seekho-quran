@@ -10,14 +10,14 @@ const Donation: React.FC = () => {
     {
       name: 'EasyPaisa',
       accountName: 'Quran Seekho Admin',
-      number: '0300-1234567', // USER: Replace with your actual number
+      number: '0316-5864192',
       color: 'bg-[#1fb35a]',
       icon: 'EP'
     },
     {
       name: 'JazzCash',
       accountName: 'Quran Seekho Admin',
-      number: '0301-7654321', // USER: Replace with your actual number
+      number: '0316-5864192',
       color: 'bg-[#ffcc00] text-black',
       icon: 'JC'
     }
