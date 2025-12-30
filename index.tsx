@@ -15,16 +15,13 @@ root.render(
   </React.StrictMode>
 );
 
-// Simplified Service Worker Registration for better PWA scanner compatibility
+// Register Service Worker
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then((reg) => {
-        console.log('SW registered:', reg.scope);
-      })
-      .catch((err) => {
-        console.log('SW registration failed:', err);
-      });
-  });
+  navigator.serviceWorker.register('/sw.js')
+    .then(registration => {
+      console.log('SW registered with scope:', registration.scope);
+    })
+    .catch(error => {
+      console.error('SW registration failed:', error);
+    });
 }
