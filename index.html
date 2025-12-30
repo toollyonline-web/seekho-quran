@@ -12,13 +12,17 @@
     <meta name="keywords" content="Read Quran Online, Quran Surah, Quran Juz, Quran English Translation, Quran Urdu Translation, QuranSeekho, Islamic Guidance, Prayer Times">
     <meta name="author" content="QuranSeekho">
 
+    <!-- SEO: Canonical Link (Crucial for SPAs) -->
+    <link rel="canonical" href="https://quranseekho.online/" />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://quranseekho.online/">
     <meta property="og:title" content="Read Quran Online – Surah & Sipara | QuranSeekho">
     <meta property="og:description" content="The ultimate platform to read, listen, and understand the Holy Quran. Complete with translations, prayer times, and spiritual tools.">
 
-    <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="PASTE_YOUR_VERIFICATION_CODE_HERE" />
 
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -51,7 +55,6 @@
           -webkit-font-smoothing: antialiased;
         }
         
-        /* Sepia Theme Styles */
         .sepia { background-color: var(--sepia-bg); color: var(--sepia-text); }
         .sepia .bg-white { background-color: #fcf9f2; }
         .sepia .dark\:bg-slate-800 { background-color: #fcf9f2; }
@@ -69,12 +72,11 @@
         .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; }
         
         .quran-text { 
-            line-height: 3.2 !important; /* Increased for better tashkeel clearance */
+            line-height: 3.2 !important; 
             word-spacing: 0.25em;
             padding: 0.5rem 0;
         }
         
-        /* Focus Mode Overrides */
         .focus-mode-active .main-layout-header,
         .focus-mode-active .main-layout-footer {
             opacity: 0.1;

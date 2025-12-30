@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Github, Twitter, Mail, Calendar, Play, Pause, Coins, FileText } from 'lucide-react';
@@ -28,6 +27,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    // Dynamic Canonical Tag for SEO
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      canonical.setAttribute('href', `https://quranseekho.online${location.pathname}`);
+    }
+
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
     window.addEventListener('online', handleOnline);
@@ -36,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [location.pathname]);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
@@ -54,8 +59,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Tasbeeh', path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
   ];
 
+  // Schema.org Structured Data for Google
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "QuranSeekho Online",
+    "url": "https://quranseekho.online/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://quranseekho.online/surah?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-green-50 text-slate-900'}`}>
+      <script type="application/ld+json">
+        {JSON.stringify(schemaMarkup)}
+      </script>
+
       {isOffline && (
         <div className="bg-amber-600 text-white text-[10px] py-1 px-4 flex items-center justify-center gap-2 font-bold uppercase tracking-widest z-[70] relative">
           <WifiOff size={12} /> Offline Mode - Some features may be limited
