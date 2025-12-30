@@ -24,11 +24,24 @@ export const fetchJuzDetail = async (id: number): Promise<any> => {
   return data.data;
 };
 
-export const fetchPrayerTimes = async (lat: number, lng: number): Promise<PrayerTimes> => {
-  const date = new Date().toLocaleDateString('en-GB').split('/').join('-');
-  const res = await fetch(`${PRAYER_URL}/timings/${date}?latitude=${lat}&longitude=${lng}&method=2`);
+export const searchAyah = async (query: string): Promise<any> => {
+  if (!query || query.length < 3) return null;
+  const res = await fetch(`${BASE_URL}/search/${query}/all/en.sahih`);
   const data = await res.json();
-  return data.data.timings;
+  return data.data;
+};
+
+export const fetchPrayerTimes = async (lat: number, lng: number): Promise<PrayerTimes> => {
+  try {
+    const date = new Date().toLocaleDateString('en-GB').split('/').join('-');
+    const res = await fetch(`${PRAYER_URL}/timings/${date}?latitude=${lat}&longitude=${lng}&method=2`);
+    if (!res.ok) throw new Error("Prayer times API failed");
+    const data = await res.json();
+    return data.data.timings;
+  } catch (err) {
+    console.warn("Using fallback prayer times due to error:", err);
+    throw err;
+  }
 };
 
 export const fetchRandomAyah = async (): Promise<any> => {

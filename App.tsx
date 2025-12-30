@@ -20,6 +20,7 @@ import TermsAndConditions from './pages/TermsAndConditions';
 import Feedback from './pages/Feedback';
 import Donation from './pages/Donation';
 import QiblaFinder from './pages/QiblaFinder';
+import Search from './pages/Search';
 import { Heart, Globe, ShieldCheck, Mail, Share2, MessageSquare, User, Code2, Sparkles, Coffee } from 'lucide-react';
 
 const AboutPage = () => {
@@ -49,7 +50,6 @@ const AboutPage = () => {
         <div className="mt-4 inline-block px-4 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-[10px] font-black uppercase tracking-[0.2em]">Release v1.0.8-Official</div>
       </div>
 
-      {/* Creator Bio Section */}
       <section className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-[3rem] border dark:border-slate-700 shadow-sm mb-12 relative overflow-hidden">
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
           <div className="md:col-span-4 flex justify-center">
@@ -94,7 +94,6 @@ const AboutPage = () => {
         </div>
       </div>
 
-      {/* Donation Section */}
       <section className="bg-green-800 text-white p-10 md:p-14 rounded-[3rem] shadow-2xl text-center relative overflow-hidden">
         <div className="relative z-10">
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-8">
@@ -138,6 +137,7 @@ const App: React.FC = () => {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/surah" element={<SurahList />} />
           <Route path="/surah/:id" element={<SurahReader />} />
           <Route path="/juz" element={<JuzList />} />

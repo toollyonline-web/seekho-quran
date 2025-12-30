@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass, Gavel, Quote, ArrowRight, Book, Sparkles, Languages, Sliders, Type } from 'lucide-react';
+import { Clock, BookOpen, Star, Heart, Hash, Sun, Moon, Menu, X, WifiOff, Calendar, Play, Pause, Coins, FileText, Coffee, Shield, MessageSquare, Compass, Gavel, Quote, ArrowRight, Book, Sparkles, Languages, Sliders, Type, Search as SearchIcon } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { getHijriDate } from '../services/quranApi';
 import { translations, Language } from '../services/i18n';
@@ -42,6 +42,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setLanguage(initialLang);
     setFontScale(initialScale);
     setHijriDate(getHijriDate());
+
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const applyLanguage = (lang: Language) => {
@@ -76,10 +86,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: t.nav.home, path: '/', icon: <Clock size={20} /> },
     { name: t.nav.surah, path: '/surah', icon: <BookOpen size={20} /> },
-    { name: t.nav.qibla, path: '/qibla', icon: <Compass size={20} className="text-blue-500" /> },
-    { name: t.nav.duas, path: '/duas', icon: <Star size={20} className="text-yellow-500" /> },
-    { name: t.nav.zakat, path: '/zakat', icon: <Coins size={20} className="text-amber-500" /> },
-    { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} className="text-orange-500" /> },
+    { name: "Search", path: '/search', icon: <SearchIcon size={20} /> },
+    { name: t.nav.duas, path: '/duas', icon: <Star size={20} /> },
+    { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} /> },
   ];
 
   return (
@@ -91,7 +100,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       
       {isOffline && (
         <div className="bg-amber-600 text-white text-[10px] py-1 px-4 flex items-center justify-center gap-2 font-bold uppercase tracking-widest z-[70] relative">
-          <WifiOff size={12} /> Offline Mode - Some features may be limited
+          <WifiOff size={12} /> Offline Mode - Using Cached Content
         </div>
       )}
 
@@ -153,7 +162,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         theme === 'dark' ? 'bg-slate-900/90 border-slate-800' : 
         theme === 'sepia' ? 'bg-[#fdf6e3]/90 border-[#eee8d5]' : 
         'bg-white/90 border-green-100'
-      } backdrop-blur-md`}>
+      } backdrop-blur-md safe-top`}>
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-900/20">QS</div>
@@ -230,7 +239,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         theme === 'dark' ? 'bg-slate-950 text-white' : 
         theme === 'sepia' ? 'bg-[#eee8d5]' : 
         'bg-white'
-      } border-t dark:border-slate-800 overflow-hidden`}>
+      } border-t dark:border-slate-800 overflow-hidden pb-20 lg:pb-0`}>
         <div className="container mx-auto px-6 py-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
@@ -313,11 +322,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </footer>
 
+      {/* Mobile Bottom Navigation - Improved with Safe Areas */}
       <div className={`lg:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex justify-around items-center px-2 z-[90] ${
-        theme === 'dark' ? 'bg-slate-900/90 border-slate-800' : 
-        theme === 'sepia' ? 'bg-[#fdf6e3]/90 border-[#eee8d5]' : 
-        'bg-white/90 border-green-100'
-      } backdrop-blur-lg shadow-[0_-10px_30px_rgba(0,0,0,0.05)]`}>
+        theme === 'dark' ? 'bg-slate-900/95 border-slate-800' : 
+        theme === 'sepia' ? 'bg-[#fdf6e3]/95 border-[#eee8d5]' : 
+        'bg-white/95 border-green-100'
+      } backdrop-blur-lg shadow-[0_-10px_30px_rgba(0,0,0,0.05)] safe-bottom`}>
         {navItems.map((item) => (
           <Link
             key={item.path}

@@ -1,14 +1,16 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { fetchPrayerTimes, fetchRandomAyah, ISLAMIC_EVENTS, getHijriParts } from '../services/quranApi';
 import { PrayerTimes } from '../types';
 import { 
   MapPin, Clock, Book, BookOpen, Star, Info, ArrowRight, Download, Quote, 
   Smartphone, Heart, Sparkles, ShieldCheck, Sun, CheckCircle2, Circle, 
-  Calendar, Share2, Compass, Hash, PlayCircle, Target, Zap, LayoutGrid, Coins
+  Calendar, Share2, Compass, Hash, PlayCircle, Target, Zap, LayoutGrid, Coins,
+  RefreshCcw, Search as SearchIcon
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { translations, Language } from '../services/i18n';
+import PermissionModal from '../components/PermissionModal';
 
 const PopularSurahs = [
   { id: 36, name: 'Yaseen', arabic: 'يس', translation: 'The Heart of Quran' },
@@ -42,9 +44,9 @@ const KNOWLEDGE_BASE = [
 
 const Home: React.FC = () => {
   const [prayers, setPrayers] = useState<PrayerTimes | null>(null);
-  const [dailyAyah, setDailyAyah] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [sunnahs, setSunnahs] = useState<Record<string, boolean>>({});
   const [lastRead, setLastRead] = useState<any>(null);
   const [readingProgress, setReadingProgress] = useState({ count: 0, goal: 5 });
@@ -53,6 +55,35 @@ const Home: React.FC = () => {
 
   const currentLang = (localStorage.getItem('language') as Language) || 'en';
   const t = translations[currentLang];
+
+  const initData = useCallback(async (withLocation = false) => {
+    try {
+      const hParts = getHijriParts();
+      setHijri(hParts);
+
+      if (withLocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            const p = await fetchPrayerTimes(latitude, longitude);
+            setPrayers(p);
+          },
+          async () => {
+            const p = await fetchPrayerTimes(21.4225, 39.8262); // Mecca fallback
+            setPrayers(p);
+          }
+        );
+      } else {
+        const p = await fetchPrayerTimes(21.4225, 39.8262); // Mecca default
+        setPrayers(p);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
     const today = new Date().toDateString();
@@ -63,6 +94,12 @@ const Home: React.FC = () => {
 
     // Load knowledge of the day
     setDidYouKnow(KNOWLEDGE_BASE[Math.floor(Math.random() * KNOWLEDGE_BASE.length)]);
+
+    // Check location permission
+    const hasAsked = localStorage.getItem('qs_location_asked');
+    if (!hasAsked) {
+      setShowPermissionModal(true);
+    }
 
     // Load Sunnahs
     const savedSunnahs = localStorage.getItem('qs_sunnah_today');
@@ -90,31 +127,27 @@ const Home: React.FC = () => {
       setReadingProgress({ count: 0, goal: savedGoal ? parseInt(savedGoal) : 5 });
     }
 
-    const initData = async () => {
-      try {
-        const hParts = getHijriParts();
-        setHijri(hParts);
+    initData(localStorage.getItem('qs_location_allowed') === 'true');
+  }, [initData]);
 
-        navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            const { latitude, longitude } = pos.coords;
-            setLocation({ lat: latitude, lng: longitude });
-            const p = await fetchPrayerTimes(latitude, longitude);
-            setPrayers(p);
-          },
-          async () => {
-            const p = await fetchPrayerTimes(21.4225, 39.8262); // Mecca fallback
-            setPrayers(p);
-          }
-        );
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    initData();
-  }, []);
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    initData(localStorage.getItem('qs_location_allowed') === 'true');
+  };
+
+  const handleAcceptPermission = () => {
+    localStorage.setItem('qs_location_asked', 'true');
+    localStorage.setItem('qs_location_allowed', 'true');
+    setShowPermissionModal(false);
+    initData(true);
+  };
+
+  const handleDeclinePermission = () => {
+    localStorage.setItem('qs_location_asked', 'true');
+    localStorage.setItem('qs_location_allowed', 'false');
+    setShowPermissionModal(false);
+    initData(false);
+  };
 
   const toggleSunnah = (id: string) => {
     const newSunnahs = { ...sunnahs, [id]: !sunnahs[id] };
@@ -133,7 +166,7 @@ const Home: React.FC = () => {
     }
   };
 
-  const upcomingEvents = ISLAMIC_EVENTS.slice(0, 3); // Simple logic for demonstration
+  const upcomingEvents = ISLAMIC_EVENTS.slice(0, 3);
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -142,7 +175,16 @@ const Home: React.FC = () => {
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 pb-12">
+    <div className="space-y-8 animate-in fade-in duration-700 pb-12 relative">
+      {showPermissionModal && (
+        <PermissionModal onAccept={handleAcceptPermission} onDecline={handleDeclinePermission} />
+      )}
+
+      {/* Pull to refresh visual */}
+      <div className={`flex justify-center transition-all duration-300 ${isRefreshing ? 'h-10 opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
+        <RefreshCcw size={20} className="animate-spin text-green-600" />
+      </div>
+
       {/* Hero Banner */}
       <section className="relative overflow-hidden rounded-[2.5rem] bg-green-800 p-8 md:p-14 text-white shadow-2xl shadow-green-950/20">
         <div className="relative z-10 max-w-2xl">
@@ -153,8 +195,8 @@ const Home: React.FC = () => {
           <p className="text-green-100 text-lg md:text-xl mb-10 opacity-90 font-medium">{t.home.heroSubtitle}</p>
           <div className="flex flex-wrap gap-4">
             <Link to="/surah" className="px-8 py-4 bg-white text-green-800 rounded-2xl font-black hover:bg-green-50 transition-all shadow-xl hover:scale-105 active:scale-95">{t.home.browseSurahs}</Link>
-            <button onClick={handleShareApp} className="flex items-center gap-3 px-8 py-4 bg-green-700 text-white border border-green-600/50 rounded-2xl font-black hover:bg-green-600 transition-all shadow-lg">
-              <Share2 size={20} /> {t.home.shareApp}
+            <button onClick={handleRefresh} className="px-8 py-4 bg-green-700/50 text-white rounded-2xl font-black border border-white/10 hover:bg-green-600 transition-all shadow-lg active:scale-95">
+              <RefreshCcw size={20} className={isRefreshing ? 'animate-spin' : ''} />
             </button>
           </div>
         </div>
@@ -190,8 +232,9 @@ const Home: React.FC = () => {
         <h2 className="text-xl font-black flex items-center gap-2 px-1 uppercase tracking-wider text-slate-400 text-xs">
           <LayoutGrid size={16} /> {t.home.quickActions}
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {[
+            { label: "Search Ayah", path: '/search', icon: <SearchIcon className="text-emerald-500" />, bg: 'bg-emerald-50 dark:bg-emerald-900/10' },
             { label: t.nav.qibla, path: '/qibla', icon: <Compass className="text-blue-500" />, bg: 'bg-blue-50 dark:bg-blue-900/10' },
             { label: t.nav.zakat, path: '/zakat', icon: <Coins className="text-amber-500" />, bg: 'bg-amber-50 dark:bg-amber-900/10' },
             { label: t.nav.duas, path: '/duas', icon: <Star className="text-yellow-500" />, bg: 'bg-yellow-50 dark:bg-yellow-900/10' },
@@ -201,7 +244,7 @@ const Home: React.FC = () => {
               <div className={`w-12 h-12 ${action.bg} rounded-2xl flex items-center justify-center shadow-inner`}>
                 {action.icon}
               </div>
-              <span className="text-sm font-black text-slate-600 dark:text-slate-300">{action.label}</span>
+              <span className="text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-tighter text-center">{action.label}</span>
             </Link>
           ))}
         </div>
@@ -253,7 +296,6 @@ const Home: React.FC = () => {
             </section>
           </div>
 
-          {/* Popular Surahs (Existing) */}
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-black flex items-center gap-2">
@@ -276,25 +318,9 @@ const Home: React.FC = () => {
               ))}
             </div>
           </section>
-
-          {/* Moods (Existing) */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-black flex items-center gap-2">
-              <Heart className="text-rose-500 fill-rose-500" size={24} /> {t.home.moodTitle}
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {MOODS.map((mood) => (
-                <Link key={mood.name} to={`/surah/${mood.surahId}`} className={`flex items-center justify-between p-6 rounded-[2rem] shadow-sm border border-transparent hover:border-white/20 transition-all hover:scale-105 active:scale-95 ${mood.color}`}>
-                  <span className="font-black text-sm uppercase tracking-wider">{mood.name}</span>
-                  {mood.icon}
-                </Link>
-              ))}
-            </div>
-          </section>
         </div>
 
         <div className="space-y-6">
-          {/* Prayer Times (Existing) */}
           <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-sm border dark:border-slate-700">
             <h2 className="text-xl font-black mb-8 flex items-center gap-3">
               <Clock className="text-green-600" size={24} /> {t.home.prayerTimes}
@@ -309,11 +335,13 @@ const Home: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="flex justify-center py-8 animate-spin text-green-600"><Clock size={32} /></div>
+              <div className="flex flex-col items-center py-8 gap-4">
+                <div className="animate-spin text-green-600"><Clock size={32} /></div>
+                <p className="text-xs text-slate-400 font-bold uppercase">Updating Times...</p>
+              </div>
             )}
           </div>
 
-          {/* 5. Upcoming Islamic Events */}
           <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-sm border dark:border-slate-700">
             <h2 className="text-xl font-black mb-8 flex items-center gap-3">
               <Calendar className="text-blue-500" size={24} /> {t.home.upcomingEvents}
@@ -334,24 +362,6 @@ const Home: React.FC = () => {
             <Link to="/calendar" className="mt-6 w-full py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-green-600 transition-all border-t dark:border-slate-700 pt-6">
               Full Calendar <ArrowRight size={14} />
             </Link>
-          </div>
-
-          {/* Daily Sunnahs (Existing) */}
-          <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-sm border dark:border-slate-700">
-            <h2 className="text-xl font-black mb-8 flex items-center gap-3">
-              <Sparkles className="text-yellow-500" size={24} /> {t.home.dailySunnahs}
-            </h2>
-            <div className="space-y-4">
-              {DAILY_SUNNAHS.map((sunnah) => (
-                <button key={sunnah.id} onClick={() => toggleSunnah(sunnah.id)} className="w-full flex items-start gap-4 p-4 rounded-[1.5rem] border dark:border-slate-700 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-900">
-                  {sunnahs[sunnah.id] ? <CheckCircle2 className="text-green-600 shrink-0" /> : <Circle className="text-slate-300 shrink-0" />}
-                  <div>
-                    <p className={`font-bold text-sm ${sunnahs[sunnah.id] ? 'line-through opacity-50' : 'text-slate-900 dark:text-white'}`}>{sunnah.label}</p>
-                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">{sunnah.detail}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </div>

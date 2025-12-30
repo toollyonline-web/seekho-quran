@@ -3,7 +3,7 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <meta name="theme-color" content="#166534">
     
     <!-- PWA / Native App Meta Tags -->
@@ -59,13 +59,20 @@
         html {
             scroll-behavior: smooth;
             font-size: calc(16px * var(--ui-scale));
+            overflow-x: hidden;
         }
 
         body { 
           font-family: 'Inter', sans-serif; 
           text-rendering: optimizeLegibility;
           -webkit-font-smoothing: antialiased;
+          overflow-x: hidden;
+          padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
+
+        /* Safe Areas */
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); height: calc(4rem + env(safe-area-inset-bottom)); }
 
         /* Language-specific Typography */
         [lang="ur"] { font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif !important; }
@@ -119,6 +126,11 @@
             background-clip: content-box;
         }
         ::-webkit-scrollbar-thumb:hover { background-color: #14532d; }
+
+        /* Over-scroll bounce for native feel */
+        body {
+            overscroll-behavior-y: contain;
+        }
     </style>
 <script type="importmap">
 {
