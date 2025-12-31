@@ -25,10 +25,8 @@ const fetchWithRetry = async (url: string, retries = 3, timeout = 15000) => {
     try {
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), timeout);
-      
       const response = await fetch(url, { signal: controller.signal });
       clearTimeout(id);
-      
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return await response.json();
     } catch (err) {
@@ -52,27 +50,22 @@ export const fetchSurahDetail = async (id: number): Promise<any> => {
   try {
     const editions = ['quran-uthmani', 'quran-tajweed', 'en.sahih', 'ur.jalandhara'];
     const data = await fetchWithRetry(`${BASE_URL}/surah/${id}/editions/${editions.join(',')}`);
-    return data.data;
+    return data.data; // This returns an array of editions
   } catch (err) {
-    console.warn("Multi-edition fetch failed, falling back to basic Uthmani.");
-    // Fallback: If combined request fails, try to at least get the Arabic text
-    try {
-      const data = await fetchWithRetry(`${BASE_URL}/surah/${id}/quran-uthmani`);
-      return [data.data];
-    } catch (fallbackErr) {
-      throw new Error("Unable to connect to Quran servers. Please try again later.");
-    }
+    console.warn("Multi-edition fetch failed, trying basic Uthmani fallback.");
+    const data = await fetchWithRetry(`${BASE_URL}/surah/${id}/quran-uthmani`);
+    return [data.data]; // Wrap in array to match expected component logic
   }
 };
 
 export const fetchJuzDetail = async (id: number): Promise<any> => {
   try {
-    // Note: The AlQuran API juz endpoint doesn't support the /editions/ pattern natively in the same way surah does
-    // We fetch Uthmani for Juz and return as array for consistency
+    // AlQuran Cloud Juz endpoint doesn't support the multi-edition /editions/ suffix
+    // We fetch primary Uthmani text and return as a single-element array
     const data = await fetchWithRetry(`${BASE_URL}/juz/${id}/quran-uthmani`);
     return [data.data];
   } catch (err) {
-    throw new Error("Failed to load Juz detail");
+    throw new Error("Juz connection failed.");
   }
 };
 
@@ -115,9 +108,7 @@ export const getAyahAudioUrl = (ayahGlobalNumber: number, reciterId: string = 'a
 export const getHijriParts = (date: Date = new Date()) => {
   try {
     const parts = new Intl.DateTimeFormat('en-u-ca-islamic-uma-nu-latn', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+      day: 'numeric', month: 'long', year: 'numeric'
     }).formatToParts(date);
     const res: any = {};
     parts.forEach(p => res[p.type] = p.value);
