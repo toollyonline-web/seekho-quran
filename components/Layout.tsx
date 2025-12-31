@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   Home as HomeIcon, BookOpen, Star, Hash, 
   Search as SearchIcon, Heart, X, Menu,
-  Mail, ShieldCheck, Github, Twitter, Compass, MapPin
+  Mail, ShieldCheck, Compass, ArrowUp
 } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { translations, Language } from '../services/i18n';
@@ -23,7 +23,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
-    // Close menu on route change
     setIsMenuOpen(false);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location]);
@@ -36,6 +35,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={18} /> },
     { name: t.nav.qibla, path: '/qibla', icon: <Compass size={18} /> },
   ];
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const currentDateStr = new Date().toLocaleDateString('en-US', {
     month: 'long',
@@ -129,50 +132,85 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </main>
 
-      {/* Production Footer */}
-      <footer className="bg-[#0f1112] border-t border-white/5 mt-20 pt-20 pb-10 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-            <div className="space-y-6">
-              <Link to="/" className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-xl">QS</div>
-                <span className="font-black text-lg tracking-tight">Quran Seekho</span>
+      {/* Premium Re-designed Footer */}
+      <footer className="relative bg-[#090a0b] border-t border-white/5 mt-32 pb-16 pt-24 overflow-hidden">
+        {/* Background Decorative Element */}
+        <div className="absolute top-0 right-0 p-20 opacity-[0.02] pointer-events-none select-none">
+           <span className="text-[20rem] font-black italic leading-none">QS</span>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-8 relative z-10">
+          <div className="flex flex-col lg:flex-row justify-between gap-16 mb-24">
+            
+            {/* Branding Pillar */}
+            <div className="max-w-xs space-y-8">
+              <Link to="/" className="flex items-center gap-4 group">
+                <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-2xl transition-transform group-hover:rotate-6">QS</div>
+                <div className="flex flex-col">
+                  <span className="font-black text-xl tracking-tighter italic">Quran Seekho</span>
+                  <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.3em]">Pure Revelation</span>
+                </div>
               </Link>
-              <p className="text-slate-500 text-sm leading-relaxed italic">
-                A non-profit digital gateway to the divine revelation, designed for the modern seeker.
+              <p className="text-slate-500 text-sm leading-relaxed font-medium italic">
+                A volunteer-driven digital portal to the Holy Quran, designed to bridge faith and modern accessibility without distractions.
               </p>
+              <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/5 w-fit">
+                <ShieldCheck size={14} className="text-emerald-500" /> Ad-Free & Privacy Focused
+              </div>
             </div>
-            <div className="space-y-6">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Navigation</h4>
-              <ul className="space-y-3 text-sm font-bold text-slate-400">
-                <li><Link to="/surah" className="hover:text-emerald-500 transition-colors">Surah List</Link></li>
-                <li><Link to="/juz" className="hover:text-emerald-500 transition-colors">Juz (Sipara)</Link></li>
-                <li><Link to="/search" className="hover:text-emerald-500 transition-colors">Verse Search</Link></li>
-              </ul>
-            </div>
-            <div className="space-y-6">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Foundation</h4>
-              <ul className="space-y-3 text-sm font-bold text-slate-400">
-                <li><Link to="/about" className="hover:text-emerald-500 transition-colors">About Mission</Link></li>
-                <li><Link to="/privacy" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/donate" className="text-emerald-500 hover:underline flex items-center gap-2">Sadaqah Jariyah <Heart size={12} fill="currentColor" /></Link></li>
-              </ul>
-            </div>
-            <div className="space-y-6">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Contact</h4>
-              <div className="flex gap-4">
-                <a href="#" className="p-3 bg-white/5 rounded-xl text-slate-500 hover:text-emerald-500 transition-all"><Twitter size={18} /></a>
-                <a href="#" className="p-3 bg-white/5 rounded-xl text-slate-500 hover:text-emerald-500 transition-all"><Github size={18} /></a>
-                <a href="mailto:support@quranseekho.online" className="p-3 bg-white/5 rounded-xl text-slate-500 hover:text-emerald-500 transition-all"><Mail size={18} /></a>
+
+            {/* Navigation Grid */}
+            <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-12">
+              <div className="space-y-6">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500">Reading</h4>
+                <ul className="space-y-4 text-sm font-bold text-slate-400">
+                  <li><Link to="/surah" className="hover:text-white hover:translate-x-1 transition-all block">Surah Index</Link></li>
+                  <li><Link to="/juz" className="hover:text-white hover:translate-x-1 transition-all block">Juz Browser</Link></li>
+                  <li><Link to="/search" className="hover:text-white hover:translate-x-1 transition-all block">Verse Discovery</Link></li>
+                </ul>
+              </div>
+              <div className="space-y-6">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500">Tools</h4>
+                <ul className="space-y-4 text-sm font-bold text-slate-400">
+                  <li><Link to="/tasbeeh" className="hover:text-white hover:translate-x-1 transition-all block">Tasbeeh Counter</Link></li>
+                  <li><Link to="/qibla" className="hover:text-white hover:translate-x-1 transition-all block">Qibla Finder</Link></li>
+                  <li><Link to="/zakat" className="hover:text-white hover:translate-x-1 transition-all block">Zakat Calculator</Link></li>
+                </ul>
+              </div>
+              <div className="space-y-6">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500">Foundation</h4>
+                <ul className="space-y-4 text-sm font-bold text-slate-400">
+                  <li><Link to="/about" className="hover:text-white hover:translate-x-1 transition-all block">Our Mission</Link></li>
+                  <li><Link to="/privacy" className="hover:text-white hover:translate-x-1 transition-all block">Privacy Policy</Link></li>
+                  <li><Link to="/donate" className="text-emerald-500 hover:text-emerald-400 flex items-center gap-2 group transition-all">
+                    Support <Heart size={14} className="group-hover:fill-current" />
+                  </Link></li>
+                </ul>
               </div>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-            <div className="flex items-center gap-2">
-              <ShieldCheck size={14} className="text-emerald-600" /> Secure & Ad-Free
+
+          {/* Bottom Bar */}
+          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+               <a href="mailto:support@quranseekho.online" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-emerald-500 transition-colors">
+                  <Mail size={16} /> support@quranseekho.online
+               </a>
+               <div className="text-[10px] font-black uppercase tracking-widest text-slate-600">
+                  © {new Date().getFullYear()} Quran Seekho
+               </div>
             </div>
-            <div className="flex items-center gap-2 italic">
-              Crafted by <span className="text-[#f4f5f6]">Huzaifa Bin Sardar</span>
+            
+            <button 
+              onClick={scrollToTop}
+              className="p-4 bg-white/5 rounded-2xl hover:bg-emerald-600 hover:text-white transition-all border border-white/5 group shadow-xl"
+              aria-label="Back to top"
+            >
+              <ArrowUp size={20} className="group-hover:-translate-y-1 transition-transform" />
+            </button>
+
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2">
+              Developed by <span className="text-white italic font-black underline decoration-emerald-500/50 underline-offset-4">Huzaifa Bin Sardar</span>
             </div>
           </div>
         </div>

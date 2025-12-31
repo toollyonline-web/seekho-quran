@@ -21,7 +21,7 @@ const SurahReader: React.FC = () => {
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
   const [hifzMode, setHifzMode] = useState(false);
-  const [tajweedMode, setTajweedMode] = useState(true);
+  const [tajweedMode, setTajweedMode] = useState(false); // Changed from true to false
   const [revealedAyahs, setRevealedAyahs] = useState<Set<number>>(new Set());
   
   const [fontSize, setFontSize] = useState(38);
