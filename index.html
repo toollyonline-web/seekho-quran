@@ -1,115 +1,82 @@
 
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#0b0c0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <title>Quran Seekho | Read, Study, and Explore the Noble Quran</title>
-    <meta name="description" content="A modern, ad-free Quran platform inspired by quran.com. Experience the divine word with multiple translations and high-quality audio.">
+    <title>Quran Seekho | Read, Study, and Explore</title>
+    <meta name="description" content="A modern, ad-free Quran platform. Experience the divine word with multiple translations and high-quality audio.">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     
-    <script>
-        (function() {
-            const theme = localStorage.getItem('theme') || 'light';
-            document.documentElement.classList.remove('dark', 'sepia');
-            if (theme !== 'light') document.documentElement.classList.add(theme);
-        })();
-    </script>
-
     <style>
         :root {
-            --quran-primary: #2ca4ab;
-            --quran-bg: #f4f5f6;
+            --quran-primary: #10b981;
+            --quran-bg: #0b0c0d;
         }
 
         body { 
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             background-color: var(--quran-bg);
-            color: #1f2124;
-        }
-
-        .dark body {
-            background-color: #0b0c0d;
             color: #f4f5f6;
         }
 
         .font-arabic { 
             font-family: 'Amiri', serif; 
-            line-height: 2.5; 
+            line-height: 2.2; 
             direction: rtl; 
-            font-size: 1.25em;
+            font-size: 1.35em;
         }
 
         .font-urdu { 
             font-family: 'Noto Nastaliq Urdu', serif; 
-            line-height: 3; 
+            line-height: 2.8; 
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .dark .glass {
-            background: rgba(18, 18, 18, 0.8);
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .btn-primary {
-            background-color: var(--quran-primary);
-            color: white;
-            transition: all 0.2s ease;
-        }
-        .btn-primary:hover {
-            filter: brightness(0.9);
-        }
-
         .quran-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            transition: all 0.2s ease;
+            background: #121415;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .dark .quran-card {
-            background: #181a1b;
-            border-color: #2c2e30;
-        }
+        
         .quran-card:hover {
             border-color: var(--quran-primary);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            background: #161819;
+            transform: translateY(-2px);
         }
 
         .page-transition {
-            animation: fadeIn 0.3s ease-out forwards;
+            animation: fadeIn 0.4s ease-out forwards;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Quran.com style Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        .dark ::-webkit-scrollbar-thumb {
             background: #334155;
+            border-radius: 10px;
         }
     </style>
 
@@ -120,9 +87,9 @@
     "react-dom": "https://esm.sh/react-dom@19.0.0",
     "react-router-dom": "https://esm.sh/react-router-dom@7.1.3",
     "lucide-react": "https://esm.sh/lucide-react@0.474.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
     "vite": "https://esm.sh/vite@^7.3.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }

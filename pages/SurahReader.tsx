@@ -1,12 +1,11 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, getSurahAudioUrl } from '../services/quranApi';
+import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl } from '../services/quranApi';
 import { 
   ChevronLeft, ChevronRight, X, Play, Pause, 
   Sliders, Loader2, Info, Share2, Bookmark, Settings
 } from 'lucide-react';
-import { translations, Language } from '../services/i18n';
 
 const SurahReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,8 +18,7 @@ const SurahReader: React.FC = () => {
   
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
-  const [readingTheme, setReadingTheme] = useState<'light' | 'dark' | 'sepia'>('light');
-  const [fontSize, setFontSize] = useState(38);
+  const [fontSize, setFontSize] = useState(36);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -62,7 +60,7 @@ const SurahReader: React.FC = () => {
           }));
         }
       } catch (err) { 
-        setError("Network sync error. Please check your internet connection and try again.");
+        setError("Network sync failed. This can happen on weak connections or if the API is busy. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -87,58 +85,66 @@ const SurahReader: React.FC = () => {
   };
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <div className="w-12 h-12 border-4 border-slate-200 border-t-[#2ca4ab] rounded-full animate-spin"></div>
-      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Revelation...</p>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
+      <div className="w-12 h-12 border-4 border-white/5 border-t-emerald-500 rounded-full animate-spin"></div>
+      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 animate-pulse">Loading Revelation...</p>
     </div>
   );
 
   if (error) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-8">
-      <div className="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center text-rose-600"><X size={40} /></div>
-      <div className="space-y-2">
-         <h2 className="text-2xl font-bold dark:text-white">Connection Error</h2>
-         <p className="text-slate-500 max-w-xs mx-auto text-sm">{error}</p>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 text-center px-8 page-transition">
+      <div className="w-24 h-24 bg-rose-500/10 rounded-[2.5rem] flex items-center justify-center text-rose-500 shadow-2xl border border-rose-500/20">
+         <X size={48} />
       </div>
-      <button onClick={() => window.location.reload()} className="px-10 py-4 btn-primary rounded-2xl font-bold shadow-xl">Retry Sync</button>
+      <div className="space-y-3">
+         <h2 className="text-3xl font-black">Sync Error</h2>
+         <p className="text-slate-500 max-w-sm mx-auto font-medium">{error}</p>
+      </div>
+      <button onClick={() => window.location.reload()} className="px-12 py-5 bg-emerald-600 text-white rounded-[2rem] font-black shadow-2xl hover:bg-emerald-500 transition-all uppercase tracking-widest text-xs">
+         Retry Connection
+      </button>
     </div>
   );
 
-  const arabic = data.find((e: any) => e.edition.type === 'quran' || e.edition.identifier === 'quran-uthmani');
-  const english = data.find((e: any) => e.edition.language === 'en');
-  const urdu = data.find((e: any) => e.edition.identifier === 'ur.jalandhara');
+  // Handle both array (Surah) and potentially single-object (Juz fallback) data
+  const editionsArr = Array.isArray(data) ? data : [data];
+  
+  const arabic = editionsArr.find((e: any) => e.edition.type === 'quran' || e.edition.identifier === 'quran-uthmani');
+  const english = editionsArr.find((e: any) => e.edition.language === 'en');
+  const urdu = editionsArr.find((e: any) => e.edition.identifier === 'ur.jalandhara');
 
   const title = isJuz ? `Juz ${id}` : arabic?.englishName || "Surah";
-  const subTitle = isJuz ? `Section ${id}` : `${arabic?.revelationType} • ${arabic?.numberOfAyahs} Verses`;
+  const subTitle = isJuz ? `Part of the Noble Quran` : `${arabic?.revelationType} • ${arabic?.numberOfAyahs} Verses`;
 
   return (
-    <div className={`max-w-4xl mx-auto space-y-12 pb-32 page-transition ${readingTheme === 'sepia' ? 'bg-[#fdf6e3]/50 p-6 rounded-[2rem]' : ''}`}>
+    <div className="max-w-4xl mx-auto space-y-12 pb-32 page-transition">
       
-      {/* Settings Overlay */}
+      {/* Settings Panel */}
       {isSidebarOpen && (
         <div className="fixed inset-0 z-[500] flex justify-end">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)}></div>
-          <div className="relative w-full max-w-sm h-full bg-white dark:bg-[#181a1b] shadow-2xl p-10 space-y-12 animate-in slide-in-from-right duration-300">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsSidebarOpen(false)}></div>
+          <div className="relative w-full max-w-sm h-full bg-[#0f1112] shadow-2xl p-10 space-y-12 animate-in slide-in-from-right duration-300">
              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold dark:text-white">Settings</h2>
-                <button onClick={() => setIsSidebarOpen(false)}><X size={24} className="dark:text-white" /></button>
+                <h2 className="text-2xl font-black">Display Settings</h2>
+                <button onClick={() => setIsSidebarOpen(false)} className="p-2 hover:bg-white/5 rounded-full"><X size={24} /></button>
              </div>
-             <div className="space-y-8">
+             <div className="space-y-10">
                 <div className="space-y-4">
-                  <p className="text-[10px] font-bold uppercase text-slate-400">Appearance</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {['light', 'dark', 'sepia'].map(t => (
-                      <button key={t} onClick={() => setReadingTheme(t as any)} className={`p-4 rounded-xl border-2 capitalize font-bold text-xs ${readingTheme === t ? 'border-[#2ca4ab] bg-[#2ca4ab]/5' : 'border-transparent bg-slate-50 dark:bg-slate-900'}`}>{t}</button>
-                    ))}
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Arabic Text Size</p>
+                  <input type="range" min="20" max="72" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full accent-emerald-500 bg-white/5 h-2 rounded-full appearance-none cursor-pointer" />
+                  <div className="flex justify-between text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                     <span>Normal</span>
+                     <span>Extra Large</span>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <p className="text-[10px] font-bold uppercase text-slate-400">Font Size</p>
-                  <input type="range" min="20" max="72" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full accent-[#2ca4ab]" />
-                </div>
                 <div className="space-y-3">
-                   <button onClick={() => setShowEnglish(!showEnglish)} className={`w-full flex justify-between p-4 rounded-xl font-bold text-sm ${showEnglish ? 'bg-[#2ca4ab] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>English Meaning {showEnglish ? <X size={16} /> : <Settings size={16} />}</button>
-                   <button onClick={() => setShowUrdu(!showUrdu)} className={`w-full flex justify-between p-4 rounded-xl font-bold text-sm ${showUrdu ? 'bg-[#2ca4ab] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>Urdu Translation {showUrdu ? <X size={16} /> : <Settings size={16} />}</button>
+                   <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-4">Content Toggle</p>
+                   <button onClick={() => setShowEnglish(!showEnglish)} className={`w-full flex justify-between items-center p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${showEnglish ? 'bg-emerald-600 text-white' : 'bg-white/5 text-slate-500'}`}>
+                      English Translation {showEnglish ? <X size={16} /> : <Settings size={16} />}
+                   </button>
+                   <button onClick={() => setShowUrdu(!showUrdu)} className={`w-full flex justify-between items-center p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${showUrdu ? 'bg-emerald-600 text-white' : 'bg-white/5 text-slate-500'}`}>
+                      Urdu Translation {showUrdu ? <X size={16} /> : <Settings size={16} />}
+                   </button>
                 </div>
              </div>
           </div>
@@ -146,48 +152,55 @@ const SurahReader: React.FC = () => {
       )}
 
       {/* Header Info */}
-      <div className="text-center space-y-4 pt-8">
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight dark:text-white">{title}</h1>
-        <div className="flex items-center justify-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-400">
-           <span>{subTitle}</span>
-           <button onClick={() => setIsSidebarOpen(true)} className="flex items-center gap-1 text-[#2ca4ab] hover:underline">
-              <Sliders size={14} /> Settings
+      <div className="text-center space-y-6 pt-10">
+        <h1 className="text-5xl md:text-7xl font-black tracking-tighter italic">{title}</h1>
+        <div className="flex items-center justify-center gap-6">
+           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">{subTitle}</span>
+           <button onClick={() => setIsSidebarOpen(true)} className="flex items-center gap-2 text-emerald-500 font-black text-[10px] uppercase tracking-widest hover:underline">
+              <Sliders size={14} /> Display Settings
            </button>
         </div>
       </div>
 
-      {/* Verses */}
-      <div className="space-y-12">
+      {/* Ayah List */}
+      <div className="space-y-10">
         {arabic?.ayahs?.map((ayah: any, index: number) => {
           const isPlaying = playingAyah === ayah.number;
           return (
-            <div key={ayah.number} className="quran-card p-10 md:p-14 rounded-[2.5rem] space-y-10 group">
+            <div key={ayah.number} className="quran-card p-8 md:p-14 rounded-[3rem] space-y-12">
               <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-                 <div className="flex flex-row md:flex-col gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${isPlaying ? 'bg-[#2ca4ab] text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
-                       {isAudioLoading && isPlaying ? <Loader2 className="animate-spin" size={16} /> : isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                 <div className="flex flex-row md:flex-col gap-3">
+                    <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all shadow-xl ${isPlaying ? 'bg-emerald-600 text-white' : 'bg-white/5 text-slate-500 hover:text-emerald-500'}`}>
+                       {isAudioLoading && isPlaying ? <Loader2 className="animate-spin" size={18} /> : isPlaying ? <Pause size={18} /> : <Play size={18} />}
                     </button>
-                    <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-400"><Share2 size={16} /></button>
-                    <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-400"><Bookmark size={16} /></button>
+                    <button className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 text-slate-500 hover:text-emerald-500 transition-all"><Share2 size={18} /></button>
                  </div>
-                 <p className="font-arabic text-right quran-text transition-all duration-300 dark:text-white flex-grow" style={{ fontSize: `${fontSize}px` }} dir="rtl">
-                    {ayah.text}
-                    <span className="inline-flex items-center justify-center w-12 h-12 mx-4 text-xs font-bold text-slate-300 border border-slate-200 dark:border-slate-800 rounded-full align-middle">
-                        {ayah.numberInSurah}
-                    </span>
-                 </p>
+                 <div className="flex-grow w-full">
+                    <p className="font-arabic text-right leading-[2.2] transition-all duration-300" style={{ fontSize: `${fontSize}px` }} dir="rtl">
+                       {ayah.text}
+                       <span className="inline-flex items-center justify-center w-12 h-12 mx-5 text-[10px] font-black text-emerald-500 border-2 border-emerald-500/20 rounded-2xl align-middle">
+                          {ayah.numberInSurah}
+                       </span>
+                    </p>
+                 </div>
               </div>
 
-              <div className="max-w-3xl ltr:md:ml-12 rtl:md:mr-12 space-y-6">
+              <div className="max-w-3xl md:ml-16 space-y-8">
                  {showEnglish && english?.ayahs[index] && (
-                    <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed italic">
-                       "{english.ayahs[index].text}"
-                    </p>
+                    <div className="p-6 bg-emerald-500/5 rounded-[2rem] border border-emerald-500/10">
+                       <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-3">Meaning</p>
+                       <p className="text-lg md:text-xl text-slate-400 leading-relaxed italic">
+                          "{english.ayahs[index].text}"
+                       </p>
+                    </div>
                  )}
                  {showUrdu && urdu?.ayahs[index] && (
-                    <p className="font-urdu text-2xl md:text-3xl text-right text-slate-800 dark:text-slate-200 leading-[2.6]" dir="rtl">
-                       {urdu.ayahs[index].text}
-                    </p>
+                    <div className="p-6 bg-blue-500/5 rounded-[2rem] border border-blue-500/10 text-right">
+                       <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-3">اردو ترجمہ</p>
+                       <p className="font-urdu text-2xl md:text-4xl leading-relaxed" dir="rtl">
+                          {urdu.ayahs[index].text}
+                       </p>
+                    </div>
                  )}
               </div>
             </div>
@@ -195,19 +208,14 @@ const SurahReader: React.FC = () => {
         })}
       </div>
 
-      {/* Nav Controls */}
-      <div className="flex justify-between items-center py-12 border-t dark:border-slate-800">
-         <Link to={`/surah/${parseInt(id!) - 1}`} className={`flex items-center gap-3 font-bold text-slate-500 hover:text-[#2ca4ab] transition-colors ${parseInt(id!) <= 1 ? 'invisible' : ''}`}>
-            <ChevronLeft /> Previous
+      {/* Navigation Buttons */}
+      <div className="flex justify-between items-center py-16 border-t border-white/5">
+         <Link to={isJuz ? `/juz/${parseInt(id!) - 1}` : `/surah/${parseInt(id!) - 1}`} className={`px-8 py-4 bg-white/5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-emerald-600 hover:text-white ${parseInt(id!) <= 1 ? 'invisible' : ''}`}>
+            Previous
          </Link>
-         <Link to={`/surah/${parseInt(id!) + 1}`} className={`flex items-center gap-3 font-bold text-slate-500 hover:text-[#2ca4ab] transition-colors ${parseInt(id!) >= 114 ? 'invisible' : ''}`}>
-            Next <ChevronRight />
+         <Link to={isJuz ? `/juz/${parseInt(id!) + 1}` : `/surah/${parseInt(id!) + 1}`} className={`px-8 py-4 bg-white/5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-emerald-600 hover:text-white ${parseInt(id!) >= (isJuz ? 30 : 114) ? 'invisible' : ''}`}>
+            Next
          </Link>
-      </div>
-
-      <div className="bg-[#2ca4ab]/10 p-8 rounded-3xl flex items-start gap-4 text-[#2ca4ab]">
-         <Info size={20} className="shrink-0" />
-         <p className="text-sm font-medium italic">Did you know? Every ayah you read is a source of reward. Keep your intentions pure and may Allah accept your reading.</p>
       </div>
     </div>
   );
