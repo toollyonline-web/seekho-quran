@@ -4,22 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="theme-color" content="#064e3b">
+    <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
-    <title>Quran Seekho | The Ultimate Sacred Reading Experience</title>
-    <meta name="description" content="Read and learn the Holy Quran with professional English and Urdu translations. Ad-free, private, and beautifully designed.">
-    
-    <!-- Open Graph / SEO -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Quran Seekho - A Sacred Digital Sanctuary">
-    <meta property="og:description" content="Distraction-free Quran reading with high-quality typography and Islamic tools.">
+    <title>Quran Seekho | Read, Study, and Explore the Noble Quran</title>
+    <meta name="description" content="A modern, ad-free Quran platform inspired by quran.com. Experience the divine word with multiple translations and high-quality audio.">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&family=Scheherazade+New:wght@400;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
         (function() {
@@ -31,56 +26,90 @@
 
     <style>
         :root {
-            --emerald-deep: #064e3b;
-            --gold-light: #d97706;
-            --cream: #fdfaf3;
+            --quran-primary: #2ca4ab;
+            --quran-bg: #f4f5f6;
         }
 
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
-            background-color: #f8fafc;
-            padding-bottom: env(safe-area-inset-bottom);
+            background-color: var(--quran-bg);
+            color: #1f2124;
         }
 
-        .font-arabic { font-family: 'Scheherazade New', serif; line-height: 2.3; direction: rtl; }
-        .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; line-height: 2.8; }
+        .dark body {
+            background-color: #0b0c0d;
+            color: #f4f5f6;
+        }
+
+        .font-arabic { 
+            font-family: 'Amiri', serif; 
+            line-height: 2.5; 
+            direction: rtl; 
+            font-size: 1.25em;
+        }
+
+        .font-urdu { 
+            font-family: 'Noto Nastaliq Urdu', serif; 
+            line-height: 3; 
+        }
 
         .glass {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
+
         .dark .glass {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(18, 18, 18, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .shadow-sacred {
-            box-shadow: 0 20px 50px -12px rgba(6, 78, 59, 0.12);
+        .btn-primary {
+            background-color: var(--quran-primary);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            filter: brightness(0.9);
         }
 
-        @keyframes subtle-float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0); }
+        .quran-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
         }
-        .animate-float { animation: subtle-float 4s ease-in-out infinite; }
+        .dark .quran-card {
+            background: #181a1b;
+            border-color: #2c2e30;
+        }
+        .quran-card:hover {
+            border-color: var(--quran-primary);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
 
         .page-transition {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.3s ease-out forwards;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .quran-text {
-          font-variant-ligatures: none;
+        /* Quran.com style Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
         }
     </style>
 
@@ -99,7 +128,7 @@
 }
 </script>
 </head>
-<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-500">
+<body>
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
 </body>
