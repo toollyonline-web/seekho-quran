@@ -8,19 +8,20 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <title>Quran Seekho | The Ultimate Ad-Free Quran Platform</title>
-    <meta name="description" content="Discover a premium, distraction-free Quran experience. Features professional English and Urdu translations, accurate prayer times, and sacred reading tools.">
+    <title>Quran Seekho | Premium Ad-Free Quranic Experience</title>
+    <meta name="description" content="Read and learn the Holy Quran with professional English and Urdu translations. Ad-free, private, and beautifully designed for the global Ummah.">
     
     <!-- Open Graph / SEO -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Quran Seekho | Pure Sacred Reading">
-    <meta property="og:description" content="Experience the Noble Quran with high-end typography, audio recitations, and zero ads.">
+    <meta property="og:title" content="Quran Seekho - Illuminating the Path">
+    <meta property="og:description" content="Distraction-free Quran reading with audio, prayer times, and Islamic tools.">
     <meta property="og:image" content="https://quranseekho.online/og-image.jpg">
+    <meta name="twitter:card" content="summary_large_image">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
         (function() {
@@ -33,7 +34,7 @@
     <style>
         :root {
             --emerald-sacred: #064e3b;
-            --gold-accent: #d97706;
+            --gold-soft: #d97706;
         }
 
         body { 
@@ -41,18 +42,18 @@
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             background-color: #f8fafc;
-            /* Support for modern mobile notches */
+            /* Safe area support for notched devices */
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        .font-arabic { font-family: 'Scheherazade New', serif; line-height: 2.2; direction: rtl; }
+        .font-arabic { font-family: 'Scheherazade New', serif; line-height: 2.3; direction: rtl; }
         .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; line-height: 2.8; }
 
-        /* Premium Glassmorphism */
+        /* Modern App Shell UI */
         .glass {
             background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
         .dark .glass {
@@ -60,22 +61,20 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Safe Paddings */
-        .pb-safe { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
-        .pt-safe { padding-top: env(safe-area-inset-top); }
+        /* Prevent content jumps and ensure smooth transitions */
+        .page-transition {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #334155; }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        .animate-float { animation: float 6s ease-in-out infinite; }
     </style>
 
     <script type="importmap">
@@ -85,15 +84,15 @@
     "react-dom": "https://esm.sh/react-dom@19.0.0",
     "react-router-dom": "https://esm.sh/react-router-dom@7.1.3",
     "lucide-react": "https://esm.sh/lucide-react@0.474.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "vite": "https://esm.sh/vite@^7.3.0"
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
 </head>
-<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-700 min-h-screen">
+<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-500">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
 </body>
