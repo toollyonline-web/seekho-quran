@@ -21,6 +21,7 @@ import Feedback from './pages/Feedback';
 import Donation from './pages/Donation';
 import QiblaFinder from './pages/QiblaFinder';
 import Search from './pages/Search';
+import Miracles from './pages/Miracles';
 import { Heart, Globe, ShieldCheck, Mail, Share2, MessageSquare, User, Code2, Sparkles, Coffee } from 'lucide-react';
 
 const AboutPage = () => {
@@ -138,6 +139,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/miracles" element={<Miracles />} />
           <Route path="/surah" element={<SurahList />} />
           <Route path="/surah/:id" element={<SurahReader />} />
           <Route path="/juz" element={<JuzList />} />

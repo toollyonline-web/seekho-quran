@@ -12,7 +12,8 @@ export const translations: Record<Language, any> = {
       zakat: "Zakat",
       tasbeeh: "Tasbeeh",
       names: "99 Names",
-      calendar: "Calendar"
+      calendar: "Calendar",
+      miracles: "Miracles"
     },
     home: {
       greeting: "Assalamu Alaikum",
@@ -79,7 +80,8 @@ export const translations: Record<Language, any> = {
       zakat: "زکوٰۃ",
       tasbeeh: "تسبیح",
       names: "99 نام",
-      calendar: "کیلنڈر"
+      calendar: "کیلنڈر",
+      miracles: "معجزات"
     },
     home: {
       greeting: "السلام علیکم",
@@ -146,7 +148,8 @@ export const translations: Record<Language, any> = {
       zakat: "الزكاة",
       tasbeeh: "التسبيح",
       names: "الأسماء الحسنى",
-      calendar: "التقويم"
+      calendar: "التقويم",
+      miracles: "المعجزات"
     },
     home: {
       greeting: "السلام عليكم",

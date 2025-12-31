@@ -6,7 +6,7 @@ import {
   Search as SearchIcon, Heart, X, Menu,
   Mail, ShieldCheck, Compass, ArrowUp,
   Settings, Languages, ChevronRight, Info, ExternalLink, Github,
-  Globe
+  Globe, Sparkles
 } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { translations, Language } from '../services/i18n';
@@ -34,6 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: t.nav.home, path: '/', icon: <HomeIcon size={20} /> },
     { name: t.nav.surah, path: '/surah', icon: <BookOpen size={20} /> },
+    { name: t.nav.miracles, path: '/miracles', icon: <Sparkles size={20} /> },
     { name: t.nav.juz, path: '/juz', icon: <Star size={20} /> },
     { name: t.nav.search, path: '/search', icon: <SearchIcon size={20} /> },
     { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} /> },
@@ -241,9 +242,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <h4 className="text-[12px] font-black uppercase tracking-[0.6em] text-emerald-500/80">Revelation</h4>
                 <ul className="space-y-6 text-sm font-bold text-slate-400">
                   <li><Link to="/surah" className="hover:text-emerald-400 hover:translate-x-1 transition-all flex items-center gap-3 group">Surah List <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-3 group-hover:translate-x-0 transition-all"/></Link></li>
+                  <li><Link to="/miracles" className="hover:text-emerald-400 hover:translate-x-1 transition-all flex items-center gap-3 group">Miracles Index <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-3 group-hover:translate-x-0 transition-all"/></Link></li>
                   <li><Link to="/juz" className="hover:text-emerald-400 hover:translate-x-1 transition-all flex items-center gap-3 group">Juz browser <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-3 group-hover:translate-x-0 transition-all"/></Link></li>
                   <li><Link to="/hadith" className="hover:text-emerald-400 hover:translate-x-1 transition-all flex items-center gap-3 group">Hadith Hub <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-3 group-hover:translate-x-0 transition-all"/></Link></li>
-                  <li><Link to="/search" className="hover:text-emerald-400 hover:translate-x-1 transition-all flex items-center gap-3 group">Discovery <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-3 group-hover:translate-x-0 transition-all"/></Link></li>
                 </ul>
               </div>
               <div className="space-y-10">
