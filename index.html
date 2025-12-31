@@ -15,8 +15,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Quran Seekho - A Sacred Digital Sanctuary">
     <meta property="og:description" content="Distraction-free Quran reading with high-quality typography and Islamic tools.">
-    <meta property="og:image" content="https://quranseekho.online/og-image.jpg">
-
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,28 +46,21 @@
         .font-arabic { font-family: 'Scheherazade New', serif; line-height: 2.3; direction: rtl; }
         .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; line-height: 2.8; }
 
-        /* Luxury Glassmorphism */
         .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
         .dark .glass {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .sepia { background-color: var(--cream); }
-        .sepia .glass { background: rgba(253, 250, 243, 0.8); border-color: rgba(217, 119, 6, 0.1); }
-
-        /* Soft Shadows */
         .shadow-sacred {
-            shadow-color: rgba(6, 78, 59, 0.1);
-            box-shadow: 0 20px 50px -12px rgba(6, 78, 59, 0.15);
+            box-shadow: 0 20px 50px -12px rgba(6, 78, 59, 0.12);
         }
 
-        /* Animations */
         @keyframes subtle-float {
             0% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
@@ -77,16 +69,19 @@
         .animate-float { animation: subtle-float 4s ease-in-out infinite; }
 
         .page-transition {
-            animation: fadeIn 0.5s ease-out forwards;
+            animation: fadeIn 0.4s ease-out forwards;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Hide Scrollbar */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .quran-text {
+          font-variant-ligatures: none;
+        }
     </style>
 
     <script type="importmap">
@@ -104,7 +99,7 @@
 }
 </script>
 </head>
-<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-500 min-h-screen">
+<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-500">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
 </body>
