@@ -25,6 +25,7 @@ import Miracles from './pages/Miracles';
 import AiAssistant from './pages/AiAssistant';
 import Moods from './pages/Moods';
 import IslamicMap from './pages/IslamicMap';
+import VocabularyBuilder from './pages/VocabularyBuilder';
 import { Heart, Globe, ShieldCheck, Mail, Share2, MessageSquare, User, Code2, Sparkles, Coffee } from 'lucide-react';
 
 const AboutPage = () => {
@@ -143,6 +144,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/ai" element={<AiAssistant />} />
+          <Route path="/vocabulary" element={<VocabularyBuilder />} />
           <Route path="/moods" element={<Moods />} />
           <Route path="/history-map" element={<IslamicMap />} />
           <Route path="/miracles" element={<Miracles />} />

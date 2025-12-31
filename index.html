@@ -36,6 +36,7 @@
             -webkit-font-smoothing: antialiased;
             background-color: var(--quran-bg);
             color: #f4f5f6;
+            overflow-x: hidden;
         }
 
         .font-arabic { 
@@ -51,28 +52,29 @@
         }
 
         .glass {
-            background: rgba(11, 12, 13, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(11, 12, 13, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .quran-card {
             background: #121415;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .quran-card:hover {
-            border-color: var(--quran-primary);
+            border-color: rgba(16, 185, 129, 0.3);
             background: #161819;
-            transform: translateY(-2px);
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
         }
 
         .ayah-active {
             border-color: var(--quran-primary) !important;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
-            background: rgba(16, 185, 129, 0.05);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.15);
+            background: rgba(16, 185, 129, 0.08) !important;
         }
 
         /* Tajweed Color Adjustments */
@@ -81,6 +83,26 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Flashcard Animations */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        /* Mobile Optimization */
+        @media (max-width: 640px) {
+            .quran-card { padding: 1.5rem !important; border-radius: 2rem !important; }
+        }
+
+        .page-transition {
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 
     <script type="importmap">

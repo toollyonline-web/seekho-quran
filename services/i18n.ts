@@ -16,7 +16,8 @@ export const translations: Record<Language, any> = {
       miracles: "Miracles",
       ai: "Soul Guide",
       moods: "Moods",
-      map: "History Map"
+      map: "History Map",
+      vocabulary: "Vocabulary"
     },
     home: {
       greeting: "Assalamu Alaikum",
@@ -61,7 +62,9 @@ export const translations: Record<Language, any> = {
       tajweedMode: "Tajweed Guide",
       tajweedDesc: "Color-coded rules for recitation",
       audioSettings: "Audio Settings",
-      reciter: "Select Reciter"
+      reciter: "Select Reciter",
+      morphologyTitle: "Morphology Explorer",
+      vocabularyTitle: "Vocabulary Builder"
     },
     ui: {
       settings: "Preferences",
@@ -87,7 +90,8 @@ export const translations: Record<Language, any> = {
       miracles: "معجزات",
       ai: "روحانی گائیڈ",
       moods: "کیفیت",
-      map: "تاریخی نقشہ"
+      map: "تاریخی نقشہ",
+      vocabulary: "الفاظ"
     },
     home: {
       greeting: "السلام علیکم",
@@ -132,7 +136,9 @@ export const translations: Record<Language, any> = {
       tajweedMode: "تجوید گائیڈ",
       tajweedDesc: "تلاوت کے قواعد رنگوں کے ساتھ",
       audioSettings: "آڈیو سیٹنگز",
-      reciter: "قاری منتخب کریں"
+      reciter: "قاری منتخب کریں",
+      morphologyTitle: "تحقیقِ الفاظ",
+      vocabularyTitle: "الفاظ سازی"
     },
     ui: {
       settings: "ترتیبات",
@@ -158,7 +164,8 @@ export const translations: Record<Language, any> = {
       miracles: "المعجزات",
       ai: "مرشد الأرواح",
       moods: "المزاج",
-      map: "الخريطة التاريخية"
+      map: "الخريطة التاريخية",
+      vocabulary: "المفردات"
     },
     home: {
       greeting: "السلام عليكم",
@@ -203,7 +210,9 @@ export const translations: Record<Language, any> = {
       tajweedMode: "دليل التجويد",
       tajweedDesc: "قواعد التلاوة الملونة",
       audioSettings: "إعدادات الصوت",
-      reciter: "اختر القارئ"
+      reciter: "اختر القارئ",
+      morphologyTitle: "تحليل الكلمات",
+      vocabularyTitle: "بناء المفردات"
     },
     ui: {
       settings: "الإعدادات",

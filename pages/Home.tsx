@@ -35,7 +35,7 @@ const Home: React.FC = () => {
       const list = await fetchSurahList();
       setSurahs(list);
 
-      const stats = JSON.parse(localStorage.getItem('qs_daily_stats') || '{}');
+      const stats = JSON.parse(localStorage.getItem('qs_daily_stats') || '{"count":0,"date":""}');
       const today = new Date().toDateString();
       if (stats.date === today) {
         setDailyStats(prev => ({ ...prev, count: stats.count }));
@@ -67,7 +67,7 @@ const Home: React.FC = () => {
   return (
     <div className="page-transition space-y-16 pb-32">
       
-      {/* Hero Section with SEO H1 */}
+      {/* Hero Section */}
       <section className="bg-emerald-900 text-white p-8 md:p-14 rounded-[3.5rem] shadow-2xl relative overflow-hidden group">
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8 space-y-8">
@@ -76,22 +76,26 @@ const Home: React.FC = () => {
               <span className="text-[10px] font-black uppercase tracking-widest text-emerald-100">{t.home.greeting}</span>
             </div>
             
-            {/* SEO H1 Heading */}
             <h1 className="text-4xl md:text-7xl font-black leading-[1.1] tracking-tighter italic">
-              Read Quran Online – <br/> All Surahs & Siparas
+              Experience the Noble Quran <br/> with Pure Clarity
             </h1>
             
-            {/* SEO Intro Paragraph */}
             <p className="text-emerald-100/70 text-lg md:text-2xl font-medium leading-relaxed max-w-2xl">
-              Welcome to <strong>Quran Seekho</strong>, your professional digital sanctuary for reading and listening to the Noble Quran. Explore all 114 Surahs and 30 Juz with interactive Tajweed, multi-language translations, and world-class audio recitations.
+              Access 114 Surahs and 30 Juz with interactive Tajweed, scholarly translations, and world-class audio recitations. Designed for deep study and daily reflection.
             </p>
             
             <div className="flex flex-wrap gap-5 pt-4">
-              <Link to="/surah" className="px-10 py-5 bg-white text-emerald-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl">
-                Browse All Surahs
-              </Link>
+              {lastRead ? (
+                <Link to={`/${lastRead.type}/${lastRead.id}`} className="px-10 py-5 bg-white text-emerald-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl flex items-center gap-3">
+                  <History size={18} /> Resume: {lastRead.name}
+                </Link>
+              ) : (
+                <Link to="/surah" className="px-10 py-5 bg-white text-emerald-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+                  Start Reading
+                </Link>
+              )}
               <Link to="/search" className="px-10 py-5 bg-emerald-800/40 backdrop-blur-md text-white border border-white/10 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-emerald-800 transition-all">
-                Search Verses
+                Discovery Mode
               </Link>
             </div>
           </div>
@@ -104,7 +108,7 @@ const Home: React.FC = () => {
                    </svg>
                    <Trophy size={40} className={`mb-3 transition-transform ${goalProgress >= 100 ? 'text-amber-400 scale-125' : 'text-emerald-200'}`} />
                    <span className="text-4xl font-black">{dailyStats.count}</span>
-                   <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Ayahs Today</span>
+                   <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Ayahs Recited</span>
                 </div>
              </div>
           </div>
@@ -112,65 +116,72 @@ const Home: React.FC = () => {
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/20 rounded-full blur-[120px] -mr-48 -mt-48 group-hover:scale-110 transition-transform duration-1000"></div>
       </section>
 
-      {/* Featured SEO Links (Popular Surahs) */}
+      {/* Daily Bread Section */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+         <div className="quran-card p-10 rounded-[3rem] space-y-6 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+               <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Verse of the Day</span>
+               <Sparkles size={18} className="text-amber-500" />
+            </div>
+            {randomAyah ? (
+              <div className="space-y-6">
+                <p className="font-arabic text-3xl text-right leading-relaxed" dir="rtl">{randomAyah[0].text}</p>
+                <p className="text-slate-400 italic text-sm font-medium">"{randomAyah[1].text}"</p>
+                <div className="flex justify-between items-center pt-4 border-t border-white/5">
+                   <span className="text-[10px] font-black uppercase text-slate-600">{randomAyah[0].surah.englishName} {randomAyah[0].numberInSurah}</span>
+                   <Link to={`/surah/${randomAyah[0].surah.number}?ayah=${randomAyah[0].numberInSurah}`} className="text-emerald-500 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors">Study Context</Link>
+                </div>
+              </div>
+            ) : <p className="text-slate-500">Connecting to wisdom...</p>}
+         </div>
+
+         <div className="grid grid-cols-2 gap-6">
+            <Link to="/vocabulary" className="quran-card p-8 rounded-[2.5rem] flex flex-col justify-center gap-4 hover:border-amber-500/50 transition-all group">
+               <div className="w-12 h-12 bg-amber-600/10 text-amber-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"><GraduationCap size={24}/></div>
+               <div>
+                  <h4 className="font-black text-sm uppercase tracking-widest mb-1">Vocabulary</h4>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">500 Core Words</p>
+               </div>
+            </Link>
+            <Link to="/ai" className="quran-card p-8 rounded-[2.5rem] flex flex-col justify-center gap-4 hover:border-emerald-500/50 transition-all group">
+               <div className="w-12 h-12 bg-emerald-600/10 text-emerald-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"><Sparkles size={24}/></div>
+               <div>
+                  <h4 className="font-black text-sm uppercase tracking-widest mb-1">Soul Guide</h4>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">AI Spiritual Chat</p>
+               </div>
+            </Link>
+            <Link to="/history-map" className="quran-card p-8 rounded-[2.5rem] flex flex-col justify-center gap-4 hover:border-blue-500/50 transition-all group">
+               <div className="w-12 h-12 bg-blue-600/10 text-blue-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"><Map size={24}/></div>
+               <div>
+                  <h4 className="font-black text-sm uppercase tracking-widest mb-1">History Map</h4>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Explore Sites</p>
+               </div>
+            </Link>
+            <Link to="/moods" className="quran-card p-8 rounded-[2.5rem] flex flex-col justify-center gap-4 hover:border-rose-500/50 transition-all group">
+               <div className="w-12 h-12 bg-rose-600/10 text-rose-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"><Heart size={24}/></div>
+               <div>
+                  <h4 className="font-black text-sm uppercase tracking-widest mb-1">Moods</h4>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Spiritual Remedy</p>
+               </div>
+            </Link>
+         </div>
+      </section>
+
+      {/* Featured Chapters */}
       <section className="space-y-8">
         <h2 className="text-2xl font-black flex items-center gap-3">
-          <Sparkles size={24} className="text-amber-500" /> Featured Chapters
+          <Star size={24} className="text-amber-500" /> Quick Access
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {PopularSurahs.map((surah) => (
             <Link key={surah.id} to={`/surah/${surah.id}`} className="quran-card p-8 rounded-[2.5rem] flex flex-col items-center text-center group border-white/5 hover:border-emerald-500/50 transition-all">
-               <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center font-black text-xs text-slate-500 mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-                {surah.id}
-               </div>
+               <span className="font-arabic text-4xl text-emerald-500 opacity-60 mb-3 group-hover:opacity-100 transition-opacity" dir="rtl">{surah.arabic}</span>
                <h3 className="text-xl font-bold mb-1">{surah.name}</h3>
-               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">{surah.translation}</p>
-               <span className="font-arabic text-3xl text-emerald-500 opacity-60 mb-2" dir="rtl">{surah.arabic}</span>
-               <p className="text-[9px] text-slate-600 font-medium italic mt-2">{surah.desc}</p>
+               <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-2">{surah.translation}</p>
             </Link>
           ))}
         </div>
       </section>
-
-      {/* Comprehensive Index (SEO Goldmine) */}
-      <section className="bg-white/5 p-12 rounded-[4rem] border border-white/5 space-y-12">
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-           <div className="w-16 h-16 bg-emerald-600/10 text-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-4">
-              <Map size={32} />
-           </div>
-           <h2 className="text-3xl font-black italic">The Complete Quran Index</h2>
-           <p className="text-slate-500 font-medium leading-relaxed">
-             Quickly access any Surah or Sipara from our organized directory. This is designed for both speed of use and optimal indexing by search engines like Google.
-           </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Surah Sitemap Link Block */}
-          <div className="space-y-6">
-             <h3 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-500 border-b border-white/5 pb-4">All 114 Surahs</h3>
-             <div className="grid grid-cols-3 gap-y-3 gap-x-4">
-                {surahs.slice(0, 114).map(s => (
-                  <Link key={s.number} to={`/surah/${s.number}`} className="text-xs font-bold text-slate-400 hover:text-emerald-500 transition-colors py-1 truncate">
-                    {s.number}. {s.englishName}
-                  </Link>
-                ))}
-             </div>
-          </div>
-
-          {/* Juz Sitemap Link Block */}
-          <div className="space-y-6">
-             <h3 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-500 border-b border-white/5 pb-4">All 30 Siparas (Juz)</h3>
-             <div className="grid grid-cols-3 gap-y-3 gap-x-4">
-                {Array.from({length: 30}).map((_, i) => (
-                  <Link key={i+1} to={`/juz/${i+1}`} className="text-xs font-bold text-slate-400 hover:text-emerald-500 transition-colors py-1">
-                    Juz {i+1}
-                  </Link>
-                ))}
-             </div>
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 };

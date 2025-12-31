@@ -6,7 +6,7 @@ import {
   Search as SearchIcon, Heart, X, Menu,
   Mail, ShieldCheck, Compass, ArrowUp,
   Settings, Languages, ChevronRight, Info, ExternalLink, Github,
-  Globe, Sparkles, MessageSquareHeart, Smile, Map as MapIcon
+  Globe, Sparkles, MessageSquareHeart, Smile, Map as MapIcon, GraduationCap
 } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { translations, Language } from '../services/i18n';
@@ -34,6 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: t.nav.home, path: '/', icon: <HomeIcon size={20} /> },
     { name: t.nav.surah, path: '/surah', icon: <BookOpen size={20} /> },
+    { name: t.nav.vocabulary, path: '/vocabulary', icon: <GraduationCap size={20} className="text-amber-400" /> },
     { name: t.nav.ai, path: '/ai', icon: <MessageSquareHeart size={20} className="text-emerald-400" /> },
     { name: t.nav.moods, path: '/moods', icon: <Smile size={20} className="text-rose-400" /> },
     { name: t.nav.map, path: '/history-map', icon: <MapIcon size={20} className="text-blue-400" /> },
