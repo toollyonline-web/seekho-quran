@@ -1,28 +1,11 @@
 
 import React from 'react';
-import { ShieldCheck, Lock, Eye, Globe, Mail, ChevronLeft, Info, FileText, Database, Trash2, UserCheck, AlertCircle, ArrowRight } from 'lucide-react';
+/* Added EyeOff to the lucide-react imports */
+import { ShieldCheck, Lock, Eye, EyeOff, Globe, Mail, ChevronLeft, Info, FileText, Database, Trash2, UserCheck, AlertCircle, ArrowRight, Gavel, Server, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PrivacyPolicy: React.FC = () => {
-  const lastUpdated = "December 31, 2025";
-
-  const sections = [
-    {
-      title: "Data Sovereignty",
-      desc: "All your spiritual data (bookmarks, progress) stays exclusively on your device. We do not have a centralized user database.",
-      icon: <Database className="text-emerald-500" />
-    },
-    {
-      title: "Ad-Free Forever",
-      desc: "We do not use trackers, cookies, or any form of advertising. Your journey is private and focused.",
-      icon: <Lock className="text-amber-500" />
-    },
-    {
-      title: "Anonymous Usage",
-      desc: "No account is required to use Quran Seekho. You remain completely anonymous while using our platform.",
-      icon: <UserCheck className="text-blue-500" />
-    }
-  ];
+  const lastUpdated = "January 20, 2026";
 
   return (
     <div className="max-w-4xl mx-auto py-12 px-4 page-transition pb-32">
@@ -30,19 +13,19 @@ const PrivacyPolicy: React.FC = () => {
         <ChevronLeft size={16} /> Back to Home
       </Link>
 
-      <div className="space-y-12">
-        {/* Modern Header */}
+      <div className="space-y-16">
+        {/* Header */}
         <header className="relative p-12 md:p-16 rounded-[3.5rem] bg-emerald-950/20 border border-white/5 overflow-hidden">
           <div className="relative z-10 space-y-6">
             <div className="w-16 h-16 bg-emerald-600 rounded-3xl flex items-center justify-center text-white shadow-2xl">
               <ShieldCheck size={32} />
             </div>
             <div className="space-y-2">
-              <h1 className="text-4xl md:text-7xl font-black italic tracking-tighter leading-none text-white">Privacy Portal</h1>
-              <p className="text-[11px] font-black uppercase tracking-[0.4em] text-emerald-500/60">Effective: {lastUpdated}</p>
+              <h1 className="text-4xl md:text-7xl font-black italic tracking-tighter leading-none text-white">Privacy Policy</h1>
+              <p className="text-[11px] font-black uppercase tracking-[0.4em] text-emerald-500/60">Version 2.0 • Last Updated: {lastUpdated}</p>
             </div>
-            <p className="text-slate-400 max-w-xl font-medium leading-relaxed">
-              At Quran Seekho, we believe privacy is a fundamental right. Our platform is built to protect your spiritual focus by ensuring your data never leaves your control.
+            <p className="text-slate-400 max-w-xl font-medium leading-relaxed text-lg">
+              This document explains how <strong>Quran Seekho</strong> collects, uses, and protects your information. Our primary goal is your spiritual benefit, not data collection.
             </p>
           </div>
           <div className="absolute top-0 right-0 p-12 opacity-[0.03] text-white">
@@ -50,93 +33,158 @@ const PrivacyPolicy: React.FC = () => {
           </div>
         </header>
 
-        {/* Quick Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {sections.map((s, i) => (
-            <div key={i} className="quran-card p-8 rounded-[2.5rem] space-y-4 border-white/5">
-              <div className="w-10 h-10 bg-white/5 rounded-2xl flex items-center justify-center">
-                {s.icon}
+        {/* Extensive Legal Deep Dive */}
+        <div className="quran-card p-10 md:p-20 rounded-[4rem] border-white/5 space-y-20">
+          
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 text-emerald-500">
+              <Info size={24} />
+              <h2 className="text-2xl font-black italic">1. Introduction</h2>
+            </div>
+            <p className="text-slate-400 leading-relaxed font-medium text-lg">
+              Quran Seekho ("we," "us," or "our") is dedicated to protecting your privacy. This Privacy Policy outlines the types of information that is or is not collected when you use our web application (the "Service"). By using the Service, you agree to the collection and use of information in accordance with this policy.
+            </p>
+          </section>
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 text-emerald-500">
+              <Database size={24} />
+              <h2 className="text-2xl font-black italic">2. Data Collection & Usage</h2>
+            </div>
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className="text-white font-bold text-xl">Personal Data</h3>
+                <p className="text-slate-500 leading-relaxed">
+                  We do not require you to create an account or provide any personal identification information (PII) such as your name, email address, or phone number to use the basic features of Quran Seekho.
+                </p>
               </div>
-              <h3 className="font-black text-sm uppercase tracking-widest">{s.title}</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
-            </div>
-          ))}
-        </div>
 
-        {/* Deep Dive Content */}
-        <div className="quran-card p-8 md:p-16 rounded-[4rem] border-white/5 space-y-16">
-          <section className="space-y-6">
-            <h2 className="text-2xl font-black italic flex items-center gap-4">
-              <span className="text-emerald-500">01.</span> Geolocation Privacy
-            </h2>
-            <p className="text-slate-400 leading-relaxed font-medium">
-              To provide accurate <strong>Prayer Times</strong> and <strong>Qibla direction</strong>, we request your location. This data is processed locally in your browser to calculate the celestial angles and is never transmitted to our servers or stored in any database.
-            </p>
-            <div className="bg-rose-500/5 border border-rose-500/10 p-6 rounded-3xl flex items-start gap-4">
-              <AlertCircle className="text-rose-500 shrink-0" size={20} />
-              <p className="text-xs text-rose-500/80 font-bold leading-relaxed">
-                WE DO NOT TRACK YOU. Your location is used only for the moment required to show prayer times and then it is discarded.
-              </p>
-            </div>
-          </section>
+              <div className="space-y-4">
+                <h3 className="text-white font-bold text-xl">Location Information</h3>
+                <p className="text-slate-500 leading-relaxed">
+                  The Service requests access to your device's geolocation to provide accurate <strong>Prayer Times</strong> and <strong>Qibla direction</strong>. 
+                </p>
+                <ul className="space-y-3 list-none pl-0">
+                  <li className="flex items-start gap-3 text-sm text-slate-400">
+                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
+                    <span>This data is processed <strong>locally</strong> in your browser's execution environment.</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-slate-400">
+                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
+                    <span>We do not store your historical location or transmit it to any external server.</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-slate-400">
+                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
+                    <span>You may revoke this permission at any time via your browser or device settings.</span>
+                  </li>
+                </ul>
+              </div>
 
-          <section className="space-y-6">
-            <h2 className="text-2xl font-black italic flex items-center gap-4">
-              <span className="text-emerald-500">02.</span> Local Persistence
-            </h2>
-            <p className="text-slate-400 leading-relaxed font-medium">
-              We utilize <strong>LocalStorage</strong> and <strong>IndexedDB</strong> for the sole purpose of enhancing your user experience. This includes saving your reading theme, font size, and bookmarks. This data exists only on the device you are currently using.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {['Reading History', 'Bookmark Sync', 'Interface Themes', 'Audio Preferences'].map(item => (
-                <div key={item} className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  <ArrowRight size={14} className="text-emerald-500" /> {item}
+              <div className="space-y-4">
+                <h3 className="text-white font-bold text-xl">Local Storage (Cookies)</h3>
+                <p className="text-slate-500 leading-relaxed">
+                  Quran Seekho uses <strong>LocalStorage</strong> and <strong>IndexedDB</strong> to save your user preferences. This includes:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {['Reading Font Size', 'Language Selection', 'Bookmarks & Favorites', 'Audio Reciter Choice', 'Reading History (Last Read)'].map(item => (
+                    <div key={item} className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      <ArrowRight size={14} className="text-emerald-500" /> {item}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </section>
 
-          <section className="space-y-6">
-            <h2 className="text-2xl font-black italic flex items-center gap-4">
-              <span className="text-emerald-500">03.</span> External Services
-            </h2>
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 text-emerald-500">
+              <Server size={24} />
+              <h2 className="text-2xl font-black italic">3. Third-Party Service Providers</h2>
+            </div>
             <p className="text-slate-400 leading-relaxed font-medium">
-              We rely on trusted open-source APIs to deliver Quranic content. These providers only receive the technical request (e.g., "Give me Surah 1") and do not receive any identifying information about you.
+              We employ third-party APIs to deliver the content of the Holy Quran. These services receive technical requests but do not receive any user-identifiable data:
             </p>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {[
-                { name: "AlQuran API", role: "Holy Text & Translations" },
-                { name: "Islamic Network", role: "High-quality Audio Recitations" },
-                { name: "Aladhan API", role: "Astronomical Prayer Timings" }
+                { name: "AlQuran Cloud", purpose: "Text, Translations, and Tafsir data retrieval.", url: "https://alquran.cloud" },
+                { name: "Islamic Network", purpose: "CDN for high-quality audio recitations.", url: "https://islamic.network" },
+                { name: "Aladhan API", purpose: "Astronomical calculation of prayer timings.", url: "https://aladhan.com" }
               ].map(provider => (
-                <div key={provider.name} className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/5">
-                  <span className="font-black text-xs uppercase tracking-widest">{provider.name}</span>
-                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{provider.role}</span>
+                <div key={provider.name} className="p-6 bg-white/5 rounded-3xl border border-white/5 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-black text-xs uppercase tracking-widest text-white">{provider.name}</span>
+                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">External Content Provider</span>
+                  </div>
+                  <p className="text-xs text-slate-500">{provider.purpose}</p>
                 </div>
               ))}
             </div>
+          </section>
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 text-emerald-500">
+              <Shield size={24} />
+              <h2 className="text-2xl font-black italic">4. Security of Data</h2>
+            </div>
+            <p className="text-slate-400 leading-relaxed font-medium">
+              The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage, is 100% secure. While we strive to use commercially acceptable means to protect your data (such as HTTPS and local encryption where applicable), we cannot guarantee its absolute security.
+            </p>
+          </section>
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 text-emerald-500">
+              <EyeOff size={24} />
+              <h2 className="text-2xl font-black italic">5. "Do Not Track" Signals</h2>
+            </div>
+            <p className="text-slate-400 leading-relaxed font-medium">
+              We do not support Do Not Track ("DNT"). Do Not Track is a preference you can set in your web browser to inform websites that you do not want to be tracked. However, since we do not track our users across third-party websites, DNT is not applicable to our Service.
+            </p>
+          </section>
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 text-emerald-500">
+              <Gavel size={24} />
+              <h2 className="text-2xl font-black italic">6. Children's Privacy</h2>
+            </div>
+            <p className="text-slate-400 leading-relaxed font-medium">
+              Our Service is intended for users of all ages to learn and read the Quran. We do not knowingly collect personally identifiable information from children under 13. If you are a parent or guardian and you are aware that your child has provided us with Personal Data, please contact us.
+            </p>
+          </section>
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 text-emerald-500">
+              <FileText size={24} />
+              <h2 className="text-2xl font-black italic">7. Changes to This Policy</h2>
+            </div>
+            <p className="text-slate-400 leading-relaxed font-medium">
+              We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.
+            </p>
           </section>
 
           <section className="pt-12 border-t border-white/5">
             <div className="bg-emerald-600 p-10 md:p-14 rounded-[3.5rem] space-y-8 shadow-2xl relative overflow-hidden">
               <div className="relative z-10 text-center space-y-6">
-                <h3 className="text-3xl font-black italic text-white leading-none">Questions?</h3>
+                <h3 className="text-3xl font-black italic text-white leading-none">Compliance & Contact</h3>
                 <p className="text-emerald-50 font-medium max-w-md mx-auto opacity-80">
-                  If you have concerns about your digital footprint or our technical infrastructure, please reach out.
+                  For any legal inquiries or data protection requests, please reach out to our dedicated support team.
                 </p>
                 <div className="flex flex-col md:flex-row gap-4 justify-center">
-                  <a href="mailto:privacy@quranseekho.online" className="px-10 py-5 bg-white text-emerald-950 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all">
-                    Email Security Team
+                  <a href="mailto:support@quranseekho.online" className="px-10 py-5 bg-white text-emerald-950 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all flex items-center gap-3">
+                    <Mail size={16} /> Contact Privacy Team
                   </a>
                 </div>
               </div>
               <div className="absolute top-0 left-0 p-8 opacity-10">
-                <Mail size={150} />
+                <ShieldCheck size={150} />
               </div>
             </div>
           </section>
         </div>
       </div>
+      
+      <p className="mt-20 text-center text-slate-600 text-[10px] font-black uppercase tracking-[0.4em]">
+        Quran Seekho Portal • Transparency & Trust
+      </p>
     </div>
   );
 };

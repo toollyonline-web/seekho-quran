@@ -1,11 +1,11 @@
 
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, RECITERS, TAJWEED_RULES } from '../services/quranApi';
+import { fetchSurahDetail, fetchJuzDetail, fetchTafsir, getAyahAudioUrl, RECITERS, TAJWEED_RULES, TAFSIR_EDITIONS } from '../services/quranApi';
 import { 
   ChevronLeft, ChevronRight, X, Play, Pause, 
   Loader2, Info, Share2, Bookmark, Settings,
-  Eye, EyeOff, Music, Volume2, Sparkles, BookOpen, Mic, AlertCircle
+  Eye, EyeOff, Music, Volume2, Sparkles, BookOpen, Mic, AlertCircle, FileText
 } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
 
@@ -21,12 +21,14 @@ const SurahReader: React.FC = () => {
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
   const [hifzMode, setHifzMode] = useState(false);
-  const [tajweedMode, setTajweedMode] = useState(false); // Changed from true to false
-  const [revealedAyahs, setRevealedAyahs] = useState<Set<number>>(new Set());
+  const [tajweedMode, setTajweedMode] = useState(false);
   
   const [fontSize, setFontSize] = useState(38);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'display' | 'audio'>('display');
+  const [isTafsirOpen, setIsTafsirOpen] = useState(false);
+  const [tafsirLoading, setTafsirLoading] = useState(false);
+  const [selectedTafsir, setSelectedTafsir] = useState<any>(null);
+  const [activeTafsirEdition, setActiveTafsirEdition] = useState('en.tafsir-ibn-kathir');
   
   const [reciter, setReciter] = useState(() => {
     try {
@@ -84,7 +86,6 @@ const SurahReader: React.FC = () => {
         }
         setData(detail);
         
-        // Dynamic Meta Updates
         const editions = Array.isArray(detail) ? detail : [detail];
         const primary = editions[0];
         if (primary) {
@@ -140,6 +141,20 @@ const SurahReader: React.FC = () => {
     }
   };
 
+  const openTafsir = async (ayah: any) => {
+    setIsTafsirOpen(true);
+    setTafsirLoading(true);
+    setSelectedTafsir(null);
+    try {
+      const result = await fetchTafsir(ayah.number, activeTafsirEdition);
+      setSelectedTafsir({ ...result, ayahRef: ayah });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setTafsirLoading(false);
+    }
+  };
+
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6">
       <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
@@ -163,6 +178,70 @@ const SurahReader: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-32 page-transition">
+      {/* Tafsir Side Panel */}
+      {isTafsirOpen && (
+        <div className="fixed inset-0 z-[600] flex justify-end">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsTafsirOpen(false)}></div>
+          <div className="relative w-full max-w-lg h-full bg-[#0b0c0d] border-l border-white/5 flex flex-col animate-in slide-in-from-right duration-500">
+             <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                <div>
+                   <h2 className="text-2xl font-black italic">Ayah Context</h2>
+                   <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Tafsir Exploration</p>
+                </div>
+                <button onClick={() => setIsTafsirOpen(false)} className="p-2 hover:bg-white/5 rounded-full"><X size={24} /></button>
+             </div>
+             
+             <div className="p-4 border-b border-white/5 bg-white/5 overflow-x-auto flex gap-2 no-scrollbar">
+                {TAFSIR_EDITIONS.map(ed => (
+                   <button 
+                     key={ed.id}
+                     onClick={() => {
+                        setActiveTafsirEdition(ed.id);
+                        if(selectedTafsir?.ayahRef) openTafsir(selectedTafsir.ayahRef);
+                     }}
+                     className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTafsirEdition === ed.id ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white/5 text-slate-500 hover:text-white'}`}
+                   >
+                      {ed.name}
+                   </button>
+                ))}
+             </div>
+
+             <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                {tafsirLoading ? (
+                   <div className="flex flex-col items-center justify-center h-64 gap-4">
+                      <Loader2 className="animate-spin text-emerald-500" size={32} />
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Decrypting Tafsir...</p>
+                   </div>
+                ) : selectedTafsir ? (
+                   <div className="space-y-10 animate-in fade-in duration-500">
+                      <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5">
+                        <p className="font-arabic text-right text-3xl mb-6 leading-relaxed" dir="rtl">{selectedTafsir.ayahRef.text}</p>
+                        <div className="flex justify-end">
+                           <span className="px-4 py-1.5 bg-emerald-600/10 text-emerald-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">Ayah {selectedTafsir.ayahRef.numberInSurah}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                           <div className="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center text-white"><FileText size={20}/></div>
+                           <h3 className="font-black italic text-xl">Commentary</h3>
+                        </div>
+                        <div className={`text-slate-400 leading-relaxed text-lg whitespace-pre-wrap font-medium ${activeTafsirEdition.startsWith('ar.') ? 'font-arabic text-right text-2xl' : ''}`} dir={activeTafsirEdition.startsWith('ar.') ? 'rtl' : 'ltr'}>
+                           {selectedTafsir.text}
+                        </div>
+                      </div>
+                   </div>
+                ) : (
+                   <p className="text-slate-500 italic text-center py-20">Select an Ayah to view its profound context.</p>
+                )}
+             </div>
+             <div className="p-8 border-t border-white/5 bg-white/5 text-[9px] font-bold text-slate-600 uppercase tracking-widest text-center">
+                Sourced from scholarly verified digital archives
+             </div>
+          </div>
+        </div>
+      )}
+
       {/* Settings Modal */}
       {isSidebarOpen && (
         <div className="fixed inset-0 z-[500] flex justify-end">
@@ -209,8 +288,8 @@ const SurahReader: React.FC = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="sticky top-24 z-50 glass py-4 px-6 -mx-4 border-y border-white/5 flex items-center justify-between">
-         <div className="flex gap-4 overflow-x-auto no-scrollbar items-center">
+      <div className="sticky top-24 z-50 glass py-4 px-6 -mx-4 border-y border-white/5 flex items-center justify-between overflow-x-auto no-scrollbar">
+         <div className="flex gap-4 items-center">
             {TAJWEED_RULES.map(rule => (
               <button key={rule.name} onClick={() => playTajweedSample(rule.audio)} className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 hover:border-emerald-500 shrink-0">
                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: rule.color }}></div>
@@ -219,7 +298,7 @@ const SurahReader: React.FC = () => {
               </button>
             ))}
          </div>
-         <button onClick={() => setIsSidebarOpen(true)} className="ml-4 p-3 bg-emerald-600 rounded-2xl shadow-xl"><Settings size={20}/></button>
+         <button onClick={() => setIsSidebarOpen(true)} className="ml-4 p-3 bg-emerald-600 rounded-2xl shadow-xl shrink-0"><Settings size={20}/></button>
       </div>
 
       {/* Verses */}
@@ -233,6 +312,7 @@ const SurahReader: React.FC = () => {
                     <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all shadow-xl ${isPlaying ? 'bg-emerald-600 animate-pulse' : 'bg-white/5 text-slate-500'}`}>
                        {isPlaying ? <Pause size={24}/> : <Play size={24}/>}
                     </button>
+                    <button onClick={() => openTafsir(ayah)} className="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 text-slate-600 hover:text-emerald-500 transition-colors"><Info size={20}/></button>
                     <button className="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 text-slate-600"><Bookmark size={20}/></button>
                  </div>
                  <div className="flex-grow w-full space-y-6">

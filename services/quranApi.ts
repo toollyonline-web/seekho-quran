@@ -12,6 +12,11 @@ export const RECITERS = [
   { id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary', style: 'Traditional' },
 ];
 
+export const TAFSIR_EDITIONS = [
+  { id: 'en.tafsir-ibn-kathir', name: 'Tafsir Ibn Kathir (En)', lang: 'en' },
+  { id: 'ar.jalalayn', name: 'Tafsir al-Jalalayn (Ar)', lang: 'ar' },
+];
+
 export const TAJWEED_RULES = [
   { name: 'Ghunnah', color: '#FF7E00', desc: 'Nasalization', audio: 'https://www.searchtruth.org/tajweed/ghunnah.mp3' },
   { name: 'Qalqalah', color: '#0091FF', desc: 'Echo/Bouncing', audio: 'https://www.searchtruth.org/tajweed/qalqalah.mp3' },
@@ -60,12 +65,20 @@ export const fetchSurahDetail = async (id: number): Promise<any> => {
 
 export const fetchJuzDetail = async (id: number): Promise<any> => {
   try {
-    // AlQuran Cloud Juz endpoint doesn't support the multi-edition /editions/ suffix
-    // We fetch primary Uthmani text and return as a single-element array
     const data = await fetchWithRetry(`${BASE_URL}/juz/${id}/quran-uthmani`);
     return [data.data];
   } catch (err) {
     throw new Error("Juz connection failed.");
+  }
+};
+
+export const fetchTafsir = async (ayahNumber: number, edition: string = 'en.tafsir-ibn-kathir'): Promise<any> => {
+  try {
+    const data = await fetchWithRetry(`${BASE_URL}/ayah/${ayahNumber}/${edition}`);
+    return data.data;
+  } catch (err) {
+    console.error("Tafsir fetch failed:", err);
+    return null;
   }
 };
 

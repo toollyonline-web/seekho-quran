@@ -4,7 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   Home as HomeIcon, BookOpen, Star, Hash, 
   Search as SearchIcon, Heart, X, Menu,
-  Mail, ShieldCheck, Compass, ArrowUp
+  Mail, ShieldCheck, Compass, ArrowUp,
+  Settings, Languages, ChevronRight, Info
 } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { translations, Language } from '../services/i18n';
@@ -27,13 +28,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location]);
 
+  // Handle body scroll locking when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMenuOpen]);
+
   const navItems = [
-    { name: t.nav.home, path: '/', icon: <HomeIcon size={18} /> },
-    { name: t.nav.surah, path: '/surah', icon: <BookOpen size={18} /> },
-    { name: t.nav.juz, path: '/juz', icon: <Star size={18} /> },
-    { name: t.nav.search, path: '/search', icon: <SearchIcon size={18} /> },
-    { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={18} /> },
-    { name: t.nav.qibla, path: '/qibla', icon: <Compass size={18} /> },
+    { name: t.nav.home, path: '/', icon: <HomeIcon size={20} /> },
+    { name: t.nav.surah, path: '/surah', icon: <BookOpen size={20} /> },
+    { name: t.nav.juz, path: '/juz', icon: <Star size={20} /> },
+    { name: t.nav.search, path: '/search', icon: <SearchIcon size={20} /> },
+    { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} /> },
+    { name: t.nav.qibla, path: '/qibla', icon: <Compass size={20} /> },
   ];
 
   const scrollToTop = () => {
@@ -41,75 +51,124 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const currentDateStr = new Date().toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
+    month: 'short',
+    day: 'numeric'
   });
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0b0c0d] text-[#f4f5f6] selection:bg-emerald-500/30">
       
-      {/* Side Navigation Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-[500] flex justify-end">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsMenuOpen(false)}></div>
-          <div className="relative w-full max-w-xs h-full bg-[#0f1112] shadow-2xl p-8 space-y-10 animate-in slide-in-from-right duration-300">
-             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-black text-sm">QS</div>
-                   <span className="font-bold">Menu</span>
-                </div>
-                <button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-white/5 rounded-full"><X size={24} /></button>
-             </div>
-             
-             <nav className="space-y-2">
-                {navItems.map((item) => (
+      {/* Premium Side Navigation Menu */}
+      <div className={`fixed inset-0 z-[600] transition-opacity duration-300 ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}></div>
+        <div className={`absolute top-0 right-0 w-full max-w-[320px] h-full bg-[#0b0c0d] shadow-2xl flex flex-col transition-transform duration-500 ease-out border-l border-white/5 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+           
+           {/* Menu Header */}
+           <div className="p-6 flex items-center justify-between border-b border-white/5">
+              <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-emerald-900/20">QS</div>
+                 <span className="font-black text-lg tracking-tight">Menu</span>
+              </div>
+              <button 
+                onClick={() => setIsMenuOpen(false)} 
+                className="p-2.5 bg-white/5 text-slate-400 hover:text-white rounded-xl transition-all"
+                aria-label="Close menu"
+              >
+                <X size={20} />
+              </button>
+           </div>
+           
+           {/* Nav Links */}
+           <nav className="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-4 p-4 rounded-2xl font-bold transition-all ${
-                      location.pathname === item.path ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-white/5'
+                    className={`flex items-center gap-4 px-5 py-4 rounded-2xl font-bold transition-all group ${
+                      isActive 
+                        ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-900/10' 
+                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
-                    {item.icon}
-                    <span>{item.name}</span>
+                    <span className={`${isActive ? 'text-white' : 'text-emerald-500 group-hover:scale-110 transition-transform'}`}>
+                      {item.icon}
+                    </span>
+                    <span className="text-sm tracking-wide flex-grow">{item.name}</span>
+                    {isActive && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
                   </Link>
-                ))}
-             </nav>
+                );
+              })}
 
-             <div className="pt-10 border-t border-white/5 space-y-4">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Settings</p>
-                <div className="flex flex-col gap-2">
-                   <button className="flex items-center justify-between p-4 bg-white/5 rounded-xl text-sm font-bold">
-                      Language <span>English</span>
-                   </button>
-                </div>
-             </div>
-          </div>
+              <div className="pt-8 pb-4">
+                <div className="h-px bg-white/5 mx-4"></div>
+              </div>
+
+              <Link 
+                to="/duas"
+                className="flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-slate-400 hover:bg-white/5 transition-all"
+              >
+                <Heart size={20} className="text-rose-500" />
+                <span className="text-sm tracking-wide">Duas & Adhkar</span>
+              </Link>
+           </nav>
+
+           {/* Menu Footer (Settings) */}
+           <div className="p-6 bg-[#0e0f10] border-t border-white/5 space-y-4">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] px-1">App Settings</p>
+              
+              <div className="space-y-2">
+                 <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-bold transition-all border border-white/5">
+                    <div className="flex items-center gap-3">
+                       <Languages size={16} className="text-emerald-500" />
+                       <span>Language</span>
+                    </div>
+                    <span className="text-emerald-500">English</span>
+                 </button>
+                 <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-bold transition-all border border-white/5">
+                    <div className="flex items-center gap-3">
+                       <Settings size={16} className="text-slate-400" />
+                       <span>Preferences</span>
+                    </div>
+                    <ChevronRight size={14} className="text-slate-600" />
+                 </button>
+              </div>
+
+              <div className="flex items-center justify-center gap-6 pt-4 text-slate-600">
+                <Link to="/privacy" className="text-[9px] font-bold uppercase tracking-widest hover:text-white transition-colors">Privacy</Link>
+                <Link to="/terms" className="text-[9px] font-bold uppercase tracking-widest hover:text-white transition-colors">Terms</Link>
+                <Link to="/about" className="text-[9px] font-bold uppercase tracking-widest hover:text-white transition-colors">About</Link>
+              </div>
+           </div>
         </div>
-      )}
+      </div>
 
-      {/* Modern Header */}
-      <header className={`fixed top-0 z-[400] w-full transition-all duration-300 pt-safe ${scrolled ? 'glass h-20' : 'bg-transparent h-24'}`}>
+      {/* Modern Fixed Header */}
+      <header className={`fixed top-0 z-[400] w-full transition-all duration-500 pt-safe ${scrolled ? 'glass h-20 shadow-2xl shadow-black/40' : 'bg-transparent h-24'}`}>
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg transition-transform group-hover:rotate-12">QS</div>
+          <Link to="/" className="flex items-center gap-4 group">
+            <div className={`w-11 h-11 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl transition-all duration-500 ${scrolled ? 'scale-90 shadow-emerald-900/40' : 'group-hover:rotate-12'}`}>QS</div>
             <div className="flex flex-col">
-              <span className="font-black text-lg tracking-tight leading-none">Quran Seekho</span>
-              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">{currentDateStr}</span>
+              <span className="font-black text-xl tracking-tighter leading-none italic group-hover:text-emerald-500 transition-colors">Quran Seekho</span>
+              <div className="flex items-center gap-2 mt-1">
+                 <span className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">{currentDateStr}</span>
+                 <div className="w-1 h-1 bg-white/10 rounded-full"></div>
+                 <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Global Portal</span>
+              </div>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
+          <nav className="hidden lg:flex items-center gap-2 bg-white/5 p-1.5 rounded-[2rem] border border-white/5 backdrop-blur-xl">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2 font-black px-5 py-2.5 rounded-full transition-all text-[10px] uppercase tracking-widest ${
+                className={`flex items-center gap-2 font-black px-6 py-2.5 rounded-full transition-all text-[10px] uppercase tracking-widest ${
                   location.pathname === item.path 
-                    ? 'bg-emerald-600 text-white shadow-lg' 
-                    : 'text-slate-400 hover:text-emerald-500'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 {item.icon}
@@ -118,12 +177,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             ))}
           </nav>
 
-          <button 
-            onClick={() => setIsMenuOpen(true)}
-            className="p-3 rounded-xl bg-white/5 text-slate-400 hover:text-emerald-500 transition-all border border-white/5 shadow-xl"
-          >
-            <Menu size={20} />
-          </button>
+          <div className="flex items-center gap-3">
+             <Link to="/search" className="hidden sm:flex w-11 h-11 bg-white/5 items-center justify-center rounded-2xl text-slate-400 hover:text-emerald-500 hover:bg-white/10 transition-all border border-white/5">
+                <SearchIcon size={20} />
+             </Link>
+             <button 
+               onClick={() => setIsMenuOpen(true)}
+               className="w-12 h-12 flex items-center justify-center rounded-2xl bg-emerald-600 lg:bg-white/5 text-white lg:text-slate-400 hover:text-emerald-500 transition-all border border-emerald-500/20 lg:border-white/5 shadow-xl shadow-emerald-900/20"
+             >
+               <Menu size={22} />
+             </button>
+          </div>
         </div>
       </header>
 
@@ -132,7 +196,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </main>
 
-      {/* Premium Re-designed Footer */}
+      {/* Enhanced Footer */}
       <footer className="relative bg-[#090a0b] border-t border-white/5 mt-32 pb-16 pt-24 overflow-hidden">
         {/* Background Decorative Element */}
         <div className="absolute top-0 right-0 p-20 opacity-[0.02] pointer-events-none select-none">
