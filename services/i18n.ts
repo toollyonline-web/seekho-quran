@@ -16,8 +16,8 @@ export const translations: Record<Language, any> = {
     },
     home: {
       greeting: "Assalamu Alaikum",
-      heroTitle: "Seek Final Knowledge",
-      heroSubtitle: "A premium digital sanctuary for reading, learning, and reflecting on the Noble Quran.",
+      heroTitle: "Master Quranic Recitation",
+      heroSubtitle: "Experience the Noble Quran with Interactive Tajweed guides, multi-language support, and professional recitations.",
       browseSurahs: "All Surahs",
       popularSurahs: "Featured Reading",
       prayerTimes: "Prayer Times",
@@ -54,6 +54,8 @@ export const translations: Record<Language, any> = {
       theme: "Theme Mode",
       hifzMode: "Hifz Mode",
       hifzDesc: "Hide text for memorization",
+      tajweedMode: "Tajweed Guide",
+      tajweedDesc: "Color-coded rules for recitation",
       audioSettings: "Audio Settings",
       reciter: "Select Reciter"
     },
@@ -119,6 +121,8 @@ export const translations: Record<Language, any> = {
       theme: "تھیم",
       hifzMode: "حفظ موڈ",
       hifzDesc: "یاد کرنے کے لیے عبارت چھپائیں",
+      tajweedMode: "تجوید گائیڈ",
+      tajweedDesc: "تلاوت کے قواعد رنگوں کے ساتھ",
       audioSettings: "آڈیو سیٹنگز",
       reciter: "قاری منتخب کریں"
     },
@@ -184,6 +188,8 @@ export const translations: Record<Language, any> = {
       theme: "المظهر",
       hifzMode: "وضع الحفظ",
       hifzDesc: "إخفاء النص للمساعدة في الحفظ",
+      tajweedMode: "دليل التجويد",
+      tajweedDesc: "قواعد التلاوة الملونة",
       audioSettings: "إعدادات الصوت",
       reciter: "اختر القارئ"
     },

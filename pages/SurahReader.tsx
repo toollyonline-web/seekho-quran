@@ -1,11 +1,11 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, RECITERS } from '../services/quranApi';
+import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, RECITERS, TAJWEED_RULES } from '../services/quranApi';
 import { 
   ChevronLeft, ChevronRight, X, Play, Pause, 
   Sliders, Loader2, Info, Share2, Bookmark, Settings,
-  Eye, EyeOff, Music, Volume2, Sparkles
+  Eye, EyeOff, Music, Volume2, Sparkles, BookOpen, Mic
 } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
 
@@ -21,6 +21,7 @@ const SurahReader: React.FC = () => {
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
   const [hifzMode, setHifzMode] = useState(false);
+  const [tajweedMode, setTajweedMode] = useState(true);
   const [revealedAyahs, setRevealedAyahs] = useState<Set<number>>(new Set());
   
   const [fontSize, setFontSize] = useState(36);
@@ -30,6 +31,7 @@ const SurahReader: React.FC = () => {
   const [reciter, setReciter] = useState(() => localStorage.getItem('qs_reciter') || 'ar.alafasy');
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const tajweedSampleRef = useRef<HTMLAudioElement | null>(null);
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
 
@@ -41,6 +43,10 @@ const SurahReader: React.FC = () => {
     audio.crossOrigin = "anonymous";
     audioRef.current = audio;
     
+    const sampleAudio = new Audio();
+    sampleAudio.crossOrigin = "anonymous";
+    tajweedSampleRef.current = sampleAudio;
+    
     audio.onended = () => setPlayingAyah(null);
     audio.onwaiting = () => setIsAudioLoading(true);
     audio.onplaying = () => setIsAudioLoading(false);
@@ -49,6 +55,8 @@ const SurahReader: React.FC = () => {
     return () => {
       audio.pause();
       audio.src = '';
+      sampleAudio.pause();
+      sampleAudio.src = '';
     };
   }, []);
 
@@ -96,6 +104,13 @@ const SurahReader: React.FC = () => {
     }
   };
 
+  const playTajweedSample = (url: string) => {
+    if (!tajweedSampleRef.current) return;
+    tajweedSampleRef.current.pause();
+    tajweedSampleRef.current.src = url;
+    tajweedSampleRef.current.play().catch(e => console.error(e));
+  };
+
   const updateDailyGoal = () => {
     const today = new Date().toDateString();
     const stats = JSON.parse(localStorage.getItem('qs_daily_stats') || '{}');
@@ -138,12 +153,15 @@ const SurahReader: React.FC = () => {
   );
 
   const editionsArr = Array.isArray(data) ? data : [data];
-  const arabic = editionsArr.find((e: any) => e.edition.type === 'quran' || e.edition.identifier === 'quran-uthmani');
+  const standardArabic = editionsArr.find((e: any) => e.edition.identifier === 'quran-uthmani');
+  const tajweedArabic = editionsArr.find((e: any) => e.edition.identifier === 'quran-tajweed');
   const english = editionsArr.find((e: any) => e.edition.language === 'en');
   const urdu = editionsArr.find((e: any) => e.edition.identifier === 'ur.jalandhara');
 
-  const title = isJuz ? `Juz ${id}` : arabic?.englishName || "Surah";
-  const subTitle = isJuz ? `Noble Quran Part` : `${arabic?.revelationType} • ${arabic?.numberOfAyahs} Verses`;
+  const arabicToDisplay = tajweedMode && tajweedArabic ? tajweedArabic : standardArabic;
+
+  const title = isJuz ? `Juz ${id}` : standardArabic?.englishName || "Surah";
+  const subTitle = isJuz ? `Noble Quran Part` : `${standardArabic?.revelationType} • ${standardArabic?.numberOfAyahs} Verses`;
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-32 page-transition">
@@ -192,6 +210,21 @@ const SurahReader: React.FC = () => {
                        </button>
                     </div>
 
+                    <div className="p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-[2rem] space-y-4">
+                      <div className="flex items-center justify-between">
+                         <div>
+                            <p className="text-emerald-500 font-black text-xs uppercase tracking-widest">{t.reader.tajweedMode}</p>
+                            <p className="text-[9px] text-slate-500 font-medium">{t.reader.tajweedDesc}</p>
+                         </div>
+                         <button 
+                            onClick={() => { setTajweedMode(!tajweedMode); if(!tajweedMode) setHifzMode(false); }}
+                            className={`w-12 h-6 rounded-full relative transition-colors ${tajweedMode ? 'bg-emerald-500' : 'bg-white/10'}`}
+                         >
+                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${tajweedMode ? 'right-1' : 'left-1'}`}></div>
+                         </button>
+                      </div>
+                    </div>
+
                     <div className="p-6 bg-amber-500/5 border border-amber-500/10 rounded-[2rem] space-y-4">
                       <div className="flex items-center justify-between">
                          <div>
@@ -199,7 +232,7 @@ const SurahReader: React.FC = () => {
                             <p className="text-[9px] text-slate-500 font-medium">{t.reader.hifzDesc}</p>
                          </div>
                          <button 
-                            onClick={() => { setHifzMode(!hifzMode); if(!hifzMode) { setShowEnglish(false); setShowUrdu(false); } }}
+                            onClick={() => { setHifzMode(!hifzMode); if(!hifzMode) { setShowEnglish(false); setShowUrdu(false); setTajweedMode(false); } }}
                             className={`w-12 h-6 rounded-full relative transition-colors ${hifzMode ? 'bg-amber-500' : 'bg-white/10'}`}
                          >
                             <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${hifzMode ? 'right-1' : 'left-1'}`}></div>
@@ -240,9 +273,29 @@ const SurahReader: React.FC = () => {
         </div>
       </div>
 
+      {/* Tajweed Legend Bar (Visible only in Tajweed Mode) */}
+      {tajweedMode && (
+        <div className="sticky top-24 z-[100] py-4 bg-[#0b0c0d]/80 backdrop-blur-xl border-y border-white/5 -mx-4 px-4">
+           <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar items-center">
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 whitespace-nowrap">Tajweed Guide:</span>
+              {TAJWEED_RULES.map((rule) => (
+                <button 
+                  key={rule.name}
+                  onClick={() => playTajweedSample(rule.audio)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/5 hover:border-white/20 transition-all shrink-0 active:scale-95 group"
+                >
+                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: rule.color }}></div>
+                   <span className="text-[10px] font-black uppercase tracking-widest group-hover:text-white transition-colors">{rule.name}</span>
+                   <Mic size={10} className="text-slate-500" />
+                </button>
+              ))}
+           </div>
+        </div>
+      )}
+
       {/* Ayah Stream */}
       <div className="space-y-8">
-        {arabic?.ayahs?.map((ayah: any, index: number) => {
+        {arabicToDisplay?.ayahs?.map((ayah: any, index: number) => {
           const isPlaying = playingAyah === ayah.number;
           const isHidden = hifzMode && !revealedAyahs.has(ayah.number);
           
@@ -261,17 +314,20 @@ const SurahReader: React.FC = () => {
                  </div>
                  
                  <div className="flex-grow w-full">
-                    <p 
-                      className={`font-arabic text-right leading-[2.2] transition-all duration-500 cursor-pointer ${isHidden ? 'blur-md opacity-20 select-none' : ''}`} 
+                    <div 
+                      className={`font-arabic text-right leading-[2.2] transition-all duration-500 cursor-pointer ${isHidden ? 'blur-md opacity-20 select-none' : ''} ${tajweedMode ? 'tajweed-text' : ''}`} 
                       style={{ fontSize: `${fontSize}px` }} 
                       dir="rtl"
                       onClick={() => hifzMode && toggleReveal(ayah.number)}
+                      dangerouslySetInnerHTML={tajweedMode ? { __html: ayah.text } : undefined}
                     >
-                       {ayah.text}
-                       <span className="inline-flex items-center justify-center w-12 h-12 mx-5 text-[10px] font-black text-emerald-500 border-2 border-emerald-500/20 rounded-2xl align-middle">
+                       {!tajweedMode && ayah.text}
+                    </div>
+                    <div className="flex justify-end mt-4">
+                      <span className="inline-flex items-center justify-center w-12 h-12 text-[10px] font-black text-emerald-500 border-2 border-emerald-500/20 rounded-2xl">
                           {ayah.numberInSurah}
                        </span>
-                    </p>
+                    </div>
                  </div>
               </div>
 

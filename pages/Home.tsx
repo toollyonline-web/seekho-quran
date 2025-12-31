@@ -4,7 +4,7 @@ import { fetchRandomAyah, getHijriParts } from '../services/quranApi';
 import { 
   Search as SearchIcon, BookOpen, Star, 
   ChevronRight, Sparkles, Heart, Sun, Share2, ArrowRight,
-  Trophy, Zap, Target, History, Bookmark
+  Trophy, Zap, Target, History, Bookmark, GraduationCap
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { translations, Language } from '../services/i18n';
@@ -62,7 +62,7 @@ const Home: React.FC = () => {
   const handleShareApp = async () => {
     const shareData = {
       title: 'Quran Seekho',
-      text: 'Experience the Noble Quran in a beautiful OLED Dark sanctuary.',
+      text: 'Experience the Noble Quran with Interactive Tajweed guides.',
       url: 'https://quranseekho.online/',
     };
     if (navigator.share) await navigator.share(shareData);
@@ -121,6 +121,29 @@ const Home: React.FC = () => {
           </div>
         </div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/10 rounded-full blur-[100px] -mr-48 -mt-48 group-hover:scale-110 transition-transform duration-1000"></div>
+      </section>
+
+      {/* New: Tajweed Feature Card (SEO Rich) */}
+      <section className="quran-card p-10 rounded-[3rem] bg-gradient-to-br from-[#121415] to-[#0d0e0f] border-emerald-500/10">
+         <div className="flex flex-col md:flex-row items-center gap-10">
+            <div className="w-20 h-20 bg-emerald-600/10 text-emerald-500 rounded-[1.5rem] flex items-center justify-center shrink-0">
+               <GraduationCap size={40} />
+            </div>
+            <div className="space-y-4">
+               <h2 className="text-2xl font-black italic">Interactive Tajweed Guide</h2>
+               <p className="text-slate-400 text-lg leading-relaxed max-w-2xl">
+                  Improve your recitation with our professional color-coded guide. Learn rules like <strong>Ghunnah</strong>, <strong>Idgham</strong>, and <strong>Qalqalah</strong> with instant audio pronunciation samples. Perfect for beginners and advanced students seeking correct <strong>Quranic phonetics</strong>.
+               </p>
+               <div className="flex gap-2">
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-bold uppercase tracking-widest text-slate-500">Self-Paced Learning</span>
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-bold uppercase tracking-widest text-slate-500">Audio Samples</span>
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-bold uppercase tracking-widest text-slate-500">Correct Makharij</span>
+               </div>
+            </div>
+            <Link to="/surah/1" className="ml-auto px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-emerald-500 transition-all whitespace-nowrap">
+               Try Now
+            </Link>
+         </div>
       </section>
 
       {/* Resume Card (Dynamic) */}

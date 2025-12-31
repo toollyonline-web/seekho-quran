@@ -12,6 +12,14 @@ export const RECITERS = [
   { id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary', style: 'Traditional' },
 ];
 
+export const TAJWEED_RULES = [
+  { name: 'Ghunnah', color: '#FF7E00', desc: 'Nasalization', audio: 'https://www.searchtruth.org/tajweed/ghunnah.mp3' },
+  { name: 'Qalqalah', color: '#0091FF', desc: 'Echo/Bouncing', audio: 'https://www.searchtruth.org/tajweed/qalqalah.mp3' },
+  { name: 'Ikhfa', color: '#9100FF', desc: 'Hidden Sound', audio: 'https://www.searchtruth.org/tajweed/ikhfa.mp3' },
+  { name: 'Idgham', color: '#10B981', desc: 'Merging', audio: 'https://www.searchtruth.org/tajweed/idgham.mp3' },
+  { name: 'Madd', color: '#FF0000', desc: 'Prolongation', audio: 'https://www.searchtruth.org/tajweed/madd.mp3' },
+];
+
 const fetchWithRetry = async (url: string, retries = 3, timeout = 15000) => {
   for (let i = 0; i < retries; i++) {
     try {
@@ -42,7 +50,8 @@ export const fetchSurahList = async (): Promise<Surah[]> => {
 
 export const fetchSurahDetail = async (id: number): Promise<any> => {
   try {
-    const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
+    // Adding quran-tajweed to the requested editions
+    const editions = ['quran-uthmani', 'quran-tajweed', 'en.sahih', 'ur.jalandhara'];
     const data = await fetchWithRetry(`${BASE_URL}/surah/${id}/editions/${editions.join(',')}`);
     return data.data;
   } catch (err) {
@@ -52,7 +61,7 @@ export const fetchSurahDetail = async (id: number): Promise<any> => {
 
 export const fetchJuzDetail = async (id: number): Promise<any> => {
   try {
-    const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
+    const editions = ['quran-uthmani', 'quran-tajweed', 'en.sahih', 'ur.jalandhara'];
     const data = await fetchWithRetry(`${BASE_URL}/juz/${id}/editions/${editions.join(',')}`);
     return data.data;
   } catch (err) {

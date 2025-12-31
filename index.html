@@ -8,8 +8,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <title>Quran Seekho | Read, Study, and Explore</title>
-    <meta name="description" content="A modern, ad-free Quran platform. Experience the divine word with multiple translations and high-quality audio.">
+    <title>Quran Seekho | Interactive Tajweed, Translations & Audio</title>
+    <meta name="description" content="Master Quran recitation with our Interactive Tajweed Guide. Features color-coded rules, audio pronunciation samples, and multiple translations. Ad-free digital Quran sanctuary.">
+    <meta name="keywords" content="Quran Tajweed, Learn Tajweed Online, Quran with Tajweed Audio, Color Coded Quran, Quran Seekho, Islamic Knowledge, Quran Urdu Translation, Quran English Translation">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,9 +43,9 @@
         }
 
         .glass {
-            background: rgba(18, 18, 18, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(11, 12, 13, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -78,6 +79,10 @@
             background: #334155;
             border-radius: 10px;
         }
+
+        /* Tajweed Color Overrides for Dark Mode visibility */
+        .tajweed-text [style*="color:#AAAAAA"] { color: #64748b !important; } /* Silent letters */
+        .tajweed-text [style*="color:#000000"] { color: #f4f5f6 !important; } /* Normal text */
     </style>
 
     <script type="importmap">
