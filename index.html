@@ -4,16 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="theme-color" content="#065f46">
-    
-    <link rel="canonical" href="https://quranseekho.online/" />
-    <title>Quran Seekho | Ad-Free Sacred Reading Experience</title>
-    <meta name="description" content="Discover a premium, ad-free Quran platform. Read with professional English and Urdu translations, track prayer times, and explore Prophetic stories.">
-    
-    <!-- PWA & Mobile Meta -->
+    <meta name="theme-color" content="#064e3b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="./manifest.json">
+    
+    <title>Quran Seekho | The Ultimate Ad-Free Quran Platform</title>
+    <meta name="description" content="Discover a premium, distraction-free Quran experience. Features professional English and Urdu translations, accurate prayer times, and sacred reading tools.">
+    
+    <!-- Open Graph / SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Quran Seekho | Pure Sacred Reading">
+    <meta property="og:description" content="Experience the Noble Quran with high-end typography, audio recitations, and zero ads.">
+    <meta property="og:image" content="https://quranseekho.online/og-image.jpg">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,82 +32,68 @@
 
     <style>
         :root {
-            --emerald-primary: #065f46;
-            --emerald-light: #ecfdf5;
-            --ui-scale: 1;
+            --emerald-sacred: #064e3b;
+            --gold-accent: #d97706;
         }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
-            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
-            /* Prevent content disappearance on iOS */
-            height: 100%;
-            min-height: -webkit-fill-available;
-        }
-
-        html {
-            height: -webkit-fill-available;
+            background-color: #f8fafc;
+            /* Support for modern mobile notches */
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .font-arabic { font-family: 'Scheherazade New', serif; line-height: 2.2; direction: rtl; }
-        .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; line-height: 3; }
+        .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; line-height: 2.8; }
 
-        /* Modern Glass UI */
+        /* Premium Glassmorphism */
         .glass {
             background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
         .dark .glass {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Responsive Safe Areas */
-        .pb-safe { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+        /* Safe Paddings */
+        .pb-safe { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
         .pt-safe { padding-top: env(safe-area-inset-top); }
 
-        /* Skeleton Animation */
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        .skeleton {
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite linear;
-        }
-        .dark .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-            background-size: 200% 100%;
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
 
-        /* Ensure smooth scroll and responsive height */
-        #root {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
+        .animate-float { animation: float 6s ease-in-out infinite; }
     </style>
-<script type="importmap">
+
+    <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@19.0.0",
     "react-dom": "https://esm.sh/react-dom@19.0.0",
     "react-router-dom": "https://esm.sh/react-router-dom@7.1.3",
     "lucide-react": "https://esm.sh/lucide-react@0.474.0",
-    "react/": "https://esm.sh/react@19.0.0/",
-    "react-dom/": "https://esm.sh/react-dom@19.0.0/",
-    "vite": "https://esm.sh/vite@^7.3.0",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.3.0"
   }
 }
 </script>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-500 min-h-screen">
+<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-700 min-h-screen">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
 </body>

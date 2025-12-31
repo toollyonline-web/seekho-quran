@@ -1,17 +1,15 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, getSurahAudioUrl } from '../services/quranApi';
 import { 
-  ChevronLeft, ChevronRight, Bookmark, BookmarkCheck, Book, 
-  X, Play, Pause, Eye, EyeOff, Maximize2,
-  Sliders, Sun, Moon, Share2, Info, Coffee, Loader2, Quote
+  ChevronLeft, ChevronRight, Bookmark, X, Play, Pause, Eye, EyeOff, 
+  Sliders, Sun, Moon, Share2, Coffee, Loader2, Quote, PlayCircle
 } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
 
 const SurahReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const location = useLocation();
   const isJuz = location.pathname.includes('/juz/');
   
@@ -21,54 +19,45 @@ const SurahReader: React.FC = () => {
   
   const [showEnglish, setShowEnglish] = useState(true);
   const [showUrdu, setShowUrdu] = useState(true);
-  const [showTafsir, setShowTafsir] = useState(false);
   const [readingTheme, setReadingTheme] = useState<'light' | 'sepia' | 'dark'>('light');
-  const [focusMode, setFocusMode] = useState(false);
-  const [fontSize, setFontSize] = useState(36);
-  const [isAmiri, setIsAmiri] = useState(false);
+  const [fontSize, setFontSize] = useState(42);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [activeAyah, setActiveAyah] = useState<number | null>(null);
-  const [tafsirData, setTafsirData] = useState<Record<number, string>>({});
   
   const currentLang = (localStorage.getItem('language') as Language) || 'en';
-  const t = translations[currentLang];
-  const isRTL = currentLang === 'ur' || currentLang === 'ar';
+  const t = translations[currentLang] || translations['en'];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const playPromiseRef = useRef<Promise<void> | null>(null);
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const [isPlayingFullSurah, setIsPlayingFullSurah] = useState(false);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
 
   useEffect(() => {
-    try {
-      const savedBookmarks = localStorage.getItem('qs_bookmarks');
-      if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks).map((b: any) => `${b.surahNumber}:${b.ayahNumber}`));
-      
-      const savedTheme = localStorage.getItem('theme') as any;
-      if (savedTheme) setReadingTheme(savedTheme);
-
-      const savedSize = localStorage.getItem('qs_font_size');
-      if (savedSize) setFontSize(parseInt(savedSize));
-    } catch (e) { console.warn("Preferences load failed", e); }
-
+    // Initial audio setup
     const audio = new Audio();
     audio.crossOrigin = "anonymous";
     audioRef.current = audio;
 
-    const handleEvents = {
-      ended: () => { setPlayingAyah(null); setIsPlayingFullSurah(false); setIsAudioLoading(false); },
-      waiting: () => setIsAudioLoading(true),
-      playing: () => setIsAudioLoading(false),
-      error: () => { setIsAudioLoading(false); setPlayingAyah(null); setIsPlayingFullSurah(false); }
+    const onEnded = () => { 
+        setPlayingAyah(null); 
+        setIsPlayingFullSurah(false); 
+        setIsAudioLoading(false); 
     };
+    const onWaiting = () => setIsAudioLoading(true);
+    const onPlaying = () => setIsAudioLoading(false);
+    const onError = () => { setIsAudioLoading(false); setPlayingAyah(null); setIsPlayingFullSurah(false); };
 
-    Object.entries(handleEvents).forEach(([ev, fn]) => audio.addEventListener(ev, fn));
+    audio.addEventListener('ended', onEnded);
+    audio.addEventListener('waiting', onWaiting);
+    audio.addEventListener('playing', onPlaying);
+    audio.addEventListener('error', onError);
     
     return () => {
       audio.pause();
-      Object.entries(handleEvents).forEach(([ev, fn]) => audio.removeEventListener(ev, fn));
+      audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('waiting', onWaiting);
+      audio.removeEventListener('playing', onPlaying);
+      audio.removeEventListener('error', onError);
     };
   }, []);
 
@@ -79,9 +68,10 @@ const SurahReader: React.FC = () => {
       setError(null);
       try {
         const detail = isJuz ? await fetchJuzDetail(parseInt(id)) : await fetchSurahDetail(parseInt(id));
-        if (!detail) throw new Error("No data returned from API");
+        if (!detail) throw new Error("API content missing");
         setData(detail);
         
+        // Save progression
         if (!isJuz && detail[0]) {
           localStorage.setItem('qs_last_read', JSON.stringify({
             id: id,
@@ -91,8 +81,8 @@ const SurahReader: React.FC = () => {
           }));
         }
       } catch (err) { 
-        console.error("Reader load error:", err); 
-        setError("Failed to load content. Please check your connection.");
+        console.error("Reader Error:", err); 
+        setError("Network sync failed. Please check your connection.");
       } finally {
         setLoading(false);
       }
@@ -101,22 +91,7 @@ const SurahReader: React.FC = () => {
     loadContent();
   }, [id, isJuz]);
 
-  const safePlay = async () => {
-    if (!audioRef.current) return;
-    try {
-      if (playPromiseRef.current !== null) await playPromiseRef.current;
-      setIsAudioLoading(true);
-      playPromiseRef.current = audioRef.current.play();
-      await playPromiseRef.current;
-      playPromiseRef.current = null;
-    } catch (err) {
-      console.warn("Playback interrupted:", err);
-      setIsAudioLoading(false);
-      playPromiseRef.current = null;
-    }
-  };
-
-  const toggleAyahAudio = async (ayahGlobalNumber: number, ayahInSurah: number) => {
+  const toggleAyahAudio = async (ayahGlobalNumber: number) => {
     if (!audioRef.current) return;
     if (playingAyah === ayahGlobalNumber) {
       audioRef.current.pause();
@@ -126,10 +101,11 @@ const SurahReader: React.FC = () => {
       audioRef.current.pause();
       audioRef.current.src = getAyahAudioUrl(ayahGlobalNumber);
       audioRef.current.load();
-      safePlay();
-      setPlayingAyah(ayahGlobalNumber);
-      setActiveAyah(ayahGlobalNumber);
-      document.querySelector(`[data-ayah-number="${ayahGlobalNumber}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try {
+        await audioRef.current.play();
+        setPlayingAyah(ayahGlobalNumber);
+        setActiveAyah(ayahGlobalNumber);
+      } catch (e) { console.error("Audio blocked", e); }
     }
   };
 
@@ -140,92 +116,82 @@ const SurahReader: React.FC = () => {
       setIsPlayingFullSurah(false);
     } else {
       setPlayingAyah(null);
-      const newSrc = getSurahAudioUrl(parseInt(id!));
-      if (audioRef.current.src !== newSrc) {
-        audioRef.current.pause();
-        audioRef.current.src = newSrc;
-        audioRef.current.load();
-      }
-      safePlay();
-      setIsPlayingFullSurah(true);
+      audioRef.current.src = getSurahAudioUrl(parseInt(id!));
+      audioRef.current.load();
+      try {
+        await audioRef.current.play();
+        setIsPlayingFullSurah(true);
+      } catch (e) { console.error("Audio blocked", e); }
     }
   };
 
-  const switchTheme = (theme: 'light' | 'sepia' | 'dark') => {
-    setReadingTheme(theme);
-    localStorage.setItem('theme', theme);
-    document.documentElement.classList.remove('dark', 'sepia');
-    if (theme !== 'light') document.documentElement.classList.add(theme);
-  };
-
   if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6 page-transition">
-      <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-      <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Opening the Sacred Text...</p>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 animate-pulse">
+      <div className="w-16 h-16 border-[5px] border-emerald-800/20 border-t-emerald-800 rounded-full animate-spin"></div>
+      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Syncing Sacred Text...</p>
     </div>
   );
 
   if (error) return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6 text-center px-4 page-transition">
-      <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mb-4">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
+      <div className="w-20 h-20 bg-rose-100 text-rose-700 rounded-3xl flex items-center justify-center mb-4">
         <X size={40} />
       </div>
       <h2 className="text-2xl font-black">{error}</h2>
-      <button onClick={() => window.location.reload()} className="px-8 py-4 bg-green-700 text-white rounded-2xl font-bold shadow-lg">Try Again</button>
+      <button onClick={() => window.location.reload()} className="px-10 py-4 bg-emerald-800 text-white rounded-2xl font-black shadow-lg">Retry Connection</button>
     </div>
   );
 
-  let arabic: any, english: any, urdu: any;
-  try {
-    arabic = data.find((e: any) => e.edition.identifier === 'quran-uthmani' || e.edition.type === 'quran');
-    english = data.find((e: any) => e.edition.language === 'en');
-    urdu = data.find((e: any) => e.edition.identifier === 'ur.jalandhara');
-  } catch (e) {
-    return <div className="text-center py-20">Formatting error. Please refresh.</div>;
-  }
+  const arabic = data.find((e: any) => e.edition.type === 'quran' || e.edition.identifier === 'quran-uthmani');
+  const english = data.find((e: any) => e.edition.language === 'en');
+  const urdu = data.find((e: any) => e.edition.identifier === 'ur.jalandhara');
 
-  const title = isJuz ? `Juz ${id}` : arabic?.englishName || "Surah";
-  const subtitle = isJuz ? `Part ${id}` : `${arabic?.englishNameTranslation || ''} • ${arabic?.revelationType || ''}`;
+  const title = isJuz ? `Juz ${id}` : arabic?.englishName || "Revelation";
+  const subtitle = isJuz ? `Sacred Part ${id}` : `${arabic?.englishNameTranslation || ''} • ${arabic?.revelationType || ''}`;
   const maxItems = isJuz ? 30 : 114;
   const prevLink = isJuz ? `/juz/${parseInt(id!) - 1}` : `/surah/${parseInt(id!) - 1}`;
   const nextLink = isJuz ? `/juz/${parseInt(id!) + 1}` : `/surah/${parseInt(id!) + 1}`;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 pb-32 px-4 md:px-8 page-transition">
+    <div className="max-w-5xl mx-auto space-y-12 pb-32 px-4 md:px-10 page-transition">
       
-      {/* Settings Drawer */}
+      {/* Settings Modal */}
       {isDrawerOpen && (
-        <div className="fixed inset-0 z-[200] flex justify-end">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)}></div>
-          <div className="relative w-80 h-full glass shadow-2xl flex flex-col animate-in slide-in-from-right duration-500">
-            <div className="p-8 border-b dark:border-white/10 flex items-center justify-between">
-              <h2 className="font-black text-xl flex items-center gap-2 dark:text-white"><Sliders size={20} className="text-green-600" /> {t.reader.settings}</h2>
-              <button onClick={() => setIsDrawerOpen(false)} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full dark:text-white transition-colors"><X size={24} /></button>
+        <div className="fixed inset-0 z-[300] flex justify-end">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsDrawerOpen(false)}></div>
+          <div className="relative w-full max-w-sm h-full bg-white dark:bg-slate-900 shadow-2xl flex flex-col animate-in slide-in-from-right duration-500">
+            <div className="p-8 border-b dark:border-white/5 flex items-center justify-between">
+              <h2 className="font-black text-2xl flex items-center gap-3 dark:text-white tracking-tighter">
+                <Sliders size={24} className="text-emerald-800" /> {t.reader.settings}
+              </h2>
+              <button onClick={() => setIsDrawerOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full dark:text-white transition-colors">
+                <X size={24} />
+              </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-8 space-y-8">
+            <div className="flex-1 overflow-y-auto p-8 space-y-10">
                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block">Reading Theme</label>
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block">Environment Theme</label>
                   <div className="grid grid-cols-3 gap-3">
                     {['light', 'sepia', 'dark'].map((th) => (
-                      <button key={th} onClick={() => switchTheme(th as any)} className={`h-16 rounded-2xl border-2 flex items-center justify-center ${th === 'light' ? 'bg-white' : th === 'sepia' ? 'bg-[#fdf6e3]' : 'bg-slate-900'} ${readingTheme === th ? 'border-green-600 scale-105 shadow-lg' : 'border-transparent'}`}>
-                        {th === 'light' ? <Sun size={18} className="text-slate-900" /> : th === 'sepia' ? <Coffee size={18} className="text-[#5d4037]" /> : <Moon size={18} className="text-white" />}
+                      <button key={th} onClick={() => setReadingTheme(th as any)} className={`h-16 rounded-2xl border-2 transition-all flex items-center justify-center ${th === 'light' ? 'bg-white' : th === 'sepia' ? 'bg-[#fdf6e3]' : 'bg-slate-950'} ${readingTheme === th ? 'border-emerald-700 shadow-xl' : 'border-transparent'}`}>
+                        {th === 'light' ? <Sun size={20} className="text-slate-900" /> : th === 'sepia' ? <Coffee size={20} className="text-[#5d4037]" /> : <Moon size={20} className="text-white" />}
                       </button>
                     ))}
                   </div>
                </div>
                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block">Arabic Font Size</label>
-                  <input type="range" min="20" max="72" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full accent-green-600" />
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block">Arabic Text Size</label>
+                  <input type="range" min="30" max="72" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full appearance-none accent-emerald-800" />
                   <p className="text-right font-mono text-xs text-slate-400">{fontSize}px</p>
                </div>
-               <div className="space-y-2">
+               <div className="space-y-3">
                  {[
-                   { id: 'en', label: 'English translation', state: showEnglish, set: setShowEnglish },
-                   { id: 'ur', label: 'Urdu translation', state: showUrdu, set: setShowUrdu }
+                   { id: 'en', label: 'English Meaning', state: showEnglish, set: setShowEnglish },
+                   { id: 'ur', label: 'Urdu Translation', state: showUrdu, set: setShowUrdu }
                  ].map(l => (
-                    <button key={l.id} onClick={() => l.set(!l.state)} className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${l.state ? 'bg-green-700 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
-                       <span className="font-bold text-sm">{l.label}</span>
-                       {l.state ? <Eye size={18} /> : <EyeOff size={18} />}
+                    <button key={l.id} onClick={() => l.set(!l.state)} className={`w-full flex items-center justify-between p-5 rounded-3xl transition-all ${l.state ? 'bg-emerald-800 text-white shadow-xl' : 'bg-slate-50 dark:bg-slate-800 text-slate-400'}`}>
+                       <span className="font-bold">{l.label}</span>
+                       {l.state ? <Eye size={20} /> : <EyeOff size={20} />}
                     </button>
                  ))}
                </div>
@@ -234,63 +200,72 @@ const SurahReader: React.FC = () => {
         </div>
       )}
 
-      {/* Header Card */}
-      <div className="bg-white dark:bg-slate-800 rounded-[3rem] p-10 md:p-16 border dark:border-slate-700 shadow-xl relative overflow-hidden text-center">
-        <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none rotate-12">
-           <Quote size={200} />
+      {/* Hero Header */}
+      <div className="bg-white dark:bg-slate-900 rounded-[4rem] p-10 md:p-20 border dark:border-white/5 shadow-2xl relative overflow-hidden text-center group">
+        <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none rotate-12 group-hover:rotate-0 transition-transform duration-1000">
+           <Quote size={240} />
         </div>
         <div className="relative z-10 space-y-8">
-           <div className="flex items-center justify-center gap-10">
-              <Link to={prevLink} className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-green-600 transition-all ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
-                 <ChevronLeft size={32} />
+           <div className="flex items-center justify-center gap-12">
+              <Link to={prevLink} className={`p-5 rounded-[2rem] bg-slate-50 dark:bg-slate-950 text-slate-400 hover:text-emerald-800 transition-all ${parseInt(id!) <= 1 ? 'invisible' : 'visible shadow-sm'}`}>
+                 <ChevronLeft size={36} />
               </Link>
               <div>
-                <span className="text-[10px] font-black text-green-700 dark:text-green-400 uppercase tracking-[0.5em] mb-4 block">Section {id}</span>
-                <h1 className="text-5xl md:text-7xl font-black dark:text-white tracking-tighter">{title}</h1>
-                <p className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-sm mt-4">{subtitle}</p>
+                <span className="text-[10px] font-black text-emerald-800 dark:text-emerald-500 uppercase tracking-[0.5em] mb-4 block">Quranic Section {id}</span>
+                <h1 className="text-5xl md:text-8xl font-black dark:text-white tracking-tighter leading-none">{title}</h1>
+                <p className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-sm mt-6">{subtitle}</p>
               </div>
-              <Link to={nextLink} className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-green-600 transition-all ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
-                 <ChevronRight size={32} />
+              <Link to={nextLink} className={`p-5 rounded-[2rem] bg-slate-50 dark:bg-slate-950 text-slate-400 hover:text-emerald-800 transition-all ${parseInt(id!) >= maxItems ? 'invisible' : 'visible shadow-sm'}`}>
+                 <ChevronRight size={36} />
               </Link>
            </div>
            
-           <div className="flex flex-wrap justify-center gap-4 pt-6">
-              <button disabled={isAudioLoading} onClick={toggleFullSurahAudio} className="flex items-center gap-3 px-10 py-5 bg-green-700 text-white rounded-full font-black shadow-2xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50">
+           <div className="flex flex-wrap justify-center gap-4 pt-10">
+              <button disabled={isAudioLoading} onClick={toggleFullSurahAudio} className="flex items-center gap-4 px-12 py-5 bg-emerald-800 text-white rounded-full font-black shadow-[0_20px_40px_rgba(6,78,59,0.3)] hover:scale-105 active:scale-95 transition-all disabled:opacity-50 group">
                  {isAudioLoading && isPlayingFullSurah ? <Loader2 className="animate-spin" /> : isPlayingFullSurah ? <Pause /> : <Play fill="currentColor" />}
-                 {isPlayingFullSurah ? 'Pause Audio' : 'Play Full Surah'}
+                 <span className="text-[10px] uppercase tracking-widest">{isPlayingFullSurah ? 'Pause Full Audio' : 'Play Full Audio'}</span>
               </button>
-              <button onClick={() => setIsDrawerOpen(true)} className="flex items-center gap-3 px-10 py-5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white rounded-full font-black hover:bg-green-100 transition-all">
-                 <Sliders /> Settings
+              <button onClick={() => setIsDrawerOpen(true)} className="flex items-center gap-4 px-12 py-5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white rounded-full font-black hover:bg-emerald-800 hover:text-white transition-all text-[10px] uppercase tracking-widest">
+                 <Sliders size={20} /> View Settings
               </button>
            </div>
         </div>
       </div>
 
-      {/* Verses List */}
-      <div className="space-y-12">
+      {/* Verses Render */}
+      <div className={`space-y-16 ${readingTheme === 'sepia' ? 'bg-[#fdf6e3]/50 p-10 rounded-[3rem]' : ''}`}>
         {arabic?.ayahs?.map((ayah: any, index: number) => {
           const isActive = activeAyah === ayah.number;
           const isPlaying = playingAyah === ayah.number;
           return (
-            <div key={ayah.number} data-ayah-number={ayah.number} className={`group p-8 md:p-14 rounded-[3.5rem] transition-all duration-700 ${isActive ? 'bg-white dark:bg-slate-800 shadow-2xl scale-[1.02]' : 'hover:bg-white/30 dark:hover:bg-slate-800/30'}`}>
+            <div key={ayah.number} data-ayah-number={ayah.number} className={`group p-8 md:p-16 rounded-[4rem] transition-all duration-700 ${isActive ? 'bg-white dark:bg-slate-900 shadow-2xl scale-[1.03] border dark:border-white/5' : 'hover:bg-white/50 dark:hover:bg-slate-900/30'}`}>
               <div className="space-y-12">
-                 <p className="font-arabic text-right quran-text transition-all duration-700 dark:text-white" style={{ fontSize: `${fontSize}px` }} dir="rtl">
-                    {ayah.text}
-                    <span className="inline-flex items-center justify-center w-12 h-12 mx-6 text-xs font-black text-slate-400 border-2 border-slate-100 dark:border-slate-700 rounded-full align-middle font-sans">{ayah.numberInSurah}</span>
-                 </p>
+                 <div className="flex justify-between items-start gap-10">
+                    <div className="flex md:flex-col items-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                        <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all ${isPlaying ? 'bg-emerald-800 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-emerald-800'}`}>
+                            {isAudioLoading && isPlaying ? <Loader2 className="animate-spin" /> : isPlaying ? <Pause /> : <Play fill="currentColor" size={20} />}
+                        </button>
+                        <button className="w-14 h-14 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-emerald-800"><Bookmark size={20} /></button>
+                    </div>
+                    <p className="font-arabic text-right quran-text transition-all duration-700 dark:text-white flex-grow" style={{ fontSize: `${fontSize}px` }} dir="rtl">
+                        {ayah.text}
+                        <span className="inline-flex items-center justify-center w-14 h-14 mx-8 text-xs font-black text-slate-400 border-2 border-slate-100 dark:border-slate-800 rounded-full align-middle font-sans">
+                            {ayah.numberInSurah}
+                        </span>
+                    </p>
+                 </div>
 
-                 <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-                    <div className="md:col-span-1 flex md:flex-col items-center gap-4">
-                       <button onClick={() => toggleAyahAudio(ayah.number, ayah.numberInSurah)} className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all ${isPlaying ? 'bg-green-700 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-green-600'}`}>
-                          {isAudioLoading && isPlaying ? <Loader2 className="animate-spin" /> : isPlaying ? <Pause /> : <Play fill="currentColor" />}
-                       </button>
-                       <button onClick={() => {}} className="w-14 h-14 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-400"><Bookmark /></button>
-                       <button onClick={() => {}} className="w-14 h-14 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-400"><Share2 /></button>
-                    </div>
-                    <div className="md:col-span-11 space-y-8">
-                       {showEnglish && english?.ayahs[index] && <p className="text-xl text-slate-500 dark:text-slate-400 italic leading-relaxed">"{english.ayahs[index].text}"</p>}
-                       {showUrdu && urdu?.ayahs[index] && <p className="font-urdu text-4xl text-right text-slate-800 dark:text-slate-200 leading-[2.5]" dir="rtl">{urdu.ayahs[index].text}</p>}
-                    </div>
+                 <div className="max-w-4xl ltr:ml-20 rtl:mr-20 space-y-8">
+                    {showEnglish && english?.ayahs[index] && (
+                        <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 italic leading-relaxed font-medium">
+                            "{english.ayahs[index].text}"
+                        </p>
+                    )}
+                    {showUrdu && urdu?.ayahs[index] && (
+                        <p className="font-urdu text-4xl text-right text-slate-800 dark:text-slate-200 leading-[2.4] py-4" dir="rtl">
+                            {urdu.ayahs[index].text}
+                        </p>
+                    )}
                  </div>
               </div>
             </div>
@@ -298,13 +273,21 @@ const SurahReader: React.FC = () => {
         })}
       </div>
 
-      {/* Bottom Nav */}
-      <div className="flex justify-between items-center pt-20">
-         <Link to={prevLink} className={`p-8 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm flex items-center gap-6 hover:scale-105 transition-all ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
-            <ChevronLeft size={24} /> <span className="font-bold text-sm hidden sm:inline">Previous Section</span>
+      {/* Navigation Footer */}
+      <div className="flex justify-between items-center pt-24">
+         <Link to={prevLink} className={`p-8 rounded-[2.5rem] bg-white dark:bg-slate-900 border dark:border-white/5 shadow-xl flex items-center gap-8 hover:scale-105 transition-all ${parseInt(id!) <= 1 ? 'invisible' : 'visible'}`}>
+            <ChevronLeft size={32} />
+            <div className="text-left hidden sm:block">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Previous</p>
+                <p className="font-black dark:text-white">Sacred Section</p>
+            </div>
          </Link>
-         <Link to={nextLink} className={`p-8 rounded-[2.5rem] bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-sm flex items-center gap-6 hover:scale-105 transition-all ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
-            <span className="font-bold text-sm hidden sm:inline">Next Section</span> <ChevronRight size={24} />
+         <Link to={nextLink} className={`p-8 rounded-[2.5rem] bg-white dark:bg-slate-900 border dark:border-white/5 shadow-xl flex items-center gap-8 hover:scale-105 transition-all ${parseInt(id!) >= maxItems ? 'invisible' : 'visible'}`}>
+            <div className="text-right hidden sm:block">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Up Next</p>
+                <p className="font-black dark:text-white">Sacred Section</p>
+            </div>
+            <ChevronRight size={32} />
          </Link>
       </div>
     </div>
