@@ -23,7 +23,9 @@ export const translations: Record<Language, any> = {
       prayerTimes: "Prayer Times",
       resumeReading: "Continue Journey",
       readingGoal: "Daily Progress",
-      knowledgeDay: "Verse of the Day"
+      knowledgeDay: "Verse of the Day",
+      ayahGoal: "Daily Ayah Goal",
+      goalSuccess: "MashaAllah! Goal met."
     },
     tools: {
       tasbeehTitle: "Digital Tasbeeh",
@@ -46,7 +48,11 @@ export const translations: Record<Language, any> = {
       settings: "Reading Settings",
       translation: "Translation",
       fontSize: "Text Size",
-      theme: "Theme Mode"
+      theme: "Theme Mode",
+      hifzMode: "Hifz Mode",
+      hifzDesc: "Hide text for memorization",
+      audioSettings: "Audio Settings",
+      reciter: "Select Reciter"
     },
     ui: {
       settings: "Preferences",
@@ -78,7 +84,9 @@ export const translations: Record<Language, any> = {
       prayerTimes: "نماز کے اوقات",
       resumeReading: "تلاوت جاری رکھیں",
       readingGoal: "روزانہ کا ہدف",
-      knowledgeDay: "آج کی آیت"
+      knowledgeDay: "آج کی آیت",
+      ayahGoal: "آیت کا ہدف",
+      goalSuccess: "ماشاءاللہ! ہدف پورا ہوا۔"
     },
     tools: {
       tasbeehTitle: "ڈیجیٹل تسبیح",
@@ -101,7 +109,11 @@ export const translations: Record<Language, any> = {
       settings: "ترتیبات",
       translation: "ترجمہ",
       fontSize: "فونٹ سائز",
-      theme: "تھیم"
+      theme: "تھیم",
+      hifzMode: "حفظ موڈ",
+      hifzDesc: "یاد کرنے کے لیے عبارت چھپائیں",
+      audioSettings: "آڈیو سیٹنگز",
+      reciter: "قاری منتخب کریں"
     },
     ui: {
       settings: "ترتیبات",
@@ -133,7 +145,9 @@ export const translations: Record<Language, any> = {
       prayerTimes: "أوقات الصلاة",
       resumeReading: "متابعة القراءة",
       readingGoal: "الهدف اليومي",
-      knowledgeDay: "آية اليوم"
+      knowledgeDay: "آية اليوم",
+      ayahGoal: "هدف الآيات",
+      goalSuccess: "ما شاء الله! تم الهدف"
     },
     tools: {
       tasbeehTitle: "التسبيح الرقمي",
@@ -156,7 +170,11 @@ export const translations: Record<Language, any> = {
       settings: "الإعدادات",
       translation: "الترجمة",
       fontSize: "الخط",
-      theme: "المظهر"
+      theme: "المظهر",
+      hifzMode: "وضع الحفظ",
+      hifzDesc: "إخفاء النص للمساعدة في الحفظ",
+      audioSettings: "إعدادات الصوت",
+      reciter: "اختر القارئ"
     },
     ui: {
       settings: "الإعدادات",

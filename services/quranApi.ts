@@ -4,6 +4,14 @@ import { Surah, Ayah, PrayerTimes } from '../types';
 const BASE_URL = 'https://api.alquran.cloud/v1';
 const PRAYER_URL = 'https://api.aladhan.com/v1';
 
+export const RECITERS = [
+  { id: 'ar.alafasy', name: 'Mishary Rashid Alafasy', style: 'Murattal' },
+  { id: 'ar.abdurrahmansudais', name: 'Abdurrahman Al-Sudais', style: 'Haramain' },
+  { id: 'ar.saoodshuraym', name: 'Saood bin Ibrahim Ash-Shuraym', style: 'Haramain' },
+  { id: 'ar.ghamadi', name: 'Saad Al-Ghamdi', style: 'Murattal' },
+  { id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary', style: 'Traditional' },
+];
+
 const fetchWithRetry = async (url: string, retries = 3, timeout = 15000) => {
   for (let i = 0; i < retries; i++) {
     try {
@@ -44,14 +52,11 @@ export const fetchSurahDetail = async (id: number): Promise<any> => {
 
 export const fetchJuzDetail = async (id: number): Promise<any> => {
   try {
-    // AlQuran API can be flaky with multi-edition JUZ. We prioritize Arabic, then attempt translations.
     const editions = ['quran-uthmani', 'en.sahih', 'ur.jalandhara'];
     const data = await fetchWithRetry(`${BASE_URL}/juz/${id}/editions/${editions.join(',')}`);
     return data.data;
   } catch (err) {
-    // Fallback: Just fetch Arabic if multi-fetch fails
     const data = await fetchWithRetry(`${BASE_URL}/juz/${id}/quran-uthmani`);
-    // Wrap in array to match SurahReader expectations
     return [data.data];
   }
 };
@@ -88,8 +93,8 @@ export const searchAyah = async (query: string): Promise<any> => {
   }
 };
 
-export const getAyahAudioUrl = (ayahGlobalNumber: number): string => {
-  return `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahGlobalNumber}.mp3`;
+export const getAyahAudioUrl = (ayahGlobalNumber: number, reciterId: string = 'ar.alafasy'): string => {
+  return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${ayahGlobalNumber}.mp3`;
 };
 
 export const getHijriParts = (date: Date = new Date()) => {
