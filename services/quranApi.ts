@@ -33,7 +33,7 @@ const fetchWithRetry = async (url: string, retries = 3, timeout = 15000) => {
       return await response.json();
     } catch (err) {
       if (i === retries - 1) throw err;
-      await new Promise(resolve => setTimeout(resolve, 800 * (i + 1)));
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
     }
   }
 };
@@ -50,23 +50,29 @@ export const fetchSurahList = async (): Promise<Surah[]> => {
 
 export const fetchSurahDetail = async (id: number): Promise<any> => {
   try {
-    // Adding quran-tajweed to the requested editions
     const editions = ['quran-uthmani', 'quran-tajweed', 'en.sahih', 'ur.jalandhara'];
     const data = await fetchWithRetry(`${BASE_URL}/surah/${id}/editions/${editions.join(',')}`);
     return data.data;
   } catch (err) {
-    throw new Error("Failed to load Surah detail");
+    console.warn("Multi-edition fetch failed, falling back to basic Uthmani.");
+    // Fallback: If combined request fails, try to at least get the Arabic text
+    try {
+      const data = await fetchWithRetry(`${BASE_URL}/surah/${id}/quran-uthmani`);
+      return [data.data];
+    } catch (fallbackErr) {
+      throw new Error("Unable to connect to Quran servers. Please try again later.");
+    }
   }
 };
 
 export const fetchJuzDetail = async (id: number): Promise<any> => {
   try {
-    const editions = ['quran-uthmani', 'quran-tajweed', 'en.sahih', 'ur.jalandhara'];
-    const data = await fetchWithRetry(`${BASE_URL}/juz/${id}/editions/${editions.join(',')}`);
-    return data.data;
-  } catch (err) {
+    // Note: The AlQuran API juz endpoint doesn't support the /editions/ pattern natively in the same way surah does
+    // We fetch Uthmani for Juz and return as array for consistency
     const data = await fetchWithRetry(`${BASE_URL}/juz/${id}/quran-uthmani`);
     return [data.data];
+  } catch (err) {
+    throw new Error("Failed to load Juz detail");
   }
 };
 
