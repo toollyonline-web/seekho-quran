@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Heart, Copy, Check, ShieldCheck, Coffee, Server, Globe, Sparkles, Star, ChevronRight, Gift, HandsPraying } from 'lucide-react';
+import { Heart, Copy, Check, ShieldCheck, Coffee, Server, Globe, Sparkles, Star, ChevronRight, Gift, LucideProps } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Donation: React.FC = () => {
@@ -68,14 +68,14 @@ const Donation: React.FC = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
                    {[
-                     { icon: <Globe />, title: "Global Hosting", desc: "Fast access from any country" },
-                     { icon: <Server />, title: "AI compute", desc: "Powering our Soul Guide" },
-                     { icon: <Sparkles />, title: "No Ads", desc: "Distraction-free reading" },
-                     { icon: <Coffee />, title: "Free Updates", desc: "Continuous improvement" }
+                     { icon: Globe, title: "Global Hosting", desc: "Fast access from any country" },
+                     { icon: Server, title: "AI compute", desc: "Powering our Soul Guide" },
+                     { icon: Sparkles, title: "No Ads", desc: "Distraction-free reading" },
+                     { icon: Coffee, title: "Free Updates", desc: "Continuous improvement" }
                    ].map((item, i) => (
                      <div key={i} className="flex gap-4 p-4 bg-white/5 rounded-3xl border border-white/5">
                         <div className="w-10 h-10 bg-emerald-600/10 text-emerald-500 rounded-xl flex items-center justify-center shrink-0">
-                           {React.cloneElement(item.icon as React.ReactElement, { size: 18 })}
+                           <item.icon size={18} />
                         </div>
                         <div>
                            <p className="font-black text-xs uppercase text-white tracking-widest">{item.title}</p>
@@ -104,7 +104,7 @@ const Donation: React.FC = () => {
               <div className="relative z-10 mt-12 p-6 bg-emerald-950/40 rounded-[2.5rem] border border-white/10">
                  <div className="flex gap-4 items-center">
                     <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg">
-                       <HandsPraying className="text-white" />
+                       <Sparkles className="text-white" size={24} />
                     </div>
                     <div>
                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400">Dua for Donors</p>
