@@ -39,8 +39,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: t.nav.moods, path: '/moods', icon: <Smile size={20} className="text-rose-400" /> },
     { name: t.nav.map, path: '/history-map', icon: <MapIcon size={20} className="text-blue-400" /> },
     { name: t.nav.miracles, path: '/miracles', icon: <Sparkles size={20} /> },
-    { name: t.nav.juz, path: '/juz', icon: <Star size={20} /> },
-    { name: t.nav.search, path: '/search', icon: <SearchIcon size={20} /> },
     { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} /> },
     { name: t.nav.qibla, path: '/qibla', icon: <Compass size={20} /> },
   ];
@@ -102,11 +100,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
 
               <Link 
-                to="/duas"
-                className="flex items-center gap-5 px-5 py-4.5 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-white/5 transition-all group"
+                to="/donate"
+                className="flex items-center gap-5 px-5 py-4.5 rounded-2xl font-black text-sm transition-all group bg-rose-500/10 text-rose-500 border border-rose-500/20 shadow-lg"
               >
-                <Heart size={20} className="text-rose-500 group-hover:scale-110 transition-transform" />
-                <span>Duas & Adhkar</span>
+                <Heart size={20} className="fill-current group-hover:scale-110 transition-transform" />
+                <span className="tracking-widest uppercase text-xs">Support Project</span>
               </Link>
            </nav>
 
@@ -180,6 +178,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* Action Hub */}
           <div className="flex items-center gap-2 md:gap-4">
+             <Link 
+               to="/donate" 
+               className={`hidden lg:flex px-6 py-3 bg-rose-600/10 text-rose-500 border border-rose-500/20 rounded-2xl font-black text-[10px] uppercase tracking-widest items-center gap-3 hover:bg-rose-600 hover:text-white transition-all shadow-xl shadow-rose-900/10 active:scale-95 group ${scrolled ? 'scale-90' : ''}`}
+             >
+                <Heart size={16} className="fill-current group-hover:scale-110 transition-transform" />
+                <span>Support Us</span>
+             </Link>
              <Link 
                to="/search" 
                className={`hidden sm:flex w-11 h-11 md:w-13 md:h-13 bg-white/5 items-center justify-center rounded-2xl text-slate-400 hover:text-emerald-500 hover:bg-white/10 transition-all border border-white/5 group ${scrolled ? 'scale-90' : ''}`}
