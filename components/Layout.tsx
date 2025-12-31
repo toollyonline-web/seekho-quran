@@ -54,7 +54,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
            {/* Sidebar Branding */}
            <div className="p-8 flex items-center justify-between border-b border-white/5 bg-[#0e0f10]">
               <div className="flex items-center gap-4">
-                 <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-[0_8px_20px_-4px_rgba(16,185,129,0.4)] ring-1 ring-white/10">QS</div>
+                 <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-700 rounded-xl md:rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-[0_8px_20px_-4px_rgba(16,185,129,0.4)] ring-1 ring-white/10">QS</div>
                  <div className="flex flex-col">
                     <span className="font-black text-xl tracking-tight leading-none italic">Quran Seekho</span>
                     <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.4em] mt-1.5">User Portal</span>
@@ -167,7 +167,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                {item.icon && React.cloneElement(item.icon as React.ReactElement, { size: 14 })}
+                {item.icon && React.cloneElement(item.icon as React.ReactElement<any>, { size: 14 })}
                 <span>{item.name}</span>
               </Link>
             ))}
