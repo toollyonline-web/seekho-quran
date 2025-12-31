@@ -4,7 +4,7 @@ import { useParams, Link, useLocation } from 'react-router-dom';
 import { fetchSurahDetail, fetchJuzDetail, getAyahAudioUrl, RECITERS, TAJWEED_RULES } from '../services/quranApi';
 import { 
   ChevronLeft, ChevronRight, X, Play, Pause, 
-  Sliders, Loader2, Info, Share2, Bookmark, Settings,
+  Loader2, Info, Share2, Bookmark, Settings,
   Eye, EyeOff, Music, Volume2, Sparkles, BookOpen, Mic
 } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
@@ -24,7 +24,7 @@ const SurahReader: React.FC = () => {
   const [tajweedMode, setTajweedMode] = useState(true);
   const [revealedAyahs, setRevealedAyahs] = useState<Set<number>>(new Set());
   
-  const [fontSize, setFontSize] = useState(36);
+  const [fontSize, setFontSize] = useState(38);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'display' | 'audio'>('display');
   
@@ -47,7 +47,10 @@ const SurahReader: React.FC = () => {
     sampleAudio.crossOrigin = "anonymous";
     tajweedSampleRef.current = sampleAudio;
     
-    audio.onended = () => setPlayingAyah(null);
+    audio.onended = () => {
+      // Auto-play next ayah if in sequence mode (future enhancement)
+      setPlayingAyah(null);
+    };
     audio.onwaiting = () => setIsAudioLoading(true);
     audio.onplaying = () => setIsAudioLoading(false);
     audio.onerror = () => { setPlayingAyah(null); setIsAudioLoading(false); };
@@ -70,13 +73,26 @@ const SurahReader: React.FC = () => {
         if (!detail) throw new Error("Sync Failed");
         setData(detail);
         
+        // SEO Dynamic Metadata
         if (!isJuz && detail[0]) {
+          const surahName = detail[0].englishName;
+          const surahNumber = id;
+          document.title = `Surah ${surahName} (${surahNumber}) – Read Quran Online | Quran Seekho`;
+          
+          // Update meta description
+          const metaDesc = document.querySelector('meta[name="description"]');
+          if (metaDesc) {
+            metaDesc.setAttribute("content", `Read Surah ${surahName} online with Tajweed, Urdu & English translations, and professional audio recitation. Surah ${surahNumber} of the Noble Quran.`);
+          }
+
           localStorage.setItem('qs_last_read', JSON.stringify({
             id: id,
-            name: detail[0].englishName,
+            name: surahName,
             ayah: 1,
             timestamp: Date.now()
           }));
+        } else if (isJuz) {
+          document.title = `Juz ${id} – Read Noble Quran Online | Quran Seekho`;
         }
       } catch (err) { 
         setError("Network sync failed. Please try again.");
@@ -100,6 +116,10 @@ const SurahReader: React.FC = () => {
         await audioRef.current.play();
         setPlayingAyah(num);
         updateDailyGoal();
+        
+        // Scroll ayah into view if it's active
+        const el = document.getElementById(`ayah-${num}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } catch (e) { console.error(e); }
     }
   };
@@ -133,22 +153,7 @@ const SurahReader: React.FC = () => {
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
       <div className="w-12 h-12 border-4 border-white/5 border-t-emerald-500 rounded-full animate-spin"></div>
-      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 animate-pulse">Loading Revelation...</p>
-    </div>
-  );
-
-  if (error) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 text-center px-8 page-transition">
-      <div className="w-24 h-24 bg-rose-500/10 rounded-[2.5rem] flex items-center justify-center text-rose-500 border border-rose-500/20">
-         <X size={48} />
-      </div>
-      <div className="space-y-3">
-         <h2 className="text-3xl font-black">Sync Error</h2>
-         <p className="text-slate-500 max-w-sm mx-auto font-medium">{error}</p>
-      </div>
-      <button onClick={() => window.location.reload()} className="px-12 py-5 bg-emerald-600 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs">
-         Retry Connection
-      </button>
+      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 animate-pulse">Syncing Revelation...</p>
     </div>
   );
 
@@ -197,7 +202,7 @@ const SurahReader: React.FC = () => {
                   <>
                     <div className="space-y-4">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t.reader.fontSize}</p>
-                      <input type="range" min="20" max="72" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full accent-emerald-500 bg-white/5 h-2 rounded-full appearance-none cursor-pointer" />
+                      <input type="range" min="20" max="80" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full accent-emerald-500 bg-white/5 h-2 rounded-full appearance-none cursor-pointer" />
                     </div>
                     
                     <div className="space-y-3">
@@ -224,21 +229,6 @@ const SurahReader: React.FC = () => {
                          </button>
                       </div>
                     </div>
-
-                    <div className="p-6 bg-amber-500/5 border border-amber-500/10 rounded-[2rem] space-y-4">
-                      <div className="flex items-center justify-between">
-                         <div>
-                            <p className="text-amber-500 font-black text-xs uppercase tracking-widest">{t.reader.hifzMode}</p>
-                            <p className="text-[9px] text-slate-500 font-medium">{t.reader.hifzDesc}</p>
-                         </div>
-                         <button 
-                            onClick={() => { setHifzMode(!hifzMode); if(!hifzMode) { setShowEnglish(false); setShowUrdu(false); setTajweedMode(false); } }}
-                            className={`w-12 h-6 rounded-full relative transition-colors ${hifzMode ? 'bg-amber-500' : 'bg-white/10'}`}
-                         >
-                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${hifzMode ? 'right-1' : 'left-1'}`}></div>
-                         </button>
-                      </div>
-                    </div>
                   </>
                 ) : (
                   <div className="space-y-6">
@@ -262,60 +252,66 @@ const SurahReader: React.FC = () => {
         </div>
       )}
 
-      {/* Reader Header */}
-      <div className="text-center space-y-6 pt-10">
-        <h1 className="text-5xl md:text-7xl font-black tracking-tighter italic">{title}</h1>
-        <div className="flex items-center justify-center gap-6">
-           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">{subTitle}</span>
-           <button onClick={() => setIsSidebarOpen(true)} className="flex items-center gap-2 text-emerald-500 font-black text-[10px] uppercase tracking-widest hover:underline">
-              <Sparkles size={14} className="animate-pulse" /> Settings
-           </button>
-        </div>
+      {/* Sticky Reader Header (Mobile Optimized) */}
+      <div className="sticky top-20 z-10 py-6 glass -mx-4 px-8 mb-10 flex items-center justify-between">
+         <div className="flex-1">
+            <h1 className="text-2xl font-black italic">{title}</h1>
+            <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-500">{subTitle}</p>
+         </div>
+         <button onClick={() => setIsSidebarOpen(true)} className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-emerald-500 transition-all">
+            <Settings size={20} />
+         </button>
       </div>
 
-      {/* Tajweed Legend Bar (Visible only in Tajweed Mode) */}
+      {/* Tajweed Legend Bar */}
       {tajweedMode && (
-        <div className="sticky top-24 z-[100] py-4 bg-[#0b0c0d]/80 backdrop-blur-xl border-y border-white/5 -mx-4 px-4">
+        <div className="sticky top-[10.5rem] z-[8] py-4 bg-[#0b0c0d]/90 backdrop-blur-xl border-y border-white/5 -mx-4 px-4 shadow-2xl">
            <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar items-center">
-              <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 whitespace-nowrap">Tajweed Guide:</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 whitespace-nowrap">Tajweed Tips:</span>
               {TAJWEED_RULES.map((rule) => (
                 <button 
                   key={rule.name}
                   onClick={() => playTajweedSample(rule.audio)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/5 hover:border-white/20 transition-all shrink-0 active:scale-95 group"
+                  className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 hover:border-emerald-500 transition-all shrink-0 group"
                 >
-                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: rule.color }}></div>
+                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: rule.color }}></div>
                    <span className="text-[10px] font-black uppercase tracking-widest group-hover:text-white transition-colors">{rule.name}</span>
-                   <Mic size={10} className="text-slate-500" />
+                   <Mic size={12} className="text-slate-600 group-hover:text-emerald-400" />
                 </button>
               ))}
            </div>
         </div>
       )}
 
-      {/* Ayah Stream */}
-      <div className="space-y-8">
+      {/* Ayah Content Stream */}
+      <article className="space-y-12">
         {arabicToDisplay?.ayahs?.map((ayah: any, index: number) => {
           const isPlaying = playingAyah === ayah.number;
           const isHidden = hifzMode && !revealedAyahs.has(ayah.number);
           
           return (
-            <div key={ayah.number} className="quran-card p-8 md:p-12 rounded-[2.5rem] space-y-12">
-              <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-                 <div className="flex flex-row md:flex-col gap-3">
-                    <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all shadow-xl ${isPlaying ? 'bg-emerald-600 text-white' : 'bg-white/5 text-slate-500 hover:text-emerald-500'}`}>
-                       {isAudioLoading && isPlaying ? <Loader2 className="animate-spin" size={18} /> : isPlaying ? <Pause size={18} /> : <Play size={18} />}
+            <div 
+              key={ayah.number} 
+              id={`ayah-${ayah.number}`}
+              className={`quran-card p-10 md:p-14 rounded-[3.5rem] space-y-12 transition-all duration-700 ${isPlaying ? 'ayah-active' : ''}`}
+            >
+              <div className="flex flex-col md:flex-row justify-between items-start gap-10">
+                 <div className="flex flex-row md:flex-col gap-4 sticky top-64">
+                    <button 
+                      onClick={() => toggleAyahAudio(ayah.number)} 
+                      className={`w-14 h-14 flex items-center justify-center rounded-[1.25rem] transition-all shadow-xl ${isPlaying ? 'bg-emerald-600 text-white animate-pulse' : 'bg-white/5 text-slate-500 hover:text-emerald-500'}`}
+                      aria-label="Play Verse"
+                    >
+                       {isAudioLoading && isPlaying ? <Loader2 className="animate-spin" size={24} /> : isPlaying ? <Pause size={24} /> : <Play size={24} />}
                     </button>
-                    {hifzMode && (
-                      <button onClick={() => toggleReveal(ayah.number)} className={`w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 text-slate-500 hover:text-amber-500 transition-all ${revealedAyahs.has(ayah.number) ? 'text-amber-500' : ''}`}>
-                        {revealedAyahs.has(ayah.number) ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    )}
+                    <button className="w-14 h-14 flex items-center justify-center rounded-[1.25rem] bg-white/5 text-slate-600 hover:text-emerald-500 transition-all">
+                       <Bookmark size={20} />
+                    </button>
                  </div>
                  
-                 <div className="flex-grow w-full">
+                 <div className="flex-grow w-full space-y-6">
                     <div 
-                      className={`font-arabic text-right leading-[2.2] transition-all duration-500 cursor-pointer ${isHidden ? 'blur-md opacity-20 select-none' : ''} ${tajweedMode ? 'tajweed-text' : ''}`} 
+                      className={`font-arabic text-right leading-[2.8] transition-all duration-700 cursor-pointer ${isHidden ? 'blur-md opacity-20 select-none' : ''} ${tajweedMode ? 'tajweed-text' : ''}`} 
                       style={{ fontSize: `${fontSize}px` }} 
                       dir="rtl"
                       onClick={() => hifzMode && toggleReveal(ayah.number)}
@@ -323,8 +319,9 @@ const SurahReader: React.FC = () => {
                     >
                        {!tajweedMode && ayah.text}
                     </div>
-                    <div className="flex justify-end mt-4">
-                      <span className="inline-flex items-center justify-center w-12 h-12 text-[10px] font-black text-emerald-500 border-2 border-emerald-500/20 rounded-2xl">
+                    <div className="flex justify-end items-center gap-3">
+                       <span className="h-px bg-white/5 flex-grow"></span>
+                       <span className="inline-flex items-center justify-center w-14 h-14 text-xs font-black text-emerald-500 border-2 border-emerald-500/20 rounded-[1.25rem] bg-emerald-500/5">
                           {ayah.numberInSurah}
                        </span>
                     </div>
@@ -332,31 +329,37 @@ const SurahReader: React.FC = () => {
               </div>
 
               {(!hifzMode || revealedAyahs.has(ayah.number)) && (
-                <div className="max-w-3xl md:ml-16 space-y-6 animate-in fade-in duration-500">
+                <div className="max-w-3xl md:ml-24 space-y-10 border-t border-white/5 pt-10 animate-in fade-in slide-in-from-bottom-5">
                   {showEnglish && english?.ayahs[index] && (
-                      <p className="text-lg md:text-xl text-slate-400 leading-relaxed italic border-l-2 border-emerald-500/20 pl-6">
-                        "{english.ayahs[index].text}"
-                      </p>
+                      <div className="space-y-2">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-600">English Interpretation</p>
+                        <p className="text-xl md:text-2xl text-slate-400 leading-relaxed font-medium">
+                          "{english.ayahs[index].text}"
+                        </p>
+                      </div>
                   )}
                   {showUrdu && urdu?.ayahs[index] && (
-                      <p className="font-urdu text-2xl md:text-4xl leading-relaxed text-right text-slate-300" dir="rtl">
-                        {urdu.ayahs[index].text}
-                      </p>
+                      <div className="space-y-2">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-600 text-right">اردو ترجمہ</p>
+                        <p className="font-urdu text-3xl md:text-5xl leading-[1.8] text-right text-slate-200" dir="rtl">
+                          {urdu.ayahs[index].text}
+                        </p>
+                      </div>
                   )}
                 </div>
               )}
             </div>
           );
         })}
-      </div>
+      </article>
 
-      {/* Navigation */}
-      <div className="flex justify-between items-center py-16 border-t border-white/5">
-         <Link to={isJuz ? `/juz/${parseInt(id!) - 1}` : `/surah/${parseInt(id!) - 1}`} className={`px-8 py-4 bg-white/5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-emerald-600 hover:text-white ${parseInt(id!) <= 1 ? 'invisible' : ''}`}>
-            Previous
+      {/* SEO Pagination */}
+      <div className="flex justify-between items-center py-20 border-t border-white/5">
+         <Link to={isJuz ? `/juz/${parseInt(id!) - 1}` : `/surah/${parseInt(id!) - 1}`} className={`px-10 py-5 bg-white/5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-emerald-600 hover:text-white ${parseInt(id!) <= 1 ? 'invisible' : ''}`}>
+            Previous Chapter
          </Link>
-         <Link to={isJuz ? `/juz/${parseInt(id!) + 1}` : `/surah/${parseInt(id!) + 1}`} className={`px-8 py-4 bg-white/5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-emerald-600 hover:text-white ${parseInt(id!) >= (isJuz ? 30 : 114) ? 'invisible' : ''}`}>
-            Next
+         <Link to={isJuz ? `/juz/${parseInt(id!) + 1}` : `/surah/${parseInt(id!) + 1}`} className={`px-10 py-5 bg-white/5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-emerald-600 hover:text-white ${parseInt(id!) >= (isJuz ? 30 : 114) ? 'invisible' : ''}`}>
+            Next Chapter
          </Link>
       </div>
     </div>

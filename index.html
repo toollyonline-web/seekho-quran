@@ -8,9 +8,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <title>Quran Seekho | Interactive Tajweed, Translations & Audio</title>
-    <meta name="description" content="Master Quran recitation with our Interactive Tajweed Guide. Features color-coded rules, audio pronunciation samples, and multiple translations. Ad-free digital Quran sanctuary.">
-    <meta name="keywords" content="Quran Tajweed, Learn Tajweed Online, Quran with Tajweed Audio, Color Coded Quran, Quran Seekho, Islamic Knowledge, Quran Urdu Translation, Quran English Translation">
+    <!-- Primary SEO -->
+    <title>Read Quran Online – All Surahs & Siparas | Quran Seekho</title>
+    <meta name="description" content="Read, listen, and learn the Noble Quran online at Quran Seekho. Interactive Tajweed, audio recitations by world-renowned Qaris, and multiple translations in an ad-free environment.">
+    <meta name="keywords" content="Quran Online, Read Quran, Surah Yaseen, Surah Rehman, Quran with Tajweed, Quran Audio, Islamic Knowledge, Quran Seekho, Sipara Online">
+    <meta name="author" content="Quran Seekho">
+    
+    <!-- Social Metadata -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Quran Seekho - Read Noble Quran Online">
+    <meta property="og:description" content="Experience the Quran with Tajweed, audio recitation, and translations. Free and Ad-free.">
+    <meta property="og:url" content="https://quranseekho.online/">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,18 +40,18 @@
 
         .font-arabic { 
             font-family: 'Amiri', serif; 
-            line-height: 2.2; 
+            line-height: 2.8; 
             direction: rtl; 
-            font-size: 1.35em;
+            font-size: 1.5em;
         }
 
         .font-urdu { 
             font-family: 'Noto Nastaliq Urdu', serif; 
-            line-height: 2.8; 
+            line-height: 3; 
         }
 
         .glass {
-            background: rgba(11, 12, 13, 0.85);
+            background: rgba(11, 12, 13, 0.9);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -61,44 +69,34 @@
             transform: translateY(-2px);
         }
 
-        .page-transition {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .ayah-active {
+            border-color: var(--quran-primary) !important;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 129, 0.05);
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 10px;
-        }
+        /* Tajweed Color Adjustments */
+        .tajweed-text [style*="color:#AAAAAA"] { color: #475569 !important; }
+        .tajweed-text [style*="color:#000000"] { color: #f4f5f6 !important; }
 
-        /* Tajweed Color Overrides for Dark Mode visibility */
-        .tajweed-text [style*="color:#AAAAAA"] { color: #64748b !important; } /* Silent letters */
-        .tajweed-text [style*="color:#000000"] { color: #f4f5f6 !important; } /* Normal text */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 
     <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-router-dom": "https://esm.sh/react-router-dom@7.1.3",
-    "lucide-react": "https://esm.sh/lucide-react@0.474.0",
-    "vite": "https://esm.sh/vite@^7.3.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
-  }
-}
-</script>
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.0.0",
+        "react-dom": "https://esm.sh/react-dom@19.0.0",
+        "react-router-dom": "https://esm.sh/react-router-dom@7.1.3",
+        "lucide-react": "https://esm.sh/lucide-react@0.474.0",
+        "vite": "https://esm.sh/vite@^7.3.0",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+      }
+    }
+    </script>
 </head>
 <body>
     <div id="root"></div>
