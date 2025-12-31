@@ -54,8 +54,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={20} /> },
   ];
 
+  const currentDateStr = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-500 overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b0c0d] transition-colors duration-500 overflow-x-hidden">
       
       {/* Settings Panel */}
       {isSettingsOpen && (
@@ -111,10 +117,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <header className={`fixed top-0 z-[400] w-full transition-all duration-300 pt-safe ${scrolled ? 'glass h-20 shadow-lg' : 'bg-transparent h-24'}`}>
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-emerald-800 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-xl group-hover:rotate-12 transition-transform">QS</div>
+            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-xl group-hover:rotate-12 transition-transform">QS</div>
             <div className="flex flex-col">
               <span className="font-black text-lg tracking-tight leading-none dark:text-white">Quran Seekho</span>
-              <span className="text-[8px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mt-0.5">Foundation</span>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{currentDateStr}</span>
             </div>
           </Link>
 
@@ -126,8 +132,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 to={item.path}
                 className={`flex items-center gap-2 font-black px-5 py-2.5 rounded-full transition-all text-[10px] uppercase tracking-widest ${
                   location.pathname === item.path 
-                    ? 'bg-emerald-800 text-white shadow-xl scale-105' 
-                    : 'text-slate-500 hover:text-emerald-800 dark:text-slate-400'
+                    ? 'bg-emerald-600 text-white shadow-xl scale-105' 
+                    : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
                 }`}
               >
                 {item.icon}
@@ -136,8 +142,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <button onClick={() => setIsSettingsOpen(true)} className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 text-slate-500 hover:text-emerald-700 transition-all shadow-sm">
+          <div className="flex items-center gap-3">
+            <button onClick={toggleTheme} className="hidden sm:flex items-center gap-2 p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 text-slate-500 hover:text-emerald-600 transition-all shadow-sm">
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              <span className="text-[10px] font-black uppercase tracking-widest">{theme === 'dark' ? 'LIGHT' : 'DARK'}</span>
+            </button>
+            <button onClick={() => setIsSettingsOpen(true)} className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 text-slate-500 hover:text-emerald-600 transition-all shadow-sm">
               <Menu size={20} />
             </button>
           </div>
@@ -160,14 +170,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               key={item.path}
               to={item.path}
               className={`flex flex-col items-center justify-center flex-grow transition-all duration-300 relative ${
-                active ? 'text-emerald-800 dark:text-emerald-400 -translate-y-1' : 'text-slate-400'
+                active ? 'text-emerald-600 dark:text-emerald-400 -translate-y-1' : 'text-slate-400'
               }`}
             >
               <div className={`p-2.5 rounded-xl transition-all ${active ? 'bg-emerald-600/10' : ''}`}>
                 {item.icon}
               </div>
               <span className="text-[9px] font-black uppercase tracking-tighter mt-1">{item.name}</span>
-              {active && <div className="absolute -bottom-1 w-1 h-1 bg-emerald-800 dark:bg-emerald-400 rounded-full animate-pulse"></div>}
+              {active && <div className="absolute -bottom-1 w-1 h-1 bg-emerald-600 dark:bg-emerald-400 rounded-full animate-pulse"></div>}
             </Link>
           );
         })}
