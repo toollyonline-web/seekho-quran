@@ -21,7 +21,8 @@ export const translations: Record<Language, any> = {
       browseSurahs: "All Surahs",
       popularSurahs: "Featured Reading",
       prayerTimes: "Prayer Times",
-      resumeReading: "Continue Journey",
+      resumeReading: "Resume Reading",
+      lastRead: "Last Read",
       readingGoal: "Daily Progress",
       knowledgeDay: "Verse of the Day",
       ayahGoal: "Daily Ayah Goal",
@@ -42,7 +43,9 @@ export const translations: Record<Language, any> = {
       investments: "Investments",
       liabilities: "Liabilities",
       netWealth: "Total Wealth",
-      dueZakat: "Payable Zakat"
+      dueZakat: "Payable Zakat",
+      bookmarksTitle: "Bookmarks",
+      bookmarksSubtitle: "Your saved verses for reflection"
     },
     reader: {
       settings: "Reading Settings",
@@ -60,7 +63,8 @@ export const translations: Record<Language, any> = {
       language: "App Language",
       close: "Close",
       back: "Go Back",
-      search: "Search for surahs, ayahs..."
+      search: "Search for surahs, ayahs...",
+      discover: "Discover by Topic"
     }
   },
   ur: {
@@ -83,6 +87,7 @@ export const translations: Record<Language, any> = {
       popularSurahs: "منتخب تلاوت",
       prayerTimes: "نماز کے اوقات",
       resumeReading: "تلاوت جاری رکھیں",
+      lastRead: "آخری بار پڑھا گیا",
       readingGoal: "روزانہ کا ہدف",
       knowledgeDay: "آج کی آیت",
       ayahGoal: "آیت کا ہدف",
@@ -103,7 +108,9 @@ export const translations: Record<Language, any> = {
       investments: "سرمایہ کاری",
       liabilities: "قرضہ جات",
       netWealth: "کل دولت",
-      dueZakat: "واجب الادا زکوٰۃ"
+      dueZakat: "واجب الادا زکوٰۃ",
+      bookmarksTitle: "محفوظ آیات",
+      bookmarksSubtitle: "آپ کی پسندیدہ آیات"
     },
     reader: {
       settings: "ترتیبات",
@@ -121,7 +128,8 @@ export const translations: Record<Language, any> = {
       language: "زبان",
       close: "بند کریں",
       back: "واپس",
-      search: "سورت یا آیت تلاش کریں..."
+      search: "سورت یا آیت تلاش کریں...",
+      discover: "موضوعات کے لحاظ سے تلاش کریں"
     }
   },
   ar: {
@@ -144,6 +152,7 @@ export const translations: Record<Language, any> = {
       popularSurahs: "سور مختارة",
       prayerTimes: "أوقات الصلاة",
       resumeReading: "متابعة القراءة",
+      lastRead: "آخر قراءة",
       readingGoal: "الهدف اليومي",
       knowledgeDay: "آية اليوم",
       ayahGoal: "هدف الآيات",
@@ -164,7 +173,9 @@ export const translations: Record<Language, any> = {
       investments: "الاستثمارات",
       liabilities: "الديون",
       netWealth: "صافي الثروة",
-      dueZakat: "الزكاة الواجبة"
+      dueZakat: "الزكاة الواجبة",
+      bookmarksTitle: "الإشارات المرجعية",
+      bookmarksSubtitle: "آياتك المفضلة"
     },
     reader: {
       settings: "الإعدادات",
@@ -182,7 +193,8 @@ export const translations: Record<Language, any> = {
       language: "اللغة",
       close: "إغلاق",
       back: "رجوع",
-      search: "بحث..."
+      search: "بحث...",
+      discover: "اكتشف حسب الموضوع"
     }
   }
 };
