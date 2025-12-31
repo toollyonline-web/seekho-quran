@@ -63,15 +63,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}></div>
         <div className={`absolute top-0 right-0 w-full max-w-[320px] h-full bg-[#0b0c0d] shadow-2xl flex flex-col transition-transform duration-500 ease-out border-l border-white/5 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
            
-           {/* Menu Header */}
-           <div className="p-6 flex items-center justify-between border-b border-white/5">
+           {/* Menu Header with Enhanced Logo */}
+           <div className="p-6 flex items-center justify-between border-b border-white/5 bg-[#0e0f10]">
               <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-emerald-900/20">QS</div>
-                 <span className="font-black text-lg tracking-tight">Menu</span>
+                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-700 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-[0_4px_15px_rgba(16,185,129,0.3)] ring-1 ring-white/10">QS</div>
+                 <div className="flex flex-col">
+                    <span className="font-black text-lg tracking-tight leading-none italic">Quran Seekho</span>
+                    <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest mt-0.5">Navigation Hub</span>
+                 </div>
               </div>
               <button 
                 onClick={() => setIsMenuOpen(false)} 
-                className="p-2.5 bg-white/5 text-slate-400 hover:text-white rounded-xl transition-all"
+                className="p-2.5 bg-white/5 text-slate-400 hover:text-white rounded-xl transition-all active:scale-90"
                 aria-label="Close menu"
               >
                 <X size={20} />
@@ -88,7 +91,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     to={item.path}
                     className={`flex items-center gap-4 px-5 py-4 rounded-2xl font-bold transition-all group ${
                       isActive 
-                        ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-900/10' 
+                        ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-900/10 scale-[1.02]' 
                         : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
@@ -107,9 +110,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
               <Link 
                 to="/duas"
-                className="flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-slate-400 hover:bg-white/5 transition-all"
+                className="flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-slate-400 hover:bg-white/5 transition-all group"
               >
-                <Heart size={20} className="text-rose-500" />
+                <Heart size={20} className="text-rose-500 group-hover:scale-110 transition-transform" />
                 <span className="text-sm tracking-wide">Duas & Adhkar</span>
               </Link>
            </nav>
@@ -119,16 +122,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] px-1">App Settings</p>
               
               <div className="space-y-2">
-                 <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-bold transition-all border border-white/5">
+                 <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-bold transition-all border border-white/5 group">
                     <div className="flex items-center gap-3">
-                       <Languages size={16} className="text-emerald-500" />
+                       <Languages size={16} className="text-emerald-500 group-hover:rotate-12 transition-transform" />
                        <span>Language</span>
                     </div>
                     <span className="text-emerald-500">English</span>
                  </button>
-                 <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-bold transition-all border border-white/5">
+                 <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-bold transition-all border border-white/5 group">
                     <div className="flex items-center gap-3">
-                       <Settings size={16} className="text-slate-400" />
+                       <Settings size={16} className="text-slate-400 group-hover:rotate-45 transition-transform" />
                        <span>Preferences</span>
                     </div>
                     <ChevronRight size={14} className="text-slate-600" />
@@ -144,18 +147,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      {/* Modern Fixed Header */}
-      <header className={`fixed top-0 z-[400] w-full transition-all duration-500 pt-safe ${scrolled ? 'glass h-20 shadow-2xl shadow-black/40' : 'bg-transparent h-24'}`}>
-        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-4 group">
-            <div className={`w-11 h-11 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl transition-all duration-500 ${scrolled ? 'scale-90 shadow-emerald-900/40' : 'group-hover:rotate-12'}`}>QS</div>
+      {/* Modern Fixed Header with Enhanced Logo */}
+      <header className={`fixed top-0 z-[400] w-full transition-all duration-500 pt-safe ${scrolled ? 'glass h-16 md:h-20 shadow-2xl shadow-black/40' : 'bg-transparent h-20 md:h-24'}`}>
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 md:gap-4 group">
+            <div className={`aspect-square bg-gradient-to-br from-emerald-400 to-emerald-700 rounded-xl md:rounded-2xl flex items-center justify-center text-white font-black shadow-xl transition-all duration-500 ring-1 ring-white/20 ${scrolled ? 'w-9 h-9 md:w-11 md:h-11 text-base md:text-xl scale-90' : 'w-11 h-11 md:w-13 md:h-13 text-xl md:text-2xl group-hover:rotate-12'}`}>
+              QS
+            </div>
             <div className="flex flex-col">
-              <span className="font-black text-xl tracking-tighter leading-none italic group-hover:text-emerald-500 transition-colors">Quran Seekho</span>
-              <div className="flex items-center gap-2 mt-1">
-                 <span className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">{currentDateStr}</span>
-                 <div className="w-1 h-1 bg-white/10 rounded-full"></div>
-                 <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Global Portal</span>
-              </div>
+              <span className={`font-black tracking-tighter leading-none italic group-hover:text-emerald-500 transition-all duration-300 ${scrolled ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}`}>Quran Seekho</span>
+              {!scrolled && (
+                <div className="hidden sm:flex items-center gap-2 mt-1 animate-in fade-in duration-700">
+                   <span className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">{currentDateStr}</span>
+                   <div className="w-1 h-1 bg-white/10 rounded-full"></div>
+                   <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Global Portal</span>
+                </div>
+              )}
             </div>
           </Link>
 
@@ -165,7 +172,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2 font-black px-6 py-2.5 rounded-full transition-all text-[10px] uppercase tracking-widest ${
+                className={`flex items-center gap-2 font-black px-5 py-2 rounded-full transition-all text-[10px] uppercase tracking-widest ${
                   location.pathname === item.path 
                     ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' 
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -177,13 +184,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-             <Link to="/search" className="hidden sm:flex w-11 h-11 bg-white/5 items-center justify-center rounded-2xl text-slate-400 hover:text-emerald-500 hover:bg-white/10 transition-all border border-white/5">
+          <div className="flex items-center gap-2 md:gap-3">
+             <Link to="/search" className="hidden sm:flex w-10 h-10 md:w-11 md:h-11 bg-white/5 items-center justify-center rounded-xl md:rounded-2xl text-slate-400 hover:text-emerald-500 hover:bg-white/10 transition-all border border-white/5">
                 <SearchIcon size={20} />
              </Link>
              <button 
                onClick={() => setIsMenuOpen(true)}
-               className="w-12 h-12 flex items-center justify-center rounded-2xl bg-emerald-600 lg:bg-white/5 text-white lg:text-slate-400 hover:text-emerald-500 transition-all border border-emerald-500/20 lg:border-white/5 shadow-xl shadow-emerald-900/20"
+               className={`w-11 h-11 md:w-12 md:h-12 flex items-center justify-center rounded-xl md:rounded-2xl bg-emerald-600 text-white transition-all border border-emerald-500/20 shadow-xl shadow-emerald-900/20 active:scale-95 ${scrolled ? 'scale-90' : ''}`}
              >
                <Menu size={22} />
              </button>
@@ -192,7 +199,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-grow pt-32 px-4 md:px-8 max-w-7xl mx-auto w-full">
+      <main className="flex-grow pt-24 md:pt-32 px-4 md:px-8 max-w-7xl mx-auto w-full">
         {children}
       </main>
 
@@ -209,7 +216,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {/* Branding Pillar */}
             <div className="max-w-xs space-y-8">
               <Link to="/" className="flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-2xl transition-transform group-hover:rotate-6">QS</div>
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-2xl transition-transform group-hover:rotate-6 ring-1 ring-white/10">QS</div>
                 <div className="flex flex-col">
                   <span className="font-black text-xl tracking-tighter italic">Quran Seekho</span>
                   <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.3em]">Pure Revelation</span>
