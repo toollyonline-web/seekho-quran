@@ -13,7 +13,10 @@ export const translations: Record<Language, any> = {
       tasbeeh: "Tasbeeh",
       names: "99 Names",
       calendar: "Calendar",
-      miracles: "Miracles"
+      miracles: "Miracles",
+      ai: "Soul Guide",
+      moods: "Moods",
+      map: "History Map"
     },
     home: {
       greeting: "Assalamu Alaikum",
@@ -81,7 +84,10 @@ export const translations: Record<Language, any> = {
       tasbeeh: "تسبیح",
       names: "99 نام",
       calendar: "کیلنڈر",
-      miracles: "معجزات"
+      miracles: "معجزات",
+      ai: "روحانی گائیڈ",
+      moods: "کیفیت",
+      map: "تاریخی نقشہ"
     },
     home: {
       greeting: "السلام علیکم",
@@ -149,7 +155,10 @@ export const translations: Record<Language, any> = {
       tasbeeh: "التسبيح",
       names: "الأسماء الحسنى",
       calendar: "التقويم",
-      miracles: "المعجزات"
+      miracles: "المعجزات",
+      ai: "مرشد الأرواح",
+      moods: "المزاج",
+      map: "الخريطة التاريخية"
     },
     home: {
       greeting: "السلام عليكم",

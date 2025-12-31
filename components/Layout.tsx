@@ -6,7 +6,7 @@ import {
   Search as SearchIcon, Heart, X, Menu,
   Mail, ShieldCheck, Compass, ArrowUp,
   Settings, Languages, ChevronRight, Info, ExternalLink, Github,
-  Globe, Sparkles
+  Globe, Sparkles, MessageSquareHeart, Smile, Map as MapIcon
 } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { translations, Language } from '../services/i18n';
@@ -34,6 +34,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { name: t.nav.home, path: '/', icon: <HomeIcon size={20} /> },
     { name: t.nav.surah, path: '/surah', icon: <BookOpen size={20} /> },
+    { name: t.nav.ai, path: '/ai', icon: <MessageSquareHeart size={20} className="text-emerald-400" /> },
+    { name: t.nav.moods, path: '/moods', icon: <Smile size={20} className="text-rose-400" /> },
+    { name: t.nav.map, path: '/history-map', icon: <MapIcon size={20} className="text-blue-400" /> },
     { name: t.nav.miracles, path: '/miracles', icon: <Sparkles size={20} /> },
     { name: t.nav.juz, path: '/juz', icon: <Star size={20} /> },
     { name: t.nav.search, path: '/search', icon: <SearchIcon size={20} /> },
@@ -84,7 +87,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
-                    <span className={`${isActive ? 'text-white' : 'text-emerald-500 group-hover:scale-110 transition-transform'}`}>
+                    <span className={`${isActive ? 'text-white' : 'group-hover:scale-110 transition-transform'}`}>
                       {item.icon}
                     </span>
                     <span className="tracking-widest uppercase text-xs flex-grow">{item.name}</span>

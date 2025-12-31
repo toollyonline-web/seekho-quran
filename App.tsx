@@ -22,6 +22,9 @@ import Donation from './pages/Donation';
 import QiblaFinder from './pages/QiblaFinder';
 import Search from './pages/Search';
 import Miracles from './pages/Miracles';
+import AiAssistant from './pages/AiAssistant';
+import Moods from './pages/Moods';
+import IslamicMap from './pages/IslamicMap';
 import { Heart, Globe, ShieldCheck, Mail, Share2, MessageSquare, User, Code2, Sparkles, Coffee } from 'lucide-react';
 
 const AboutPage = () => {
@@ -139,6 +142,9 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/ai" element={<AiAssistant />} />
+          <Route path="/moods" element={<Moods />} />
+          <Route path="/history-map" element={<IslamicMap />} />
           <Route path="/miracles" element={<Miracles />} />
           <Route path="/surah" element={<SurahList />} />
           <Route path="/surah/:id" element={<SurahReader />} />
