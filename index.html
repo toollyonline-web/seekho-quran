@@ -8,20 +8,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <title>Quran Seekho | Premium Ad-Free Quranic Experience</title>
-    <meta name="description" content="Read and learn the Holy Quran with professional English and Urdu translations. Ad-free, private, and beautifully designed for the global Ummah.">
+    <title>Quran Seekho | The Ultimate Sacred Reading Experience</title>
+    <meta name="description" content="Read and learn the Holy Quran with professional English and Urdu translations. Ad-free, private, and beautifully designed.">
     
     <!-- Open Graph / SEO -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Quran Seekho - Illuminating the Path">
-    <meta property="og:description" content="Distraction-free Quran reading with audio, prayer times, and Islamic tools.">
+    <meta property="og:title" content="Quran Seekho - A Sacred Digital Sanctuary">
+    <meta property="og:description" content="Distraction-free Quran reading with high-quality typography and Islamic tools.">
     <meta property="og:image" content="https://quranseekho.online/og-image.jpg">
-    <meta name="twitter:card" content="summary_large_image">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&family=Scheherazade+New:wght@400;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
         (function() {
@@ -33,48 +32,61 @@
 
     <style>
         :root {
-            --emerald-sacred: #064e3b;
-            --gold-soft: #d97706;
+            --emerald-deep: #064e3b;
+            --gold-light: #d97706;
+            --cream: #fdfaf3;
         }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
             background-color: #f8fafc;
-            /* Safe area support for notched devices */
             padding-bottom: env(safe-area-inset-bottom);
         }
 
         .font-arabic { font-family: 'Scheherazade New', serif; line-height: 2.3; direction: rtl; }
         .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; line-height: 2.8; }
 
-        /* Modern App Shell UI */
+        /* Luxury Glassmorphism */
         .glass {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         .dark .glass {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Prevent content jumps and ensure smooth transitions */
+        .sepia { background-color: var(--cream); }
+        .sepia .glass { background: rgba(253, 250, 243, 0.8); border-color: rgba(217, 119, 6, 0.1); }
+
+        /* Soft Shadows */
+        .shadow-sacred {
+            shadow-color: rgba(6, 78, 59, 0.1);
+            box-shadow: 0 20px 50px -12px rgba(6, 78, 59, 0.15);
+        }
+
+        /* Animations */
+        @keyframes subtle-float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+        .animate-float { animation: subtle-float 4s ease-in-out infinite; }
+
         .page-transition {
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.5s ease-out forwards;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        /* Hide Scrollbar */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 
     <script type="importmap">
@@ -92,7 +104,7 @@
 }
 </script>
 </head>
-<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-500">
+<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-500 min-h-screen">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
 </body>

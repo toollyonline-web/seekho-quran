@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home as HomeIcon, BookOpen, Star, Hash, Sun, Moon, Languages, 
-  Search as SearchIcon, Heart, Coffee, X, Sliders, Sparkles, Compass
+  Search as SearchIcon, Heart, Coffee, X, Sliders, Sparkles, Compass, Menu
 } from 'lucide-react';
 import InstallPWA from './InstallPWA';
 import { translations, Language } from '../services/i18n';
@@ -29,7 +29,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setLanguage(savedLang);
     applyTheme(savedTheme);
 
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -51,78 +51,81 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: t.nav.home, path: '/', icon: <HomeIcon size={22} /> },
     { name: t.nav.surah, path: '/surah', icon: <BookOpen size={22} /> },
     { name: t.nav.search, path: '/search', icon: <SearchIcon size={22} /> },
-    { name: t.nav.duas, path: '/duas', icon: <Heart size={22} /> },
     { name: t.nav.tasbeeh, path: '/tasbeeh', icon: <Hash size={22} /> },
+    { name: t.nav.qibla, path: '/qibla', icon: <Compass size={22} /> },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
-      {/* Dynamic Settings Sheet */}
+    <div className="min-h-screen flex flex-col relative bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+      
+      {/* Settings Drawer */}
       {isSettingsOpen && (
-        <div className="fixed inset-0 z-[400] flex justify-end">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsSettingsOpen(false)}></div>
-          <div className="relative w-full max-w-md h-full bg-white dark:bg-slate-900 shadow-2xl animate-in slide-in-from-right duration-500">
-            <div className="p-10 flex items-center justify-between border-b dark:border-white/5">
-              <h2 className="text-3xl font-black flex items-center gap-3 dark:text-white tracking-tighter italic">
+        <div className="fixed inset-0 z-[500] flex justify-end">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity" onClick={() => setIsSettingsOpen(false)}></div>
+          <div className="relative w-full max-w-sm h-full bg-white dark:bg-slate-900 shadow-2xl animate-in slide-in-from-right duration-500 overflow-y-auto">
+            <div className="p-8 flex items-center justify-between border-b dark:border-white/5">
+              <h2 className="text-2xl font-black italic tracking-tighter dark:text-white flex items-center gap-3">
                 <Sliders className="text-emerald-700" /> {t.ui.settings}
               </h2>
-              <button onClick={() => setIsSettingsOpen(false)} className="p-3 hover:bg-slate-100 dark:hover:bg-white/5 rounded-2xl dark:text-white transition-all">
-                <X size={28} />
+              <button onClick={() => setIsSettingsOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full dark:text-white">
+                <X size={24} />
               </button>
             </div>
-            <div className="p-10 space-y-12">
-              <div className="space-y-6">
+            
+            <div className="p-8 space-y-12">
+              <section className="space-y-6">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">{t.ui.language}</p>
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-3">
                   {['en', 'ur', 'ar'].map((l) => (
                     <button 
                       key={l}
                       onClick={() => { setLanguage(l as Language); localStorage.setItem('language', l); window.location.reload(); }}
-                      className={`p-6 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${language === l ? 'bg-emerald-800 text-white border-emerald-800 shadow-xl' : 'bg-slate-50 dark:bg-slate-800 border-transparent dark:text-white hover:border-emerald-700'}`}
+                      className={`p-5 rounded-2xl border-2 transition-all flex items-center justify-between font-bold text-sm ${language === l ? 'bg-emerald-800 text-white border-emerald-800' : 'bg-slate-50 dark:bg-slate-800 border-transparent dark:text-white'}`}
                     >
-                      <span className="font-bold text-lg">{l === 'en' ? 'English' : l === 'ur' ? 'اردو' : 'العربية'}</span>
-                      {language === l && <Star size={20} fill="currentColor" />}
+                      <span>{l === 'en' ? 'English' : l === 'ur' ? 'اردو' : 'العربية'}</span>
+                      {language === l && <Star size={18} fill="currentColor" />}
                     </button>
                   ))}
                 </div>
-              </div>
-              <div className="space-y-6">
+              </section>
+
+              <section className="space-y-6">
                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Quick Links</p>
-                 <div className="grid grid-cols-2 gap-4">
-                    <Link to="/qibla" onClick={() => setIsSettingsOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex flex-col items-center gap-2 dark:text-white">
-                       <Compass className="text-emerald-700" /> <span className="text-xs font-bold">{t.nav.qibla}</span>
+                 <div className="grid grid-cols-2 gap-3">
+                    <Link to="/names" onClick={() => setIsSettingsOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex flex-col items-center gap-2 dark:text-white group">
+                       <Sparkles size={20} className="text-amber-500 group-hover:scale-110 transition-transform" /> 
+                       <span className="text-xs font-bold">{t.nav.names}</span>
                     </Link>
-                    <Link to="/names" onClick={() => setIsSettingsOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex flex-col items-center gap-2 dark:text-white">
-                       <Star className="text-amber-500" /> <span className="text-xs font-bold">{t.nav.names}</span>
+                    <Link to="/zakat" onClick={() => setIsSettingsOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex flex-col items-center gap-2 dark:text-white group">
+                       <Heart size={20} className="text-rose-500 group-hover:scale-110 transition-transform" /> 
+                       <span className="text-xs font-bold">{t.nav.zakat}</span>
                     </Link>
                  </div>
-              </div>
+              </section>
             </div>
           </div>
         </div>
       )}
 
-      {/* Floating Header */}
-      <header className={`sticky top-0 z-[300] w-full transition-all duration-300 pt-safe ${scrolled ? 'h-20 glass shadow-2xl' : 'h-24 bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-4 md:px-10 h-full flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-4 group">
-            <div className="w-12 h-12 bg-emerald-800 rounded-[1.25rem] flex items-center justify-center text-white font-black text-2xl shadow-2xl group-hover:-rotate-6 transition-transform">
-              QS
-            </div>
-            <div className="hidden sm:flex flex-col">
-              <span className="font-black text-xl tracking-tight leading-none dark:text-white">Quran Seekho</span>
-              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-widest mt-1">Sacred Space</span>
+      {/* Header */}
+      <header className={`fixed top-0 z-[300] w-full transition-all duration-300 pt-safe ${scrolled ? 'glass h-20 shadow-lg' : 'bg-transparent h-24'}`}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12 h-full flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-emerald-800 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-xl group-hover:rotate-12 transition-transform">QS</div>
+            <div className="flex flex-col">
+              <span className="font-black text-lg tracking-tight leading-none dark:text-white">Quran Seekho</span>
+              <span className="text-[8px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mt-0.5">Sanctuary</span>
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-2 bg-slate-900/5 dark:bg-white/5 p-1.5 rounded-full backdrop-blur-md border border-white/20">
+          <nav className="hidden lg:flex items-center gap-1 bg-white/40 dark:bg-slate-900/40 p-1.5 rounded-full backdrop-blur-md border border-white/20">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2 font-black px-6 py-3 rounded-full transition-all text-[11px] uppercase tracking-widest ${
+                className={`flex items-center gap-2 font-black px-6 py-2.5 rounded-full transition-all text-[10px] uppercase tracking-widest ${
                   location.pathname === item.path 
-                    ? 'bg-white dark:bg-slate-900 text-emerald-800 shadow-xl scale-105' 
+                    ? 'bg-emerald-800 text-white shadow-xl scale-105' 
                     : 'text-slate-500 hover:text-emerald-800 dark:text-slate-400'
                 }`}
               >
@@ -132,89 +135,60 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            <button onClick={toggleTheme} className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 text-slate-500 hover:text-emerald-700 transition-all shadow-sm active:scale-90">
-              {theme === 'light' ? <Sun size={22} /> : theme === 'dark' ? <Moon size={22} /> : <Coffee size={22} />}
+          <div className="flex items-center gap-2">
+            <button onClick={toggleTheme} className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 text-slate-500 hover:text-emerald-700 transition-all shadow-sm">
+              {theme === 'light' ? <Sun size={20} /> : theme === 'dark' ? <Moon size={20} /> : <Coffee size={20} />}
             </button>
-            <button onClick={() => setIsSettingsOpen(true)} className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 text-slate-500 hover:text-emerald-700 transition-all shadow-sm active:scale-90">
-              <Sliders size={22} />
+            <button onClick={() => setIsSettingsOpen(true)} className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 text-slate-500 hover:text-emerald-700 transition-all shadow-sm">
+              <Menu size={20} />
             </button>
           </div>
         </div>
       </header>
 
-      {/* Primary View */}
-      <main className="flex-grow max-w-7xl mx-auto w-full pt-6 pb-40 md:pb-24 px-4 md:px-8">
+      {/* Content */}
+      <main className="flex-grow pt-32 pb-40 lg:pb-24 px-6 max-w-7xl mx-auto w-full">
         {children}
       </main>
 
       <InstallPWA />
 
-      {/* High-End Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-8 left-6 right-6 z-[300] h-20 glass rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.35)] flex items-center justify-around px-2 border border-white/20 pb-safe">
+      {/* Bottom Nav (Mobile) */}
+      <nav className="lg:hidden fixed bottom-6 left-6 right-6 z-[400] h-18 glass rounded-3xl shadow-2xl flex items-center justify-around px-2 border border-white/20 pb-safe">
         {navItems.map((item) => {
           const active = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center justify-center flex-grow transition-all duration-300 relative ${
-                active ? 'text-emerald-800 dark:text-emerald-400 -translate-y-2' : 'text-slate-400'
+              className={`flex flex-col items-center justify-center flex-grow transition-all duration-300 ${
+                active ? 'text-emerald-800 dark:text-emerald-400 -translate-y-1' : 'text-slate-400'
               }`}
             >
-              <div className={`p-3 rounded-2xl transition-all ${active ? 'bg-emerald-600/10 shadow-inner' : ''}`}>
+              <div className={`p-2.5 rounded-xl transition-all ${active ? 'bg-emerald-600/10' : ''}`}>
                 {item.icon}
               </div>
-              <span className="text-[10px] font-black uppercase tracking-tighter mt-1">{item.name}</span>
-              {active && <div className="absolute -bottom-2 w-1.5 h-1.5 bg-emerald-800 dark:bg-emerald-400 rounded-full animate-pulse"></div>}
+              <span className="text-[9px] font-black uppercase tracking-tighter mt-1">{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
-      <footer className="bg-slate-950 text-white py-24 px-8 hidden md:block">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
-          <div className="space-y-8">
+      {/* Footer (Desktop) */}
+      <footer className="hidden lg:block bg-slate-950 text-white py-16 px-12 border-t border-white/5">
+         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-emerald-800 rounded-2xl flex items-center justify-center font-black text-2xl">QS</div>
-              <span className="text-3xl font-black tracking-tighter italic">Quran Seekho</span>
+               <div className="w-10 h-10 bg-emerald-800 rounded-xl flex items-center justify-center font-black text-lg">QS</div>
+               <p className="text-slate-500 font-medium">Illuminate your life with the Noble Word.</p>
             </div>
-            <p className="text-slate-500 text-lg leading-relaxed font-medium">Illuminate your path with the Word of Allah. Distraction-free, private, and global.</p>
-            <Link to="/donate" className="inline-flex items-center gap-3 px-10 py-4 bg-emerald-800 rounded-2xl font-black hover:bg-emerald-700 transition-all shadow-xl hover:scale-105">
-              <Heart size={20} fill="currentColor" /> Support Us
-            </Link>
-          </div>
-          <div>
-             <h4 className="font-black text-[11px] uppercase tracking-[0.3em] text-emerald-600 mb-8">Sacred Content</h4>
-             <ul className="space-y-5 text-slate-400 font-bold">
-                <li><Link to="/surah" className="hover:text-white transition-colors">Surah Library</Link></li>
-                <li><Link to="/juz" className="hover:text-white transition-colors">Browse by Juz</Link></li>
-                <li><Link to="/hadith" className="hover:text-white transition-colors">Hadith Collection</Link></li>
-                <li><Link to="/names" className="hover:text-white transition-colors">99 Names of Allah</Link></li>
-             </ul>
-          </div>
-          <div>
-             <h4 className="font-black text-[11px] uppercase tracking-[0.3em] text-emerald-600 mb-8">Islamic Tools</h4>
-             <ul className="space-y-5 text-slate-400 font-bold">
-                <li><Link to="/qibla" className="hover:text-white transition-colors">Qibla Locator</Link></li>
-                <li><Link to="/tasbeeh" className="hover:text-white transition-colors">Dhikr Counter</Link></li>
-                <li><Link to="/zakat" className="hover:text-white transition-colors">Zakat Calculator</Link></li>
-                <li><Link to="/calendar" className="hover:text-white transition-colors">Islamic Calendar</Link></li>
-             </ul>
-          </div>
-          <div>
-             <h4 className="font-black text-[11px] uppercase tracking-[0.3em] text-emerald-600 mb-8">Platform</h4>
-             <ul className="space-y-5 text-slate-400 font-bold">
-                <li><Link to="/about" className="hover:text-white transition-colors">Our Story</Link></li>
-                <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-             </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto mt-24 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-slate-600 text-[10px] font-black uppercase tracking-[0.4em]">
-           <p>© {new Date().getFullYear()} Quran Seekho • By the Ummah, for the Ummah</p>
-           <p className="mt-4 md:mt-0 flex items-center gap-3"><Sparkles size={14} className="text-emerald-700" /> Seek Light</p>
-        </div>
+            <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
+               <Link to="/privacy" className="hover:text-white">Privacy</Link>
+               <Link to="/about" className="hover:text-white">About</Link>
+               <Link to="/donate" className="hover:text-white">Donate</Link>
+               <Link to="/feedback" className="hover:text-white">Feedback</Link>
+            </div>
+            <p className="text-[10px] text-slate-700 font-black uppercase tracking-[0.4em]">© {new Date().getFullYear()} Quran Seekho</p>
+         </div>
       </footer>
     </div>
   );

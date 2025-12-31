@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchSurahList } from '../services/quranApi';
 import { Surah } from '../types';
 import { Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, Hash, ChevronRight } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
 
 const SurahList: React.FC = () => {
@@ -13,7 +13,7 @@ const SurahList: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const currentLang = (localStorage.getItem('language') as Language) || 'en';
-  const t = translations[currentLang];
+  const t = translations[currentLang] || translations['en'];
 
   useEffect(() => {
     const loadSurahs = async () => {
@@ -35,57 +35,63 @@ const SurahList: React.FC = () => {
   }, [searchTerm, surahs]);
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[40vh]">
-      <div className="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+    <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+      <div className="w-10 h-10 border-4 border-emerald-900/10 border-t-emerald-800 rounded-full animate-spin"></div>
+      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loading Library...</p>
     </div>
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="space-y-12 page-transition pb-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
-          <h1 className="text-3xl font-black mb-1">{t.nav.surah}</h1>
-          <p className="text-slate-500 dark:text-slate-400">{t.home.browseSurahs}</p>
+          <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter italic dark:text-white">Surah Library</h1>
+          <p className="text-slate-500 font-medium max-w-md">Explore the 114 revelations of the Noble Quran with high-quality English and Urdu translations.</p>
         </div>
-        <div className="relative max-w-sm w-full">
-          <Search className="absolute ltr:left-4 rtl:right-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+        <div className="relative w-full max-w-sm group">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-700 transition-colors" size={20} />
           <input
             type="text"
-            placeholder={t.ui.search}
-            className="w-full ltr:pl-12 ltr:pr-4 rtl:pr-12 rtl:pl-4 py-4 bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-green-600 outline-none transition-all shadow-sm"
+            placeholder="Search by name, number..."
+            className="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-900 border dark:border-white/5 rounded-[2rem] shadow-sm focus:ring-4 focus:ring-emerald-800/5 outline-none transition-all font-bold"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredSurahs.map((surah) => (
           <Link
             key={surah.number}
             to={`/surah/${surah.number}`}
-            className="bg-white dark:bg-slate-800 p-6 rounded-2xl border dark:border-slate-700 hover:border-green-400 dark:hover:border-green-600 transition-all flex items-center justify-between group shadow-sm hover:shadow-md"
+            className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border dark:border-white/5 hover:border-emerald-700 hover:shadow-2xl hover:-translate-y-1 transition-all flex flex-col justify-between group h-64"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-green-50 dark:bg-green-900/30 rounded-xl flex items-center justify-center text-green-700 dark:text-green-400 font-bold rotate-45 group-hover:rotate-0 transition-transform ltr:mr-2 rtl:ml-2">
-                <span className="-rotate-45 group-hover:rotate-0 transition-transform">{surah.number}</span>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors">{surah.englishName}</h3>
-                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{surah.englishNameTranslation}</p>
-              </div>
+            <div className="flex justify-between items-start">
+               <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/40 rounded-2xl flex items-center justify-center text-emerald-800 dark:text-emerald-400 font-black text-lg group-hover:bg-emerald-800 group-hover:text-white transition-all shadow-sm">
+                  {surah.number}
+               </div>
+               <ChevronRight className="text-slate-200 group-hover:text-emerald-700 group-hover:translate-x-1 transition-all" />
             </div>
-            <div className="text-right">
-              <p className="font-arabic text-2xl mb-1">{surah.name}</p>
-              <p className="text-[10px] uppercase tracking-wider font-black opacity-30">{surah.numberOfAyahs} Ayahs</p>
+            
+            <div className="space-y-1 mt-auto">
+               <h3 className="font-black text-2xl dark:text-white tracking-tight group-hover:text-emerald-700 transition-colors">{surah.englishName}</h3>
+               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{surah.englishNameTranslation}</p>
+            </div>
+
+            <div className="flex justify-between items-end mt-6 pt-4 border-t dark:border-white/5">
+               <p className="font-arabic text-2xl dark:text-white">{surah.name}</p>
+               <p className="text-[9px] font-black uppercase tracking-widest text-emerald-700/60 dark:text-emerald-500/60">{surah.numberOfAyahs} Ayahs</p>
             </div>
           </Link>
         ))}
       </div>
+
       {filteredSurahs.length === 0 && (
-          <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border dark:border-slate-700">
-             <Search size={48} className="mx-auto text-slate-200 mb-4" />
-             <p className="text-slate-500">No results found.</p>
+          <div className="text-center py-32 bg-white dark:bg-slate-900 rounded-[3rem] border dark:border-white/5">
+             <Search size={64} className="mx-auto text-slate-100 mb-6" />
+             <h3 className="text-xl font-bold dark:text-white">No Surah Found</h3>
+             <p className="text-slate-400 mt-2">Try searching with a different name or number.</p>
           </div>
       )}
     </div>
