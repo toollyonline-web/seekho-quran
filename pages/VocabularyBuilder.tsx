@@ -1,6 +1,6 @@
 
+import { GraduationCap, ChevronLeft, ChevronRight, RotateCcw, Check, Brain, Star, BookOpen, Search, History } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, ChevronLeft, ChevronRight, RotateCcw, Check, Brain, Star, BookOpen, Search } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
 
 interface FlashCard {
@@ -126,7 +126,7 @@ const VocabularyBuilder: React.FC = () => {
 
               {/* Back Side */}
               <div className="absolute inset-0 backface-hidden rotate-y-180 bg-emerald-950/20 quran-card rounded-[4rem] p-12 flex flex-col items-center justify-center space-y-10 border-emerald-500/20 shadow-2xl">
-                 <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 text-emerald-500 rounded-full border border-emerald-500/20 text-[10px] font-black uppercase tracking-[0.3em]">
+                 <div className="flex items-center gap-2 px-4 py-1.5 bg-amber-500/10 text-amber-500 rounded-full border border-amber-500/20 text-[10px] font-black uppercase tracking-[0.3em]">
                    Meaning Revealed
                  </div>
                  <div className="text-center space-y-4">
