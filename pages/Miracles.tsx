@@ -15,7 +15,7 @@ interface Miracle {
   ayahRef: string;
   ayahArabic: string;
   explanation: string;
-  icon: React.ReactNode;
+  icon: React.ReactElement; // Changed from ReactNode to ReactElement to support cloning
 }
 
 const MIRACLES: Miracle[] = [
@@ -126,7 +126,7 @@ const MiracleCard: React.FC<{ miracle: Miracle }> = ({ miracle }) => {
 
       {/* Background Decorative Element */}
       <div className="absolute -bottom-10 -right-10 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-125 transition-all duration-1000">
-         {React.cloneElement(miracle.icon as React.ReactElement, { size: 280 })}
+         {React.cloneElement(miracle.icon as React.ReactElement<any>, { size: 280 })}
       </div>
     </div>
   );
