@@ -316,12 +316,12 @@ const SurahReader: React.FC = () => {
                   <div className="w-full text-right space-y-8">
                      <div 
                        onClick={() => hifzMode ? toggleReveal(ayah.number) : null}
-                       className={`font-arabic leading-[2.5] select-none transition-all duration-500 ${hifzMode && !isRevealed ? 'blur-xl grayscale opacity-30 cursor-pointer' : ''}`}
+                       className={`font-arabic leading-relaxed select-none transition-all duration-500 ${hifzMode && !isRevealed ? 'blur-xl grayscale opacity-30 cursor-pointer' : ''}`}
                        style={{ fontSize: `${fontSize}px` }}
                        dir="rtl"
                      >
                         {ayah.text.split(' ').map((w: string, i: number) => (
-                           <span key={i} onClick={(e) => { e.stopPropagation(); openMorphology(w, ayah.text); }} className="hover:text-emerald-500 cursor-pointer transition-colors px-1">{w} </span>
+                           <span key={i} onClick={(e) => { e.stopPropagation(); openMorphology(w, ayah.text); }} className="hover:text-emerald-500 cursor-pointer transition-colors px-1 whitespace-nowrap">{w} </span>
                         ))}
                      </div>
                      <div className="flex items-center justify-end gap-4">
