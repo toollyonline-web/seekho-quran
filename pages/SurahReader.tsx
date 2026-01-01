@@ -293,47 +293,47 @@ const SurahReader: React.FC = () => {
          </div>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-8 px-4 sm:px-0">
         {arabicToDisplay.ayahs.map((ayah: any, idx: number) => {
           const isPlaying = playingAyah === ayah.number;
           const isRevealed = revealedAyahs.has(ayah.number);
           const isBookmarked = isAyahBookmarked(ayah);
           return (
-            <div key={ayah.number} id={`ayah-${ayah.numberInSurah}`} className={`quran-card p-10 md:p-14 rounded-[3.5rem] space-y-10 group relative transition-all ${isPlaying ? 'ayah-active' : ''}`}>
-               <div className="flex flex-col md:flex-row justify-between items-start gap-12">
-                  <div className="flex flex-row md:flex-col gap-3 shrink-0">
-                     <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${isPlaying ? 'bg-emerald-600 animate-pulse' : 'bg-white/5 text-slate-500 hover:text-white'}`}>
+            <div key={ayah.number} id={`ayah-${ayah.numberInSurah}`} className={`quran-card p-6 md:p-14 rounded-[2.5rem] md:rounded-[3.5rem] space-y-10 group relative transition-all ${isPlaying ? 'ayah-active' : ''}`}>
+               <div className="flex flex-col md:flex-row justify-between items-start gap-8 md:gap-12">
+                  <div className="flex flex-row md:flex-col gap-3 shrink-0 w-full md:w-auto overflow-x-auto no-scrollbar py-2">
+                     <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all shrink-0 ${isPlaying ? 'bg-emerald-600 animate-pulse' : 'bg-white/5 text-slate-500 hover:text-white'}`}>
                         {isPlaying ? <Pause size={24}/> : <Play size={24}/>}
                      </button>
                      <button 
                        onClick={() => toggleBookmark(ayah)} 
-                       className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${isBookmarked ? 'bg-emerald-600/20 text-emerald-500 shadow-inner' : 'bg-white/5 text-slate-600 hover:text-emerald-500'}`}
+                       className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all shrink-0 ${isBookmarked ? 'bg-emerald-600/20 text-emerald-500 shadow-inner' : 'bg-white/5 text-slate-600 hover:text-emerald-500'}`}
                      >
                         <Bookmark size={20} fill={isBookmarked ? "currentColor" : "none"} />
                      </button>
-                     <button onClick={() => { setIsTafsirOpen(true); setSelectedTafsir({ ayahRef: ayah }); }} className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white/5 text-slate-600 hover:text-emerald-500 transition-all"><FileText size={20}/></button>
+                     <button onClick={() => { setIsTafsirOpen(true); setSelectedTafsir({ ayahRef: ayah }); }} className="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center bg-white/5 text-slate-600 hover:text-emerald-500 transition-all shrink-0"><FileText size={20}/></button>
                   </div>
                   <div className="w-full text-right space-y-8">
                      <div 
                        onClick={() => hifzMode ? toggleReveal(ayah.number) : null}
-                       className={`font-arabic leading-relaxed select-none transition-all duration-500 ${hifzMode && !isRevealed ? 'blur-xl grayscale opacity-30 cursor-pointer' : ''}`}
+                       className={`font-arabic select-none transition-all duration-500 flex flex-wrap justify-end gap-x-2 md:gap-x-4 ${hifzMode && !isRevealed ? 'blur-xl grayscale opacity-30 cursor-pointer' : ''}`}
                        style={{ fontSize: `${fontSize}px` }}
                        dir="rtl"
                      >
                         {ayah.text.split(' ').map((w: string, i: number) => (
-                           <span key={i} onClick={(e) => { e.stopPropagation(); openMorphology(w, ayah.text); }} className="hover:text-emerald-500 cursor-pointer transition-colors px-1 whitespace-nowrap">{w} </span>
+                           <span key={i} onClick={(e) => { e.stopPropagation(); openMorphology(w, ayah.text); }} className="hover:text-emerald-500 cursor-pointer transition-colors px-0.5">{w}</span>
                         ))}
                      </div>
                      <div className="flex items-center justify-end gap-4">
                         <span className="h-px bg-white/5 flex-grow"></span>
-                        <div className="w-12 h-12 rounded-2xl border-2 border-emerald-500/20 flex items-center justify-center text-[10px] font-black text-emerald-500">{ayah.numberInSurah}</div>
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl border-2 border-emerald-500/20 flex items-center justify-center text-[10px] font-black text-emerald-500">{ayah.numberInSurah}</div>
                      </div>
                   </div>
                </div>
                {(showEnglish || showUrdu) && (
                  <div className="md:ml-24 pt-10 border-t border-white/5 space-y-8">
-                    {showEnglish && english?.ayahs[idx] && <div className="space-y-2"><p className="text-[9px] font-black text-slate-600 uppercase tracking-widest">English</p><p className="text-xl text-slate-400 italic font-medium">"{english.ayahs[idx].text}"</p></div>}
-                    {showUrdu && urdu?.ayahs[idx] && <div className="space-y-2"><p className="text-[9px] font-black text-slate-600 uppercase tracking-widest text-right">اردو</p><p className="font-urdu text-4xl text-slate-200 leading-relaxed text-right" dir="rtl">{urdu.ayahs[idx].text}</p></div>}
+                    {showEnglish && english?.ayahs[idx] && <div className="space-y-2"><p className="text-[9px] font-black text-slate-600 uppercase tracking-widest">English</p><p className="text-lg md:text-xl text-slate-400 italic font-medium leading-relaxed">"{english.ayahs[idx].text}"</p></div>}
+                    {showUrdu && urdu?.ayahs[idx] && <div className="space-y-2"><p className="text-[9px] font-black text-slate-600 uppercase tracking-widest text-right">اردو</p><p className="font-urdu text-3xl md:text-4xl text-slate-200 leading-relaxed text-right" dir="rtl">{urdu.ayahs[idx].text}</p></div>}
                  </div>
                )}
             </div>
@@ -349,14 +349,14 @@ const SurahReader: React.FC = () => {
                  <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg animate-pulse">
                     <Music size={24} />
                  </div>
-                 <div>
-                    <p className="text-xs font-black text-white uppercase tracking-widest">Now Reciting</p>
-                    <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Ayah {playingAyah} • {RECITERS.find(r => r.id === reciter)?.name}</p>
+                 <div className="min-w-0 flex-1">
+                    <p className="text-xs font-black text-white uppercase tracking-widest truncate">Now Reciting</p>
+                    <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest truncate">Ayah {playingAyah} • {RECITERS.find(r => r.id === reciter)?.name}</p>
                  </div>
               </div>
-              <div className="flex gap-3">
-                 <button onClick={() => toggleAyahAudio(playingAyah)} className="w-12 h-12 bg-white/5 hover:bg-white/10 rounded-2xl flex items-center justify-center transition-all"><Pause size={20}/></button>
-                 <button onClick={() => setPlayingAyah(null)} className="w-12 h-12 bg-rose-600/10 text-rose-500 rounded-2xl flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all"><X size={20}/></button>
+              <div className="flex gap-2 md:gap-3 shrink-0">
+                 <button onClick={() => toggleAyahAudio(playingAyah)} className="w-10 h-10 md:w-12 md:h-12 bg-white/5 hover:bg-white/10 rounded-2xl flex items-center justify-center transition-all"><Pause size={20}/></button>
+                 <button onClick={() => setPlayingAyah(null)} className="w-10 h-10 md:w-12 md:h-12 bg-rose-600/10 text-rose-500 rounded-2xl flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all"><X size={20}/></button>
               </div>
            </div>
         </div>

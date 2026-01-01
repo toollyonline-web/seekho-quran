@@ -40,15 +40,16 @@
         }
 
         .font-arabic { 
-            font-family: 'Amiri', 'Scheherazade New', serif; 
-            line-height: 2.8; 
+            font-family: 'Scheherazade New', 'Amiri', serif; 
+            line-height: 2.2; 
             direction: rtl; 
-            font-size: 1.5em;
             text-rendering: optimizeLegibility;
             font-feature-settings: "kern" 1, "liga" 1, "clig" 1, "calt" 1;
             font-variant-ligatures: common-ligatures;
             -webkit-font-smoothing: antialiased;
-            padding: 0.2em 0; /* Prevent diacritic clipping */
+            word-spacing: 0.15em;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .font-urdu { 
@@ -97,7 +98,8 @@
 
         /* Mobile Optimization */
         @media (max-width: 640px) {
-            .quran-card { padding: 1.5rem !important; border-radius: 2rem !important; }
+            .quran-card { padding: 1.5rem !important; border-radius: 2.5rem !important; }
+            .font-arabic { line-height: 2; }
         }
 
         .page-transition {
