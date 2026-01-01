@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Compass, MapPin, Navigation, Info, CheckCircle2, ShieldCheck, Lock, RefreshCw, AlertCircle } from 'lucide-react';
+import { Compass, MapPin, Navigation, Info, CheckCircle2, ShieldCheck, Lock, RefreshCw, AlertCircle, Map as MapIcon } from 'lucide-react';
 
 const KAABA_COORDS = { lat: 21.4225, lng: 39.8262 };
 
@@ -8,7 +8,7 @@ const QiblaFinder: React.FC = () => {
   const [heading, setHeading] = useState<number | null>(null);
   const [qiblaDirection, setQiblaDirection] = useState<number | null>(null);
   const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string, type: 'denied' | 'unavailable' | 'timeout' | null }>({ message: '', type: null });
   const [isIOS, setIsIOS] = useState(false);
   const [permissionState, setPermissionState] = useState<'prompt' | 'granted' | 'denied' | 'loading'>('prompt');
   const [sensorPermission, setSensorPermission] = useState<'prompt' | 'granted' | 'denied'>('prompt');
@@ -30,25 +30,30 @@ const QiblaFinder: React.FC = () => {
   const handleOrientation = useCallback((e: any) => {
     let compass = 0;
     if (e.webkitCompassHeading !== undefined) {
-      // iOS
       compass = e.webkitCompassHeading;
     } else if (e.alpha !== null) {
-      // Android / Others
-      // Most browsers return degrees clockwise from North if absolute is true
-      compass = e.absolute ? 360 - e.alpha : e.alpha;
+      // In some environments alpha might be relative to starting position
+      // absolute is true when the device can provide absolute orientation
+      compass = e.absolute ? 360 - e.alpha : 360 - e.alpha; 
     }
     setHeading(compass);
   }, []);
 
   const initLocation = () => {
     setPermissionState('loading');
-    setError(null);
+    setError({ message: '', type: null });
 
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
+      setError({ message: "Geolocation is not supported by your browser.", type: 'unavailable' });
       setPermissionState('denied');
       return;
     }
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
+    };
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -56,18 +61,34 @@ const QiblaFinder: React.FC = () => {
         setLocation({ lat: latitude, lng: longitude });
         setQiblaDirection(calculateQibla(latitude, longitude));
         setPermissionState('granted');
+        // Automatically try to start sensors if possible
+        initSensors();
       },
       (err) => {
-        console.error(err);
+        console.error("Geolocation Error:", err);
+        let errorType: 'denied' | 'unavailable' | 'timeout' = 'unavailable';
+        let msg = "Location access was denied. Please check your browser settings.";
+
+        if (err.code === 1) {
+          errorType = 'denied';
+          msg = "Permission was denied. Please click the lock icon in your browser address bar to reset permissions and try again.";
+        } else if (err.code === 2) {
+          errorType = 'unavailable';
+          msg = "Position unavailable. Ensure your GPS is turned on and you have a clear view of the sky.";
+        } else if (err.code === 3) {
+          errorType = 'timeout';
+          msg = "Location request timed out. Please try again or move to an area with better signal.";
+        }
+
         setPermissionState('denied');
-        setError("Location access was denied. Please enable it in your browser/system settings to find the Qibla.");
+        setError({ message: msg, type: errorType });
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      options
     );
   };
 
   const initSensors = async () => {
-    if (isIOS && typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
       try {
         const response = await (DeviceOrientationEvent as any).requestPermission();
         if (response === 'granted') {
@@ -80,9 +101,7 @@ const QiblaFinder: React.FC = () => {
         setSensorPermission('denied');
       }
     } else {
-      // Android or Non-iOS
       window.addEventListener('deviceorientationabsolute', handleOrientation, true);
-      // Fallback for older browsers
       window.addEventListener('deviceorientation', handleOrientation, true);
       setSensorPermission('granted');
     }
@@ -135,32 +154,52 @@ const QiblaFinder: React.FC = () => {
               </div>
            </div>
 
-           {error && (
-             <div className="flex items-center gap-3 p-4 bg-rose-500/10 text-rose-500 rounded-2xl text-xs font-bold border border-rose-500/20">
-                <AlertCircle size={16} /> {error}
+           {error.message && (
+             <div className="flex items-start gap-4 p-6 bg-rose-500/10 text-rose-500 rounded-3xl text-sm font-bold border border-rose-500/20 text-left">
+                <AlertCircle size={20} className="shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                   <p className="uppercase text-[10px] tracking-widest font-black opacity-60">
+                      {error.type === 'denied' ? 'Permission Blocked' : 'Connection Error'}
+                   </p>
+                   <p className="leading-relaxed">{error.message}</p>
+                </div>
              </div>
            )}
 
-           <button 
-             onClick={initLocation}
-             disabled={permissionState === 'loading'}
-             className="w-full py-6 bg-emerald-600 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-900/20 active:scale-95 disabled:opacity-50"
-           >
-              {permissionState === 'loading' ? <RefreshCw className="animate-spin mx-auto" /> : 'Allow & Detect Location'}
-           </button>
+           <div className="flex flex-col gap-4">
+             <button 
+               onClick={initLocation}
+               disabled={permissionState === 'loading'}
+               className="w-full py-6 bg-emerald-600 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-900/20 active:scale-95 disabled:opacity-50"
+             >
+                {permissionState === 'loading' ? <RefreshCw className="animate-spin mx-auto" /> : 'Retry Location Detection'}
+             </button>
+             
+             {error.type === 'denied' && (
+               <div className="p-6 bg-white/5 rounded-3xl text-xs text-slate-500 text-left border border-white/5">
+                 <p className="font-bold text-slate-400 mb-2">How to fix:</p>
+                 <ul className="list-decimal list-inside space-y-2 leading-relaxed">
+                   <li>Check browser bar (top left) for a lock <Lock size={10} className="inline"/> icon.</li>
+                   <li>Click it and find "Permissions" or "Location".</li>
+                   <li>Set it to "Allow" or "Always".</li>
+                   <li>Refresh this page.</li>
+                 </ul>
+               </div>
+             )}
+           </div>
         </div>
       ) : sensorPermission !== 'granted' ? (
-        <div className="quran-card p-12 rounded-[4rem] text-center space-y-8 w-full border-white/5">
-          <div className="w-20 h-20 bg-blue-500/10 text-blue-500 rounded-[2rem] flex items-center justify-center mx-auto">
+        <div className="quran-card p-12 rounded-[4rem] text-center space-y-8 w-full border-white/5 shadow-2xl">
+          <div className="w-20 h-20 bg-blue-500/10 text-blue-500 rounded-[2rem] flex items-center justify-center mx-auto animate-bounce">
              <Navigation size={40} />
           </div>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-black italic text-white">Activate Sensors</h2>
-            <p className="text-slate-500">Enable your device's compass sensor for real-time direction finding.</p>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black italic text-white">Activate Sensors</h2>
+            <p className="text-slate-400 text-lg">Enable your device's internal compass for real-time direction tracking.</p>
           </div>
           <button 
             onClick={initSensors}
-            className="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-blue-500 transition-all shadow-lg active:scale-95"
+            className="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl active:scale-95"
           >
             Start Compass
           </button>
@@ -191,7 +230,6 @@ const QiblaFinder: React.FC = () => {
                       {dir}
                     </span>
                  ))}
-                 {/* Degree ticks */}
                  {Array.from({length: 12}).map((_, i) => (
                    <div key={i} className="absolute inset-0 flex justify-center" style={{ transform: `rotate(${i * 30}deg)` }}>
                       <div className="h-4 w-0.5 bg-white/10 mt-1"></div>
@@ -220,7 +258,7 @@ const QiblaFinder: React.FC = () => {
                   {Math.round(heading || 0)}°
                 </p>
                 <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em] mt-3">
-                  Current Heading
+                  Heading
                 </p>
               </div>
 
@@ -244,31 +282,31 @@ const QiblaFinder: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            <div className="quran-card p-8 rounded-[2.5rem] border-white/5 space-y-4">
+            <div className="quran-card p-8 rounded-[2.5rem] border-white/5 space-y-4 shadow-xl">
               <div className="flex items-center justify-between">
                  <p className="text-[11px] font-black text-slate-600 uppercase tracking-widest">Location Verify</p>
                  <MapPin size={16} className="text-emerald-500" />
               </div>
               <p className="text-lg font-black text-white">{location ? `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}` : '--'}</p>
-              <p className="text-[10px] text-slate-500 font-bold uppercase">Coordinates used for calculation</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase">GPS Coordinates Linked</p>
             </div>
             
-            <div className="quran-card p-8 rounded-[2.5rem] border-white/5 space-y-4">
+            <div className="quran-card p-8 rounded-[2.5rem] border-white/5 space-y-4 shadow-xl">
               <div className="flex items-center justify-between">
                  <p className="text-[11px] font-black text-slate-600 uppercase tracking-widest">Calculated Qibla</p>
                  <Navigation size={16} className="text-blue-500" />
               </div>
               <p className="text-lg font-black text-white">{qiblaDirection ? `${Math.round(qiblaDirection)}° from North` : '--'}</p>
-              <p className="text-[10px] text-slate-500 font-bold uppercase">Magnetic bearing to Kaaba</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase">Target Magnetic Bearing</p>
             </div>
           </div>
 
-          <div className="bg-blue-600/5 p-8 rounded-[3rem] border border-blue-500/10 flex items-start gap-6 max-w-xl mx-auto">
+          <div className="bg-blue-600/5 p-8 rounded-[3rem] border border-blue-500/10 flex items-start gap-6 max-w-xl mx-auto shadow-inner">
             <Info size={28} className="text-blue-500 shrink-0" />
             <div className="space-y-2">
                <p className="text-[11px] font-black text-blue-500 uppercase tracking-[0.2em]">Accuracy Tips</p>
                <p className="text-sm text-slate-400 font-medium leading-relaxed">
-                  Keep your phone flat on your palm. Move your device in a 'Figure-8' motion to calibrate the internal magnetometer. Avoid using near large metal objects or magnetic cases.
+                  Keep your phone flat on your palm. Move your device in a 'Figure-8' motion to calibrate. Avoid being near metal objects, speakers, or magnets.
                </p>
             </div>
           </div>
@@ -277,7 +315,7 @@ const QiblaFinder: React.FC = () => {
             onClick={() => { setPermissionState('prompt'); setHeading(null); setLocation(null); }}
             className="mx-auto flex items-center gap-2 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] hover:text-white transition-colors"
           >
-             <RefreshCw size={14} /> Recalibrate Sensors
+             <RefreshCw size={14} /> Recalibrate Entire Tool
           </button>
         </div>
       )}
