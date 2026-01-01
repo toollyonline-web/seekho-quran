@@ -11,6 +11,14 @@ import {
 } from 'lucide-react';
 import { translations, Language } from '../services/i18n';
 
+interface AyahBookmark {
+  surahNumber: number;
+  surahName: string;
+  ayahNumber: number;
+  text: string;
+  timestamp: number;
+}
+
 const SurahReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -37,6 +45,8 @@ const SurahReader: React.FC = () => {
   const [morphologyLoading, setMorphologyLoading] = useState(false);
   const [morphologyData, setMorphologyData] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
+
+  const [bookmarks, setBookmarks] = useState<AyahBookmark[]>([]);
   
   const [reciter, setReciter] = useState(() => {
     try {
@@ -54,6 +64,12 @@ const SurahReader: React.FC = () => {
   const t = translations[lang] || translations['en'];
 
   useEffect(() => {
+    // Load initial bookmarks
+    const saved = localStorage.getItem('qs_bookmarks');
+    if (saved) {
+      try { setBookmarks(JSON.parse(saved)); } catch(e) { console.error(e); }
+    }
+
     const audio = new Audio();
     audio.crossOrigin = "anonymous";
     audioRef.current = audio;
@@ -177,6 +193,35 @@ const SurahReader: React.FC = () => {
     setRevealedAyahs(next);
   };
 
+  const toggleBookmark = (ayah: any) => {
+    const sNum = isJuz ? ayah.surah.number : standardArabic.number;
+    const sName = isJuz ? ayah.surah.englishName : standardArabic.englishName;
+    
+    const isAlreadyBookmarked = bookmarks.some(b => b.surahNumber === sNum && b.ayahNumber === ayah.numberInSurah);
+    
+    let updated;
+    if (isAlreadyBookmarked) {
+      updated = bookmarks.filter(b => !(b.surahNumber === sNum && b.ayahNumber === ayah.numberInSurah));
+    } else {
+      const newBookmark: AyahBookmark = {
+        surahNumber: sNum,
+        surahName: sName,
+        ayahNumber: ayah.numberInSurah,
+        text: ayah.text,
+        timestamp: Date.now()
+      };
+      updated = [...bookmarks, newBookmark];
+    }
+    
+    setBookmarks(updated);
+    localStorage.setItem('qs_bookmarks', JSON.stringify(updated));
+  };
+
+  const isAyahBookmarked = (ayah: any) => {
+    const sNum = isJuz ? ayah.surah.number : standardArabic.number;
+    return bookmarks.some(b => b.surahNumber === sNum && b.ayahNumber === ayah.numberInSurah);
+  };
+
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6">
       <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
@@ -216,6 +261,9 @@ const SurahReader: React.FC = () => {
                     <button onClick={() => setShowEnglish(!showEnglish)} className={`w-full p-4 rounded-2xl flex justify-between font-black text-[10px] uppercase tracking-widest border transition-all ${showEnglish ? 'bg-emerald-600 border-emerald-500' : 'bg-white/5 border-white/5 text-slate-500'}`}>English Translation <Eye size={14}/></button>
                     <button onClick={() => setShowUrdu(!showUrdu)} className={`w-full p-4 rounded-2xl flex justify-between font-black text-[10px] uppercase tracking-widest border transition-all ${showUrdu ? 'bg-emerald-600 border-emerald-500' : 'bg-white/5 border-white/5 text-slate-500'}`}>Urdu Translation <Eye size={14}/></button>
                  </div>
+                 <Link to="/bookmarks" className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors">
+                    <Bookmark size={18} className="text-emerald-500" /> View All Bookmarks
+                 </Link>
               </div>
            </div>
         </div>
@@ -236,19 +284,32 @@ const SurahReader: React.FC = () => {
             <button onClick={() => setTajweedMode(!tajweedMode)} className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${tajweedMode ? 'bg-emerald-600 border-emerald-500' : 'bg-white/5 border-white/5 text-slate-500'}`}>Tajweed Rules</button>
             <button onClick={() => setHifzMode(!hifzMode)} className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${hifzMode ? 'bg-amber-600 border-amber-500' : 'bg-white/5 border-white/5 text-slate-500'}`}>Hifz Mode</button>
          </div>
-         <button onClick={() => setIsSidebarOpen(true)} className="p-3 bg-emerald-600 rounded-2xl shadow-xl"><Settings size={20}/></button>
+         <div className="flex gap-3">
+            <Link to="/bookmarks" className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white transition-colors relative">
+               <Bookmark size={20} />
+               {bookmarks.length > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-600 text-white text-[8px] font-black flex items-center justify-center rounded-full border border-[#0b0c0d]">{bookmarks.length}</span>}
+            </Link>
+            <button onClick={() => setIsSidebarOpen(true)} className="p-3 bg-emerald-600 rounded-2xl shadow-xl"><Settings size={20}/></button>
+         </div>
       </div>
 
       <div className="space-y-12">
         {arabicToDisplay.ayahs.map((ayah: any, idx: number) => {
           const isPlaying = playingAyah === ayah.number;
           const isRevealed = revealedAyahs.has(ayah.number);
+          const isBookmarked = isAyahBookmarked(ayah);
           return (
             <div key={ayah.number} id={`ayah-${ayah.numberInSurah}`} className={`quran-card p-10 md:p-14 rounded-[3.5rem] space-y-10 group relative transition-all ${isPlaying ? 'ayah-active' : ''}`}>
                <div className="flex flex-col md:flex-row justify-between items-start gap-12">
                   <div className="flex flex-row md:flex-col gap-3 shrink-0">
                      <button onClick={() => toggleAyahAudio(ayah.number)} className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${isPlaying ? 'bg-emerald-600 animate-pulse' : 'bg-white/5 text-slate-500 hover:text-white'}`}>
                         {isPlaying ? <Pause size={24}/> : <Play size={24}/>}
+                     </button>
+                     <button 
+                       onClick={() => toggleBookmark(ayah)} 
+                       className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${isBookmarked ? 'bg-emerald-600/20 text-emerald-500 shadow-inner' : 'bg-white/5 text-slate-600 hover:text-emerald-500'}`}
+                     >
+                        <Bookmark size={20} fill={isBookmarked ? "currentColor" : "none"} />
                      </button>
                      <button onClick={() => { setIsTafsirOpen(true); setSelectedTafsir({ ayahRef: ayah }); }} className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white/5 text-slate-600 hover:text-emerald-500 transition-all"><FileText size={20}/></button>
                   </div>
