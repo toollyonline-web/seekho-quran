@@ -52,7 +52,6 @@ const AboutPage = () => {
         <div className="w-24 h-24 bg-green-700 rounded-[2rem] flex items-center justify-center text-white font-bold text-4xl mx-auto mb-6 shadow-2xl shadow-green-900/30 transform -rotate-3 hover:rotate-0 transition-transform">QS</div>
         <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tight">Meet the Vision</h1>
         <p className="text-xl text-slate-500 italic max-w-2xl mx-auto leading-relaxed">"Guiding the hearts through the light of the Noble Quran."</p>
-        <div className="mt-4 inline-block px-4 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-[10px] font-black uppercase tracking-[0.2em]">Release v1.0.8-Official</div>
       </div>
 
       <section className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-[3rem] border dark:border-slate-700 shadow-sm mb-12 relative overflow-hidden">
